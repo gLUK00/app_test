@@ -1,0 +1,217 @@
+Ce projet est une application de test d'applications web multi-environnements, conçue pour démontrer les capacités de diverses technologies web.
+
+Le nom de l'application "TestGyver" est un jeu de mots entre "Test" et "MacGyver", suggérant une approche ingénieuse et polyvalente pour la réalisation de tests.
+
+L'application expose les pages et API suivantes :
+- / : Page d'authentification
+- /dashboard : Tableau de bord principal après authentification
+    => Affiche la liste des campagnes
+    => Pour les administrateurs, affiche dans le bandeau la possibilite de :
+        - Gérer les variables multi-environnements
+        - Gérer les utilisateurs
+    => Bouton d'ajout de campagne
+- /campains/add : Ajout d'une nouvelle campagne
+- /campains/:id : Détails d'une campagne spécifique
+- /campains/:id/add/test : Ajout d'un test à une campagne
+    => Formulaire pour ajouter des actions au test
+    => Le formulaire correspond au masque de saisie des actions
+- /admin/users : Gestion des utilisateurs (accessible uniquement aux administrateurs)
+    - /admin/users/add : Ajout d'un nouvel utilisateur
+    - /admin/users/edit/:id : Édition d'un utilisateur existant
+- /admin/variables : Gestion des variables (accessible uniquement aux administrateurs)
+    => Affiche la liste des variables
+    => Bouton d'ajout de variable
+    => Trier les variables par environnement
+    => Regrouper l'affichage des variables par environnement
+    - /admin/variables/add : Ajout d'une nouvelle variable
+    - /admin/variables/edit/:id : Édition d'une variable existante
+- /api/login : API d'authentification
+    => Retourne un token JWT en cas de succès
+- /api/logout : API de déconnexion
+- /api/users : API de gestion des utilisateurs
+    - GET /api/users : Récupère la liste des utilisateurs (admin uniquement)
+    - POST /api/users : Crée un nouvel utilisateur (admin uniquement)
+    - PUT /api/users/:id : Met à jour un utilisateur existant (admin uniquement)
+    - DELETE /api/users/:id : Supprime un utilisateur (admin uniquement)
+- /api/campains : API de gestion des campagnes
+    - GET /api/campains : Récupère la liste des campagnes
+    - POST /api/campains : Crée une nouvelle campagne
+    - GET /api/campains/:id : Récupère les détails d'une campagne spécifique
+    - PUT /api/campains/:id : Met à jour une campagne existante
+    - DELETE /api/campains/:id : Supprime une campagne
+- /api/variables : API de gestion des variables (accessible uniquement aux administrateurs)
+    - GET /api/variables : Récupère la liste des variables
+    - POST /api/variables : Crée une nouvelle variable
+    - GET /api/variables/:id : Récupère les détails d'une variable spécifique
+    - PUT /api/variables/:id : Met à jour une variable existante
+    - DELETE /api/variables/:id : Supprime une variable
+- /api/tests : API de gestion des tests
+    - GET /api/tests : Récupère la liste des tests
+    - POST /api/tests : Crée un nouveau test
+    - GET /api/tests/:id : Récupère les détails d'un test spécifique
+    - PUT /api/tests/:id : Met à jour un test existant
+    - DELETE /api/tests/:id : Supprime un test
+- /api/rapports : API de génération et récupération des rapports
+    - GET /api/rapports : Récupère la liste des rapports
+    - POST /api/rapports : Crée un nouveau rapport
+    - GET /api/rapports/:id : Récupère les détails d'un rapport spécifique
+    - PUT /api/rapports/:id : Met à jour un rapport existant
+    - DELETE /api/rapports/:id : Supprime un rapport
+- /swagger : Documentation interactive de l'API
+
+L'application s'appuie sur une base de données mongo et les collections suivantes :
+- users
+    - _id: ObjectId
+    - name: String
+    - email: String
+    - password: String (hashed)
+    - role: String (admin, user)
+- variables
+    - _id: ObjectId
+    - key: String
+    - value: Mixed
+    - filiere: String
+    - description: String
+    - isRoot: Boolean (default: false), determine si la variable fait partie du masquage racine
+- campains
+    - _id: ObjectId
+    - userCreated: ObjectId (référence à users)
+    - name: String
+    - dateCreated: Date
+    - description: String
+- tests
+    - _id: ObjectId
+    - campainId: ObjectId (référence à campains)
+    - userId: ObjectId (référence à users)
+    - dateCreated: Date
+    - actions: Array of Objects
+        - type: String (spécificité de l'action en fonction des classes d'actions)
+        - value: Mixed
+- rapports
+    - _id: ObjectId
+    - campainId: ObjectId (référence à campains)
+    - dateCreated: Date
+    - result: String (success, failure)
+    - details: String
+    - filiere: String
+    - tests: Array of Objects
+        - testId: ObjectId (référence à tests)
+        - status: String (passed, failed)
+        - logs: String
+
+Les classes d'actions :
+- disponible dans le répertoire "plugins/actions"
+- chaque classe d'action hérite de la classe de base "ActionBase" qui retourne un code et des traces d'exécution
+- chaque action à un masque de saisie spécifique pour les paramètres nécessaires à l'exécution de l'action
+    => représenté par un dictionnaire JSON sous la forme :
+    {
+        "name": "username",
+        "type": "string",
+        "label": "Nom d'utilisateur",
+        "placeholder": "Entrez le nom d'utilisateur",
+        "required": true
+    }
+    => les différents types de champs disponibles sont :
+        - string
+        - number
+        - boolean
+        - textarea
+        - select (avec une liste d'options)
+        - checkbox (case à cocher)
+- lors de la saisie d'une champs de type "string" ou "textarea", en fonction du mot en cours de saisie, une liste de tags de variables est proposée à l'utilisateur pour l'insertion
+    => si l'utilisateur click sur un tag, celui-ci est inséré dans le champs de saisie par {{variable_key}}
+- chaque classe d'action doit implémenter la méthode "execute" qui prend en paramètre un objet de type "ActionContext" qui contient les informations nécessaires à l'exécution de l'action (spécifiques à chaque action )
+
+Les actions disponibles sont :
+- HTTPRequestAction : Effectue une requête HTTP (GET, POST, PUT, DELETE) vers une URL spécifiée avec des en-têtes et un corps personnalisables.
+    => le dictionnaire transmis dans "value" doit contenir les clés suivantes :
+        - method : Méthode HTTP (GET, POST, PUT, DELETE)
+        - url : URL de la requête
+        - headers : Dictionnaire des en-têtes HTTP
+        - body : Corps de la requête (pour POST et PUT)
+        - files : Dictionnaire des fichiers à envoyer (pour POST)
+- WebdavAction : Effectue des opérations WebDAV (telles que la création, la lecture, la mise à jour et la suppression de fichiers) sur un serveur WebDAV spécifié.
+    => le dictionnaire transmis dans "value" doit contenir les clés suivantes :
+        - method : Méthode WebDAV (GET, PUT, DELETE, MKCOL)
+        - url : URL de la requête
+        - headers : Dictionnaire des en-têtes HTTP
+        - body : Corps de la requête (pour PUT)
+        - files : Dictionnaire des fichiers à envoyer (pour PUT)
+        - username : Nom d'utilisateur pour l'authentification
+        - password : Mot de passe pour l'authentification
+- FTPAction : Effectue des opérations FTP (telles que la connexion, le téléchargement et le téléversement de fichiers) sur un serveur FTP spécifié.
+    => le dictionnaire transmis dans "value" doit contenir les clés suivantes :
+        - method : Méthode FTP (GET, PUT, DELETE)
+        - url : URL de la requête
+        - headers : Dictionnaire des en-têtes HTTP
+        - body : Corps de la requête (pour PUT)
+        - files : Dictionnaire des fichiers à envoyer (pour PUT)
+        - username : Nom d'utilisateur pour l'authentification
+        - password : Mot de passe pour l'authentification
+- SFTPAction : Effectue des opérations SFTP (telles que la connexion, le téléchargement et le téléversement de fichiers) sur un serveur SFTP spécifié.
+    => le dictionnaire transmis dans "value" doit contenir les clés suivantes :
+        - method : Méthode SFTP (GET, PUT, DELETE)
+        - url : URL de la requête
+        - headers : Dictionnaire des en-têtes HTTP
+        - body : Corps de la requête (pour PUT)
+        - files : Dictionnaire des fichiers à envoyer (pour PUT)
+        - username : Nom d'utilisateur pour l'authentification
+        - password : Mot de passe pour l'authentification
+- SSHAction : Exécute des commandes SSH sur un serveur distant spécifié.
+    => le dictionnaire transmis dans "value" doit contenir les clés suivantes :
+        - host : Adresse du serveur SSH
+        - port : Port du serveur SSH
+        - username : Nom d'utilisateur pour l'authentification
+        - password : Mot de passe pour l'authentification
+        - command : Commande à exécuter sur le serveur distant
+Dans le bandeau du bas, l'application affiche :
+- La version de l'application
+- Un lien vers le swagger de l'API
+
+Stack technologique utilisé :
+- Flask pour le frontend/API
+- MongoDB pour la base de données
+- JWT pour l'authentification
+- Jinja2 pour le templating
+- Flask-Swagger pour la documentation de l'API
+- Bootstrap pour le design frontend
+- FontAwesome pour les icônes
+- PyMongo pour l'interaction avec MongoDB
+- Tous les fichiers statiques (CSS, JS, images) sont dans le répertoire "static" et téléchargés en local via des CDN
+- s'appuie sur requirements.txt pour la gestion des dépendances python
+
+Un fichier de configuration "configuration.json" est utilisé pour définir les paramètres suivants :
+- données de connexion à la base de données MongoDB
+    => sous la forme :
+    "mongo": {
+        "user": "root",
+        "pass": "mypass",
+        "host": "localhost",
+        "port": "27017",
+        "bdd": "testGyver",
+    }
+- secret key pour JWT
+- paramètres de l'application (port, debug mode, etc.)
+- paramètres de pagination (nombre d'éléments par page, etc.)
+- paramètres de sécurité (durée d'expiration des tokens, etc.)
+- version de l'application
+
+concernant le style et le design :
+- utilise un trombone CSS personnalisé dans "static/css/custom.css" sur la page d'authentification
+- expose le trombone également sur toutes les pages de l'application pour une cohérence visuelle
+
+Génére un fichier de lancement en mode débug pour visual studio code : .vscode/launch.json
+
+Créer un fichier Dockerfile pour conteneuriser l'application avec un fichier start.sh pour lancer l'application dans le conteneur.
+Créer un fichier .gitignore pour ignorer les fichiers et répertoires suivants :
+- __pycache__/
+- *.pyc
+- .env
+
+Renseigne le fichier README.md avec les instructions d'installation et d'utilisation de l'application.
+Avec une premiere section pour selectionner la langue souhaitée  (français par défaut).
+Avec des fichiers d'autres langues :
+- README.en.md
+- README.es.md
+- README.de.md
+- README.it.md

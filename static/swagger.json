@@ -1,0 +1,184 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "TestGyver API",
+    "description": "API pour la plateforme de test multi-environnements TestGyver",
+    "version": "1.0.0"
+  },
+  "host": "localhost:5000",
+  "basePath": "/api",
+  "schemes": ["http", "https"],
+  "securityDefinitions": {
+    "Bearer": {
+      "type": "apiKey",
+      "name": "Authorization",
+      "in": "header",
+      "description": "JWT Authorization header using the Bearer scheme. Example: 'Bearer {token}'"
+    }
+  },
+  "paths": {
+    "/login": {
+      "post": {
+        "tags": ["Authentification"],
+        "summary": "Connexion utilisateur",
+        "description": "Authentifie un utilisateur et retourne un token JWT",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "credentials",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "email": {"type": "string", "example": "user@example.com"},
+                "password": {"type": "string", "example": "password123"}
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {"description": "Authentification réussie"},
+          "401": {"description": "Identifiants invalides"}
+        }
+      }
+    },
+    "/logout": {
+      "post": {
+        "tags": ["Authentification"],
+        "summary": "Déconnexion utilisateur",
+        "responses": {
+          "200": {"description": "Déconnexion réussie"}
+        }
+      }
+    },
+    "/users": {
+      "get": {
+        "tags": ["Utilisateurs"],
+        "summary": "Liste des utilisateurs",
+        "security": [{"Bearer": []}],
+        "responses": {
+          "200": {"description": "Liste des utilisateurs"},
+          "401": {"description": "Non authentifié"},
+          "403": {"description": "Accès refusé"}
+        }
+      },
+      "post": {
+        "tags": ["Utilisateurs"],
+        "summary": "Créer un utilisateur",
+        "security": [{"Bearer": []}],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "user",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {"type": "string"},
+                "email": {"type": "string"},
+                "password": {"type": "string"},
+                "role": {"type": "string", "enum": ["admin", "user"]}
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {"description": "Utilisateur créé"},
+          "400": {"description": "Données invalides"}
+        }
+      }
+    },
+    "/campains": {
+      "get": {
+        "tags": ["Campagnes"],
+        "summary": "Liste des campagnes",
+        "security": [{"Bearer": []}],
+        "responses": {
+          "200": {"description": "Liste des campagnes"}
+        }
+      },
+      "post": {
+        "tags": ["Campagnes"],
+        "summary": "Créer une campagne",
+        "security": [{"Bearer": []}],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "campain",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {"type": "string"},
+                "description": {"type": "string"}
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {"description": "Campagne créée"}
+        }
+      }
+    },
+    "/variables": {
+      "get": {
+        "tags": ["Variables"],
+        "summary": "Liste des variables",
+        "security": [{"Bearer": []}],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "grouped",
+            "type": "boolean",
+            "description": "Grouper par filière"
+          },
+          {
+            "in": "query",
+            "name": "filiere",
+            "type": "string",
+            "description": "Filtrer par filière"
+          }
+        ],
+        "responses": {
+          "200": {"description": "Liste des variables"}
+        }
+      }
+    },
+    "/tests": {
+      "get": {
+        "tags": ["Tests"],
+        "summary": "Liste des tests",
+        "security": [{"Bearer": []}],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "campain_id",
+            "type": "string",
+            "description": "Filtrer par campagne"
+          }
+        ],
+        "responses": {
+          "200": {"description": "Liste des tests"}
+        }
+      }
+    },
+    "/rapports": {
+      "get": {
+        "tags": ["Rapports"],
+        "summary": "Liste des rapports",
+        "security": [{"Bearer": []}],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "campain_id",
+            "type": "string",
+            "description": "Filtrer par campagne"
+          }
+        ],
+        "responses": {
+          "200": {"description": "Liste des rapports"}
+        }
+      }
+    }
+  }
+}

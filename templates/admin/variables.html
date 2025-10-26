@@ -1,0 +1,200 @@
+{% extends "base.html" %}
+
+{% block title %}Gestion des variables - {{ app_name }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1><i class="fas fa-code"></i> Gestion des variables</h1>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{{ url_for('web.admin_variables_add') }}" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Nouvelle variable
+            </a>
+        </div>
+    </div>
+    
+    <div class="row mb-3">
+        <div class="col-md-12">
+            <div class="btn-group" role="group">
+                <button type="button" class="btn btn-outline-primary" onclick="loadVariables('all')">
+                    Toutes
+                </button>
+                <button type="button" class="btn btn-outline-primary" onclick="loadVariablesByFiliere()">
+                    Par environnement
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-list"></i> Liste des variables
+                </div>
+                <div class="card-body">
+                    <div id="variablesList">
+                        <div class="text-center">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Chargement...</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="paginationContainer"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    async function loadVariables(mode = 'all', page = 1) {
+        const listDiv = document.getElementById('variablesList');
+        const paginationDiv = document.getElementById('paginationContainer');
+        
+        try {
+            const data = await API.get(`/api/variables?page=${page}`);
+            
+            if (data.data && data.data.length > 0) {
+                listDiv.innerHTML = `
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Clé</th>
+                                    <th>Valeur</th>
+                                    <th>Filière</th>
+                                    <th>Description</th>
+                                    <th>Root</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${data.data.map(variable => `
+                                    <tr>
+                                        <td><code>${variable.key}</code></td>
+                                        <td>${variable.value}</td>
+                                        <td><span class="badge bg-info">${variable.filiere}</span></td>
+                                        <td>${variable.description || '-'}</td>
+                                        <td>
+                                            ${variable.isRoot ? '<i class="fas fa-check text-success"></i>' : '<i class="fas fa-times text-muted"></i>'}
+                                        </td>
+                                        <td>
+                                            <a href="/admin/variables/edit/${variable._id}" class="btn btn-sm btn-warning">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <button class="btn btn-sm btn-danger" onclick="deleteVariable('${variable._id}')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+                
+                if (data.pagination && data.pagination.total_pages > 1) {
+                    paginationDiv.innerHTML = '';
+                    paginationDiv.appendChild(Pagination.create(data.pagination, (p) => loadVariables(mode, p)));
+                }
+            } else {
+                listDiv.innerHTML = `
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i> Aucune variable trouvée
+                    </div>
+                `;
+            }
+        } catch (error) {
+            listDiv.innerHTML = `
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-triangle"></i> Erreur lors du chargement des variables
+                </div>
+            `;
+        }
+    }
+    
+    async function loadVariablesByFiliere() {
+        const listDiv = document.getElementById('variablesList');
+        
+        try {
+            const data = await API.get('/api/variables?grouped=true');
+            
+            let html = '';
+            for (const [filiere, variables] of Object.entries(data)) {
+                html += `
+                    <div class="mb-4">
+                        <h5 class="text-primary">
+                            <i class="fas fa-folder"></i> ${filiere}
+                            <span class="badge bg-secondary">${variables.length}</span>
+                        </h5>
+                        <div class="table-responsive">
+                            <table class="table table-sm table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Clé</th>
+                                        <th>Valeur</th>
+                                        <th>Description</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${variables.map(v => `
+                                        <tr>
+                                            <td><code>${v.key}</code></td>
+                                            <td>${v.value}</td>
+                                            <td>${v.description || '-'}</td>
+                                            <td>
+                                                <a href="/admin/variables/edit/${v._id}" class="btn btn-sm btn-warning">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                                <button class="btn btn-sm btn-danger" onclick="deleteVariable('${v._id}')">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            listDiv.innerHTML = html || `
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i> Aucune variable trouvée
+                </div>
+            `;
+        } catch (error) {
+            listDiv.innerHTML = `
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-triangle"></i> Erreur lors du chargement des variables
+                </div>
+            `;
+        }
+    }
+    
+    async function deleteVariable(id) {
+        if (!Utils.confirmDelete('Êtes-vous sûr de vouloir supprimer cette variable ?')) {
+            return;
+        }
+        
+        try {
+            await API.delete(`/api/variables/${id}`);
+            Notification.success('Variable supprimée avec succès');
+            loadVariables();
+        } catch (error) {
+            Notification.error('Erreur lors de la suppression de la variable');
+        }
+    }
+    
+    document.addEventListener('DOMContentLoaded', () => {
+        loadVariables();
+    });
+</script>
+{% endblock %}

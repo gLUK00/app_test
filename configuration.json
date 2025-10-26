@@ -1,0 +1,24 @@
+{
+    "mongo": {
+        "user": "root",
+        "pass": "mypass",
+        "host": "localhost",
+        "port": "27017",
+        "bdd": "testGyver"
+    },
+    "jwt_secret": "4f51s5Gg1r41gh7",
+    "app": {
+        "debug": true,
+        "port": 5000,
+        "host": "0.0.0.0"
+    },
+    "pagination": {
+        "page_size": 20,
+        "max_page_size": 100
+    },
+    "security": {
+        "token_expiration_minutes": 60,
+        "password_min_length": 8
+    },
+    "version": "1.0.0"
+}

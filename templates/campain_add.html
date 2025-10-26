@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}Gestion des campagnes - {{ app_name }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1><i class="fas fa-plus-circle"></i> Nouvelle campagne</h1>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{{ url_for('web.dashboard') }}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Retour
+            </a>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-edit"></i> Informations de la campagne
+                </div>
+                <div class="card-body">
+                    <form id="campainForm">
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Nom de la campagne *</label>
+                            <input type="text" class="form-control" id="name" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Description</label>
+                            <textarea class="form-control" id="description" rows="4"></textarea>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-save"></i> Créer la campagne
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.getElementById('campainForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const data = {
+            name: document.getElementById('name').value,
+            description: document.getElementById('description').value
+        };
+        
+        try {
+            const result = await API.post('/api/campains', data);
+            Notification.success('Campagne créée avec succès');
+            setTimeout(() => {
+                window.location.href = '/dashboard';
+            }, 1000);
+        } catch (error) {
+            Notification.error('Erreur lors de la création de la campagne');
+        }
+    });
+</script>
+{% endblock %}

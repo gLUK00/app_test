@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+
+{% block title %}Modifier la variable - {{ app_name }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1><i class="fas fa-edit"></i> Modifier la variable</h1>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{{ url_for('web.admin_variables') }}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Retour
+            </a>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-edit"></i> Informations de la variable
+                </div>
+                <div class="card-body">
+                    <div id="loadingSpinner" class="text-center">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Chargement...</span>
+                        </div>
+                    </div>
+                    
+                    <form id="variableForm" style="display: none;">
+                        <div class="mb-3">
+                            <label for="key" class="form-label">Clé de la variable *</label>
+                            <input type="text" class="form-control" id="key" required 
+                                   placeholder="Ex: API_URL, DATABASE_HOST">
+                            <small class="form-text text-muted">
+                                Le nom unique de la variable (généralement en MAJUSCULES)
+                            </small>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="value" class="form-label">Valeur *</label>
+                            <input type="text" class="form-control" id="value" required
+                                   placeholder="Ex: https://api.example.com">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="filiere" class="form-label">Environnement (filière) *</label>
+                            <input type="text" class="form-control" id="filiere" required
+                                   placeholder="Ex: DEV, TEST, STAGING, PROD">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Description</label>
+                            <textarea class="form-control" id="description" rows="3"
+                                      placeholder="Description de la variable et son utilisation"></textarea>
+                        </div>
+                        
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="isRoot">
+                            <label class="form-check-label" for="isRoot">
+                                Variable racine (privilèges élevés)
+                            </label>
+                            <small class="form-text text-muted d-block">
+                                Cochez cette option si la variable nécessite des privilèges administrateur
+                            </small>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-save"></i> Mettre à jour la variable
+                            </button>
+                            <button type="button" class="btn btn-danger" onclick="deleteVariable()">
+                                <i class="fas fa-trash"></i> Supprimer la variable
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const variableId = '{{ variable_id }}';
+    
+    // Charger les données de la variable au chargement de la page
+    async function loadVariable() {
+        try {
+            const variable = await API.get(`/api/variables/${variableId}`);
+            
+            // Remplir le formulaire avec les données existantes
+            document.getElementById('key').value = variable.key || '';
+            document.getElementById('value').value = variable.value || '';
+            document.getElementById('filiere').value = variable.filiere || '';
+            document.getElementById('description').value = variable.description || '';
+            document.getElementById('isRoot').checked = variable.isRoot || false;
+            
+            // Afficher le formulaire et masquer le spinner
+            document.getElementById('loadingSpinner').style.display = 'none';
+            document.getElementById('variableForm').style.display = 'block';
+        } catch (error) {
+            Notification.error('Erreur lors du chargement de la variable');
+            setTimeout(() => {
+                window.location.href = '/admin/variables';
+            }, 2000);
+        }
+    }
+    
+    // Soumettre le formulaire de modification
+    document.getElementById('variableForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const data = {
+            key: document.getElementById('key').value.trim(),
+            value: document.getElementById('value').value,
+            filiere: document.getElementById('filiere').value,
+            description: document.getElementById('description').value.trim(),
+            isRoot: document.getElementById('isRoot').checked
+        };
+        
+        // Validation de base
+        if (!data.key || !data.value || !data.filiere) {
+            Notification.error('Veuillez remplir tous les champs obligatoires');
+            return;
+        }
+        
+        try {
+            await API.put(`/api/variables/${variableId}`, data);
+            Notification.success('Variable mise à jour avec succès');
+            setTimeout(() => {
+                window.location.href = '/admin/variables';
+            }, 1000);
+        } catch (error) {
+            Notification.error(error.message || 'Erreur lors de la mise à jour de la variable');
+        }
+    });
+    
+    // Supprimer la variable
+    async function deleteVariable() {
+        if (!confirm('Êtes-vous sûr de vouloir supprimer cette variable ?')) {
+            return;
+        }
+        
+        try {
+            await API.delete(`/api/variables/${variableId}`);
+            Notification.success('Variable supprimée avec succès');
+            setTimeout(() => {
+                window.location.href = '/admin/variables';
+            }, 1000);
+        } catch (error) {
+            Notification.error(error.message || 'Erreur lors de la suppression de la variable');
+        }
+    }
+    
+    // Charger les données au chargement de la page
+    loadVariable();
+</script>
+{% endblock %}

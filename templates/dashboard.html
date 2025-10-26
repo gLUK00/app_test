@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+
+{% block title %}Tableau de bord - {{ app_name }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <h1><i class="fas fa-chart-line"></i> Tableau de bord</h1>
+            <p class="text-muted">Bienvenue sur votre espace de gestion des campagnes de tests</p>
+        </div>
+    </div>
+    
+    <div class="row mb-4">
+        <div class="col-md-12 text-end">
+            <a href="{{ url_for('web.add_campain') }}" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Nouvelle campagne
+            </a>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-list"></i> Mes campagnes
+                </div>
+                <div class="card-body">
+                    <div id="campaignsList">
+                        <div class="text-center">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Chargement...</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="paginationContainer"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    let currentPage = 1;
+    
+    async function loadCampaigns(page = 1) {
+        const listDiv = document.getElementById('campaignsList');
+        const paginationDiv = document.getElementById('paginationContainer');
+        
+        try {
+            const data = await API.get(`/api/campains?page=${page}`);
+            
+            if (data.data && data.data.length > 0) {
+                listDiv.innerHTML = `
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Nom</th>
+                                    <th>Description</th>
+                                    <th>Date de création</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${data.data.map(campaign => `
+                                    <tr>
+                                        <td><strong>${campaign.name}</strong></td>
+                                        <td>${campaign.description || '-'}</td>
+                                        <td>${Utils.formatDate(campaign.dateCreated)}</td>
+                                        <td>
+                                            <a href="/campains/${campaign._id}" class="btn btn-sm btn-info">
+                                                <i class="fas fa-eye"></i> Voir
+                                            </a>
+                                            <button class="btn btn-sm btn-danger" onclick="deleteCampaign('${campaign._id}')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+                
+                // Pagination
+                if (data.pagination && data.pagination.total_pages > 1) {
+                    paginationDiv.innerHTML = '';
+                    paginationDiv.appendChild(Pagination.create(data.pagination, loadCampaigns));
+                }
+            } else {
+                listDiv.innerHTML = `
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i> Aucune campagne trouvée. 
+                        <a href="${'{{ url_for("web.add_campain") }}'}" class="alert-link">Créez votre première campagne</a>
+                    </div>
+                `;
+            }
+        } catch (error) {
+            listDiv.innerHTML = `
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-triangle"></i> Erreur lors du chargement des campagnes
+                </div>
+            `;
+        }
+    }
+    
+    async function deleteCampaign(id) {
+        if (!Utils.confirmDelete('Êtes-vous sûr de vouloir supprimer cette campagne ?')) {
+            return;
+        }
+        
+        try {
+            await API.delete(`/api/campains/${id}`);
+            Notification.success('Campagne supprimée avec succès');
+            loadCampaigns(currentPage);
+        } catch (error) {
+            Notification.error('Erreur lors de la suppression de la campagne');
+        }
+    }
+    
+    // Charger les campagnes au chargement de la page
+    document.addEventListener('DOMContentLoaded', () => {
+        loadCampaigns();
+    });
+</script>
+{% endblock %}
