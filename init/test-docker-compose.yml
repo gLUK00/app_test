@@ -1,0 +1,95 @@
+version: '3.8'
+
+services:
+  # Serveur FTP
+  ftp-server:
+    image: stilliard/pure-ftpd:latest
+    container_name: test-ftp-server
+    ports:
+      - "21:21"
+      - "30000-30009:30000-30009"
+    environment:
+      - PUBLICHOST=localhost
+      - FTP_USER_NAME=testuser
+      - FTP_USER_PASS=testpass
+      - FTP_USER_HOME=/home/testuser
+    volumes:
+      - ftp-data:/home/testuser
+      - ftp-passwd:/etc/pure-ftpd/passwd
+    restart: unless-stopped
+    networks:
+      - test-network
+
+  # Serveur SFTP/SSH
+  sftp-server:
+    image: atmoz/sftp:latest
+    container_name: test-sftp-server
+    ports:
+      - "2222:22"
+    command: testuser:testpass:::upload
+    volumes:
+      - sftp-data:/home/testuser/upload
+    restart: unless-stopped
+    networks:
+      - test-network
+
+  # Serveur WebDAV
+  webdav-server:
+    image: bytemark/webdav:latest
+    container_name: test-webdav-server
+    ports:
+      - "8080:80"
+    environment:
+      - AUTH_TYPE=Basic
+      - USERNAME=testuser
+      - PASSWORD=testpass
+    volumes:
+      - webdav-data:/var/lib/dav
+    restart: unless-stopped
+    networks:
+      - test-network
+
+  # API HTTP de test
+  http-api:
+    image: kennethreitz/httpbin:latest
+    container_name: test-http-api
+    ports:
+      - "8082:80"
+    restart: unless-stopped
+    networks:
+      - test-network
+
+  # Serveur SSH supplémentaire pour les commandes SSH
+  ssh-server:
+    image: linuxserver/openssh-server:latest
+    container_name: test-ssh-server
+    ports:
+      - "2223:2222"
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Paris
+      - PASSWORD_ACCESS=true
+      - USER_PASSWORD=testpass
+      - USER_NAME=testuser
+    volumes:
+      - ssh-config:/config
+    restart: unless-stopped
+    networks:
+      - test-network
+
+volumes:
+  ftp-data:
+    driver: local
+  ftp-passwd:
+    driver: local
+  sftp-data:
+    driver: local
+  webdav-data:
+    driver: local
+  ssh-config:
+    driver: local
+
+networks:
+  test-network:
+    driver: bridge

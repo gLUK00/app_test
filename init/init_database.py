@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """Script d'initialisation de la base de données TestGyver."""
 import sys
 import os

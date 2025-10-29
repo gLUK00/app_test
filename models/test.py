@@ -9,7 +9,7 @@ class Test:
     collection_name = 'tests'
     
     @staticmethod
-    def create(campain_id, user_id, actions):
+    def create(campain_id, user_id, actions, name=None, description=None, variables=None):
         """Crée un nouveau test."""
         collection = get_collection(Test.collection_name)
         
@@ -17,7 +17,10 @@ class Test:
             'campainId': ObjectId(campain_id),
             'userId': ObjectId(user_id),
             'dateCreated': datetime.utcnow(),
-            'actions': actions
+            'actions': actions,
+            'name': name or '',
+            'description': description or '',
+            'variables': variables or []
         }
         
         result = collection.insert_one(test_data)
@@ -77,6 +80,15 @@ class Test:
         
         if 'actions' in data:
             update_data['actions'] = data['actions']
+        
+        if 'name' in data:
+            update_data['name'] = data['name']
+        
+        if 'description' in data:
+            update_data['description'] = data['description']
+        
+        if 'variables' in data:
+            update_data['variables'] = data['variables']
         
         if update_data:
             collection.update_one({'_id': ObjectId(test_id)}, {'$set': update_data})

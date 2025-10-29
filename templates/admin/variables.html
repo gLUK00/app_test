@@ -18,10 +18,10 @@
     <div class="row mb-3">
         <div class="col-md-12">
             <div class="btn-group" role="group">
-                <button type="button" class="btn btn-outline-primary" onclick="loadVariables('all')">
+                <button type="button" class="btn btn-outline-primary" id="btnAllVariables" onclick="loadVariables('all')">
                     Toutes
                 </button>
-                <button type="button" class="btn btn-outline-primary" onclick="loadVariablesByFiliere()">
+                <button type="button" class="btn btn-outline-primary active" id="btnGroupedVariables" onclick="loadVariablesByFiliere()">
                     Par environnement
                 </button>
             </div>
@@ -56,6 +56,10 @@
         const listDiv = document.getElementById('variablesList');
         const paginationDiv = document.getElementById('paginationContainer');
         
+        // Mettre à jour l'état actif des boutons
+        document.getElementById('btnAllVariables').classList.add('active');
+        document.getElementById('btnGroupedVariables').classList.remove('active');
+        
         try {
             const data = await API.get(`/api/variables?page=${page}`);
             
@@ -84,6 +88,11 @@
                                             ${variable.isRoot ? '<i class="fas fa-check text-success"></i>' : '<i class="fas fa-times text-muted"></i>'}
                                         </td>
                                         <td>
+                                            ${variable.isRoot ? `
+                                                <a href="/admin/variables/add?parent_key=${encodeURIComponent(variable.key)}" class="btn btn-sm btn-success" title="Créer une variable enfant">
+                                                    <i class="fas fa-plus"></i>
+                                                </a>
+                                            ` : ''}
                                             <a href="/admin/variables/edit/${variable._id}" class="btn btn-sm btn-warning">
                                                 <i class="fas fa-edit"></i>
                                             </a>
@@ -120,6 +129,14 @@
     
     async function loadVariablesByFiliere() {
         const listDiv = document.getElementById('variablesList');
+        const paginationDiv = document.getElementById('paginationContainer');
+        
+        // Mettre à jour l'état actif des boutons
+        document.getElementById('btnAllVariables').classList.remove('active');
+        document.getElementById('btnGroupedVariables').classList.add('active');
+        
+        // Vider la pagination
+        paginationDiv.innerHTML = '';
         
         try {
             const data = await API.get('/api/variables?grouped=true');
@@ -144,11 +161,19 @@
                                 </thead>
                                 <tbody>
                                     ${variables.map(v => `
-                                        <tr>
-                                            <td><code>${v.key}</code></td>
+                                        <tr ${v.isRoot ? 'class="table-primary"' : ''}>
+                                            <td>
+                                                ${v.isRoot ? '<i class="fas fa-star text-warning"></i> ' : ''}
+                                                <code>${v.key}</code>
+                                            </td>
                                             <td>${v.value}</td>
                                             <td>${v.description || '-'}</td>
                                             <td>
+                                                ${v.isRoot ? `
+                                                    <a href="/admin/variables/add?parent_key=${encodeURIComponent(v.key)}" class="btn btn-sm btn-success" title="Créer une variable enfant">
+                                                        <i class="fas fa-plus"></i>
+                                                    </a>
+                                                ` : ''}
                                                 <a href="/admin/variables/edit/${v._id}" class="btn btn-sm btn-warning">
                                                     <i class="fas fa-edit"></i>
                                                 </a>
@@ -194,7 +219,7 @@
     }
     
     document.addEventListener('DOMContentLoaded', () => {
-        loadVariables();
+        loadVariablesByFiliere();
     });
 </script>
 {% endblock %}

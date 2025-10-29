@@ -77,6 +77,10 @@ class Variable:
             
             grouped[filiere].append(variable)
         
+        # Trier chaque groupe : variables racines en premier
+        for filiere in grouped:
+            grouped[filiere].sort(key=lambda v: (not v.get('isRoot', False), v.get('key', '')))
+        
         return grouped
     
     @staticmethod
@@ -123,3 +127,14 @@ class Variable:
             variable['_id'] = str(variable['_id'])
         
         return variables
+    
+    @staticmethod
+    def find_by_key_and_root(key, is_root=True):
+        """Trouve une variable par sa clé et son statut root."""
+        collection = get_collection(Variable.collection_name)
+        variable = collection.find_one({'key': key, 'isRoot': is_root})
+        
+        if variable:
+            variable['_id'] = str(variable['_id'])
+        
+        return variable

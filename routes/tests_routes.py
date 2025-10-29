@@ -42,7 +42,10 @@ def create_test():
         test_id = Test.create(
             campain_id=data['campain_id'],
             user_id=request.user_id,
-            actions=data['actions']
+            actions=data['actions'],
+            name=data.get('name'),
+            description=data.get('description'),
+            variables=data.get('variables', [])
         )
         
         return jsonify({
@@ -75,11 +78,19 @@ def update_test(test_id):
     try:
         data = request.get_json()
         
+        print(f"[DEBUG] Mise à jour du test {test_id}")
+        print(f"[DEBUG] Données reçues: {data}")
+        if 'actions' in data:
+            print(f"[DEBUG] Nombre d'actions: {len(data['actions'])}")
+            for i, action in enumerate(data['actions']):
+                print(f"[DEBUG] Action {i}: {action}")
+        
         Test.update(test_id, data)
         
         return jsonify({'message': 'Test mis à jour avec succès'}), 200
     
     except Exception as e:
+        print(f"[ERROR] Erreur lors de la mise à jour: {str(e)}")
         return jsonify({'message': f'Erreur serveur: {str(e)}'}), 500
 
 @tests_bp.route('/<test_id>', methods=['DELETE'])

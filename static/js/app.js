@@ -33,12 +33,34 @@ const API = {
         const response = await fetch(url, { ...defaultOptions, ...options });
         
         if (response.status === 401) {
+            const data = await response.json().catch(() => ({}));
+            const message = data.message || 'Votre session a expiré. Veuillez vous reconnecter.';
+            
+            // Afficher un message avant la redirection
+            if (typeof Notification !== 'undefined') {
+                Notification.error(message);
+            } else {
+                alert(message);
+            }
+            
             Auth.removeToken();
-            window.location.href = '/';
-            return;
+            
+            // Redirection après un court délai pour permettre la lecture du message
+            setTimeout(() => {
+                window.location.href = '/?error=session_expired';
+            }, 1500);
+            
+            throw new Error(message);
         }
         
-        return response.json();
+        const data = await response.json();
+        
+        // Si la réponse n'est pas OK (status code n'est pas 2xx), lancer une erreur
+        if (!response.ok) {
+            throw new Error(data.message || `Erreur HTTP: ${response.status}`);
+        }
+        
+        return data;
     },
     
     async get(url) {

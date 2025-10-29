@@ -1,7 +1,7 @@
 # TestGyver
 
 ## Elige tu idioma
-- [Français](README.md)
+- [Français](../README.md)
 - [English](README.en.md)
 - Español (por defecto en este archivo)
 - [Deutsch](README.de.md)

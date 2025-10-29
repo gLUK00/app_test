@@ -100,6 +100,10 @@ def update_user(user_id):
 def delete_user(user_id):
     """Supprime un utilisateur (admin uniquement)."""
     try:
+        # Empêcher un administrateur de supprimer son propre compte
+        if str(request.user_id) == str(user_id):
+            return jsonify({"message": "Vous ne pouvez pas supprimer votre propre compte"}), 403
+
         success = User.delete(user_id)
 
         if not success:

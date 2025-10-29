@@ -2,8 +2,31 @@
 import paramiko
 from plugins.actions.action_base import ActionBase
 
+
 class SSHAction(ActionBase):
     """Action pour exécuter des commandes SSH sur un serveur distant."""
+    
+    # Métadonnées du plugin
+    plugin_name = "ssh"
+    version = "1.0.0"
+    author = "TestGyver Team"
+    
+    def get_metadata(self):
+        """Retourne les métadonnées de l'action."""
+        return {
+            "name": self.plugin_name,
+            "version": self.version,
+            "author": self.author,
+            "description": "Exécute des commandes SSH sur un serveur distant"
+        }
+    
+    def validate_config(self, config):
+        """Valide la configuration de l'action."""
+        required_fields = ['host', 'username', 'password', 'command']
+        for field in required_fields:
+            if field not in config or not config[field]:
+                return (False, f"Le champ '{field}' est obligatoire")
+        return (True, "")
     
     def get_input_mask(self):
         """Retourne le masque de saisie pour les commandes SSH."""
@@ -42,6 +65,26 @@ class SSHAction(ActionBase):
                 "label": "Commande à exécuter",
                 "placeholder": "ls -la /home",
                 "required": True
+            }
+        ]
+    
+    def get_output_variables(self):
+        """Retourne la liste des variables de sortie pour les commandes SSH."""
+        return [
+            {
+                "name": "ssh_exit_code",
+                "description": "Code de sortie de la commande SSH",
+                "type": "number"
+            },
+            {
+                "name": "ssh_output",
+                "description": "Sortie standard de la commande",
+                "type": "string"
+            },
+            {
+                "name": "ssh_error",
+                "description": "Sortie d'erreur de la commande",
+                "type": "string"
             }
         ]
     
@@ -89,6 +132,13 @@ class SSHAction(ActionBase):
             
             self.add_trace(f"Code de sortie: {exit_code}")
             
+            # Préparer les variables de sortie
+            output_vars = {
+                "ssh_exit_code": exit_code,
+                "ssh_output": output,
+                "ssh_error": error_output if error_output else ""
+            }
+            
             if exit_code == 0:
                 self.set_code(0)
                 self.add_trace("Commande exécutée avec succès")
@@ -99,7 +149,7 @@ class SSHAction(ActionBase):
                     "error": error_output[:500] if error_output else None
                 }
                 
-                return self.get_result(result_data)
+                return self.get_result(result_data, output_vars)
             else:
                 self.set_code(1)
                 self.add_trace(f"Erreur lors de l'exécution: {error_output}")
@@ -108,7 +158,7 @@ class SSHAction(ActionBase):
                     "exit_code": exit_code,
                     "output": output[:500],
                     "error": error_output[:500]
-                })
+                }, output_vars)
         
         except paramiko.AuthenticationException:
             self.set_code(1)

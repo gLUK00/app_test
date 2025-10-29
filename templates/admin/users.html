@@ -39,6 +39,17 @@
 
 {% block extra_js %}
 <script>
+    let currentUserId = null;
+
+    async function loadCurrentUser() {
+        try {
+            const userData = await API.get('/api/me');
+            currentUserId = userData.id;
+        } catch (error) {
+            console.error('Erreur lors du chargement de l\'utilisateur connecté:', error);
+        }
+    }
+
     async function loadUsers(page = 1) {
         const listDiv = document.getElementById('usersList');
         const paginationDiv = document.getElementById('paginationContainer');
@@ -72,9 +83,11 @@
                                             <a href="/admin/users/edit/${user._id}" class="btn btn-sm btn-warning">
                                                 <i class="fas fa-edit"></i>
                                             </a>
+                                            ${user._id !== currentUserId ? `
                                             <button class="btn btn-sm btn-danger" onclick="deleteUser('${user._id}')">
                                                 <i class="fas fa-trash"></i>
                                             </button>
+                                            ` : ''}
                                         </td>
                                     </tr>
                                 `).join('')}
@@ -117,7 +130,8 @@
         }
     }
     
-    document.addEventListener('DOMContentLoaded', () => {
+    document.addEventListener('DOMContentLoaded', async () => {
+        await loadCurrentUser();
         loadUsers();
     });
 </script>

@@ -76,7 +76,20 @@
 {% block extra_js %}
 <script>
     const filiereInput = document.getElementById('filiere');
+    const valueInput = document.getElementById('value');
     const isRootCheckbox = document.getElementById('isRoot');
+    const keyInput = document.getElementById('key');
+    
+    // Récupérer le paramètre parent_key de l'URL si présent
+    const urlParams = new URLSearchParams(window.location.search);
+    const parentKey = urlParams.get('parent_key');
+    
+    // Si un parent_key est fourni, préremplir le champ key
+    if (parentKey) {
+        keyInput.value = parentKey;
+        keyInput.focus();
+        keyInput.setSelectionRange(keyInput.value.length, keyInput.value.length);
+    }
     
     // Gérer le changement de la checkbox "Variable racine"
     isRootCheckbox.addEventListener('change', function() {
@@ -84,9 +97,14 @@
             filiereInput.value = '';
             filiereInput.disabled = true;
             filiereInput.required = false;
+            valueInput.value = '';
+            valueInput.disabled = true;
+            valueInput.required = false;
         } else {
             filiereInput.disabled = false;
             filiereInput.required = true;
+            valueInput.disabled = false;
+            valueInput.required = true;
         }
     });
     
@@ -102,7 +120,7 @@
         };
         
         // Validation de base
-        if (!data.key || !data.value || (!data.filiere && !data.isRoot)) {
+        if (!data.key || (!data.filiere && !data.value && !data.isRoot)) {
             Notification.error('Veuillez remplir tous les champs obligatoires');
             return;
         }

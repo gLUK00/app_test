@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test - Autocomplétion Variables</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Styles d'autocomplétion -->
+    <style>
+        /* Autocomplétion des variables */
+        .variable-autocomplete-suggestions {
+            position: absolute;
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            z-index: 10000;
+            max-height: 300px;
+            overflow-y: auto;
+            font-size: 0.9rem;
+        }
+
+        .variable-suggestions-header {
+            padding: 10px 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-weight: 600;
+            border-radius: 8px 8px 0 0;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .variable-suggestions-list {
+            padding: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .variable-suggestion-tag {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .variable-suggestion-tag:hover,
+        .variable-suggestion-tag.selected {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-color: #667eea;
+            color: white;
+            transform: translateX(4px);
+        }
+
+        .variable-suggestion-tag .variable-key {
+            font-family: 'Courier New', monospace;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .variable-suggestion-tag .variable-key strong {
+            color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+
+        .variable-suggestion-tag:hover .variable-key strong,
+        .variable-suggestion-tag.selected .variable-key strong {
+            color: #ffd700;
+            background: rgba(255, 215, 0, 0.2);
+        }
+    </style>
+</head>
+<body class="bg-light">
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-md-8 mx-auto">
+                <div class="card shadow">
+                    <div class="card-header bg-primary text-white">
+                        <h4 class="mb-0">
+                            <i class="fas fa-flask"></i> Test d'Autocomplétion des Variables
+                        </h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle"></i>
+                            Tapez des caractères dans les champs ci-dessous pour voir l'autocomplétion en action.
+                            Les variables de test sont : <code>username</code>, <code>password</code>, <code>host</code>, <code>api_token</code>
+                        </div>
+
+                        <form>
+                            <div class="mb-3">
+                                <label class="form-label">URL</label>
+                                <input type="text" class="form-control" placeholder="https://api.example.com/users/">
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">En-tête Authorization</label>
+                                <input type="text" class="form-control" placeholder="Bearer ">
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Commande SSH</label>
+                                <textarea class="form-control" rows="3" placeholder="ssh @"></textarea>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Corps de la requête</label>
+                                <textarea class="form-control" rows="5" placeholder='{"user": "", "token": ""}'></textarea>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="card shadow mt-4">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0">
+                            <i class="fas fa-keyboard"></i> Raccourcis Clavier
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <ul class="mb-0">
+                            <li><kbd>↑</kbd> <kbd>↓</kbd> : Naviguer dans les suggestions</li>
+                            <li><kbd>Entrée</kbd> : Insérer la variable sélectionnée</li>
+                            <li><kbd>Échap</kbd> : Fermer les suggestions</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mock de l'API -->
+    <script>
+        // Mock de l'API pour les tests
+        window.API = {
+            async get(url) {
+                console.log('API GET:', url);
+                
+                // Simuler des variables de test
+                return {
+                    items: [
+                        { key: 'username', description: 'Nom d\'utilisateur', isRoot: true },
+                        { key: 'password', description: 'Mot de passe', isRoot: true },
+                        { key: 'host', description: 'Nom d\'hôte', isRoot: true },
+                        { key: 'api_token', description: 'Token d\'API', isRoot: true },
+                        { key: 'endpoint', description: 'Point de terminaison', isRoot: true },
+                        { key: 'port', description: 'Numéro de port', isRoot: true },
+                        { key: 'database', description: 'Nom de la base de données', isRoot: true },
+                        { key: 'email', description: 'Adresse email', isRoot: true }
+                    ]
+                };
+            }
+        };
+    </script>
+
+    <!-- Plugin d'autocomplétion -->
+    <script>
+        /**
+         * Plugin d'autocomplétion pour les variables racines
+         * Version simplifiée pour test
+         */
+        class VariableAutocomplete {
+            constructor(options = {}) {
+                this.options = {
+                    apiEndpoint: options.apiEndpoint || '/api/variables?isRoot=true',
+                    debounceDelay: options.debounceDelay || 200,
+                    minChars: options.minChars || 1,
+                    maxSuggestions: options.maxSuggestions || 10,
+                    ...options
+                };
+                
+                this.variables = [];
+                this.activeField = null;
+                this.suggestionBox = null;
+                this.debounceTimer = null;
+                
+                this.init();
+            }
+            
+            async init() {
+                await this.loadVariables();
+                this.createSuggestionBox();
+                this.attachEventListeners();
+            }
+            
+            async loadVariables() {
+                try {
+                    const response = await API.get(this.options.apiEndpoint);
+                    
+                    if (response.items) {
+                        this.variables = response.items.filter(v => v.isRoot === true);
+                    } else if (Array.isArray(response)) {
+                        this.variables = response.filter(v => v.isRoot === true);
+                    } else {
+                        this.variables = [];
+                    }
+                    
+                    console.log(`[VariableAutocomplete] ${this.variables.length} variables chargées`);
+                } catch (error) {
+                    console.error('[VariableAutocomplete] Erreur:', error);
+                    this.variables = [];
+                }
+            }
+            
+            createSuggestionBox() {
+                this.suggestionBox = document.createElement('div');
+                this.suggestionBox.className = 'variable-autocomplete-suggestions';
+                this.suggestionBox.style.display = 'none';
+                document.body.appendChild(this.suggestionBox);
+                
+                document.addEventListener('click', (e) => {
+                    if (e.target !== this.activeField && !this.suggestionBox.contains(e.target)) {
+                        this.hideSuggestions();
+                    }
+                });
+            }
+            
+            attachEventListeners() {
+                const observer = new MutationObserver(() => {
+                    this.attachToFields();
+                });
+                
+                observer.observe(document.body, {
+                    childList: true,
+                    subtree: true
+                });
+                
+                this.attachToFields();
+            }
+            
+            attachToFields() {
+                const fields = document.querySelectorAll('input[type="text"]:not([data-var-autocomplete]), textarea:not([data-var-autocomplete])');
+                
+                fields.forEach(field => {
+                    field.setAttribute('data-var-autocomplete', 'true');
+                    field.addEventListener('input', (e) => this.handleInput(e));
+                    field.addEventListener('keydown', (e) => this.handleKeydown(e));
+                    field.addEventListener('focus', (e) => this.handleFocus(e));
+                });
+            }
+            
+            handleInput(e) {
+                const field = e.target;
+                this.activeField = field;
+                
+                clearTimeout(this.debounceTimer);
+                this.debounceTimer = setTimeout(() => {
+                    this.analyzeInput(field);
+                }, this.options.debounceDelay);
+            }
+            
+            handleFocus(e) {
+                this.activeField = e.target;
+            }
+            
+            handleKeydown(e) {
+                if (!this.suggestionBox || this.suggestionBox.style.display === 'none') {
+                    return;
+                }
+                
+                const suggestions = this.suggestionBox.querySelectorAll('.variable-suggestion-tag');
+                const selected = this.suggestionBox.querySelector('.variable-suggestion-tag.selected');
+                let currentIndex = Array.from(suggestions).indexOf(selected);
+                
+                switch(e.key) {
+                    case 'ArrowDown':
+                        e.preventDefault();
+                        if (currentIndex < suggestions.length - 1) {
+                            if (selected) selected.classList.remove('selected');
+                            suggestions[currentIndex + 1].classList.add('selected');
+                            suggestions[currentIndex + 1].scrollIntoView({ block: 'nearest' });
+                        } else if (suggestions.length > 0) {
+                            if (selected) selected.classList.remove('selected');
+                            suggestions[0].classList.add('selected');
+                        }
+                        break;
+                        
+                    case 'ArrowUp':
+                        e.preventDefault();
+                        if (currentIndex > 0) {
+                            if (selected) selected.classList.remove('selected');
+                            suggestions[currentIndex - 1].classList.add('selected');
+                            suggestions[currentIndex - 1].scrollIntoView({ block: 'nearest' });
+                        }
+                        break;
+                        
+                    case 'Enter':
+                        if (selected) {
+                            e.preventDefault();
+                            const variableKey = selected.getAttribute('data-variable-key');
+                            this.insertVariable(variableKey);
+                        }
+                        break;
+                        
+                    case 'Escape':
+                        e.preventDefault();
+                        this.hideSuggestions();
+                        break;
+                }
+            }
+            
+            analyzeInput(field) {
+                const value = field.value;
+                const cursorPos = field.selectionStart;
+                const currentWord = this.getCurrentWord(value, cursorPos);
+                
+                if (currentWord.text.length >= this.options.minChars) {
+                    this.showSuggestions(field, currentWord);
+                } else {
+                    this.hideSuggestions();
+                }
+            }
+            
+            getCurrentWord(text, cursorPos) {
+                let start = cursorPos;
+                while (start > 0 && /[a-zA-Z0-9_]/.test(text[start - 1])) {
+                    start--;
+                }
+                
+                let end = cursorPos;
+                while (end < text.length && /[a-zA-Z0-9_]/.test(text[end])) {
+                    end++;
+                }
+                
+                return {
+                    text: text.substring(start, end),
+                    start: start,
+                    end: end
+                };
+            }
+            
+            showSuggestions(field, currentWord) {
+                const word = currentWord.text.toLowerCase();
+                
+                const filtered = this.variables.filter(v => 
+                    v.key.toLowerCase().includes(word)
+                ).slice(0, this.options.maxSuggestions);
+                
+                if (filtered.length === 0) {
+                    this.hideSuggestions();
+                    return;
+                }
+                
+                this.suggestionBox.innerHTML = `
+                    <div class="variable-suggestions-header">
+                        <i class="fas fa-tag"></i> Variables disponibles
+                    </div>
+                    <div class="variable-suggestions-list">
+                        ${filtered.map((v, index) => `
+                            <div class="variable-suggestion-tag ${index === 0 ? 'selected' : ''}" 
+                                 data-variable-key="${v.key}" 
+                                 title="${v.description || v.key}">
+                                <i class="fas fa-code"></i>
+                                <span class="variable-key">${this.highlightMatch(v.key, word)}</span>
+                                ${v.description ? `<span class="variable-desc">${v.description}</span>` : ''}
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+                
+                this.positionSuggestionBox(field);
+                
+                const tags = this.suggestionBox.querySelectorAll('.variable-suggestion-tag');
+                tags.forEach(tag => {
+                    tag.addEventListener('click', () => {
+                        const variableKey = tag.getAttribute('data-variable-key');
+                        this.insertVariable(variableKey);
+                    });
+                    
+                    tag.addEventListener('mouseenter', () => {
+                        tags.forEach(t => t.classList.remove('selected'));
+                        tag.classList.add('selected');
+                    });
+                });
+                
+                this.suggestionBox.style.display = 'block';
+            }
+            
+            highlightMatch(text, match) {
+                const index = text.toLowerCase().indexOf(match);
+                if (index === -1) return text;
+                
+                return text.substring(0, index) + 
+                       '<strong>' + text.substring(index, index + match.length) + '</strong>' + 
+                       text.substring(index + match.length);
+            }
+            
+            positionSuggestionBox(field) {
+                const rect = field.getBoundingClientRect();
+                const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
+                
+                this.suggestionBox.style.position = 'absolute';
+                this.suggestionBox.style.top = (rect.bottom + scrollTop + 5) + 'px';
+                this.suggestionBox.style.left = (rect.left + scrollLeft) + 'px';
+                this.suggestionBox.style.width = Math.max(rect.width, 300) + 'px';
+            }
+            
+            hideSuggestions() {
+                if (this.suggestionBox) {
+                    this.suggestionBox.style.display = 'none';
+                }
+            }
+            
+            insertVariable(variableKey) {
+                if (!this.activeField) return;
+                
+                const field = this.activeField;
+                const value = field.value;
+                const cursorPos = field.selectionStart;
+                const currentWord = this.getCurrentWord(value, cursorPos);
+                
+                const before = value.substring(0, currentWord.start);
+                const after = value.substring(currentWord.end);
+                const variableText = `{{${variableKey}}}`;
+                
+                field.value = before + variableText + after;
+                
+                const newCursorPos = currentWord.start + variableText.length;
+                field.setSelectionRange(newCursorPos, newCursorPos);
+                field.focus();
+                
+                field.dispatchEvent(new Event('input', { bubbles: true }));
+                
+                this.hideSuggestions();
+            }
+        }
+
+        // Initialisation au chargement de la page
+        document.addEventListener('DOMContentLoaded', () => {
+            window.variableAutocomplete = new VariableAutocomplete();
+        });
+    </script>
+</body>
+</html>

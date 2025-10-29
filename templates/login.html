@@ -26,6 +26,19 @@
                 <p class="text-muted">Plateforme de test multi-environnements</p>
             </div>
             
+            <!-- Messages Flash -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show mt-3" role="alert">
+                            <i class="fas fa-{{ 'exclamation-circle' if category == 'error' else 'exclamation-triangle' if category == 'warning' else 'info-circle' }}"></i>
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            
             <form id="loginForm">
                 <div class="mb-3">
                     <label for="email" class="form-label">
@@ -59,6 +72,19 @@
     <script src="{{ url_for('static', filename='js/app.js') }}"></script>
     
     <script>
+        // Vérifier si un message d'erreur est passé en paramètre URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const errorParam = urlParams.get('error');
+        
+        if (errorParam === 'session_expired') {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = 'Votre session a expiré. Veuillez vous reconnecter.';
+            errorDiv.classList.remove('d-none');
+            
+            // Nettoyer l'URL
+            window.history.replaceState({}, document.title, '/');
+        }
+        
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             

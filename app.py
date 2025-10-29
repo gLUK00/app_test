@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """Application Flask principale pour TestGyver."""
 from flask import Flask, jsonify
 from flask_swagger_ui import get_swaggerui_blueprint
@@ -9,7 +11,9 @@ from routes import (
     variables_bp,
     tests_bp,
     rapports_bp,
-    web_bp
+    web_bp,
+    actions_bp,
+    plugins_routes
 )
 
 def create_app():
@@ -31,6 +35,8 @@ def create_app():
     app.register_blueprint(variables_bp)
     app.register_blueprint(tests_bp)
     app.register_blueprint(rapports_bp)
+    app.register_blueprint(actions_bp)
+    app.register_blueprint(plugins_routes)
     
     # Configuration Swagger UI
     SWAGGER_URL = '/swagger'

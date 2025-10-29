@@ -9,13 +9,13 @@ variables_bp = Blueprint('variables_api', __name__, url_prefix='/api/variables')
 
 @variables_bp.route('', methods=['GET'])
 @token_required
-@admin_required
 def get_variables():
-    """Récupère la liste des variables (admin uniquement)."""
+    """Récupère la liste des variables."""
     try:
         # Vérifier si on veut grouper par filière
         grouped = request.args.get('grouped', 'false').lower() == 'true'
         filiere = request.args.get('filiere')
+        is_root = request.args.get('isRoot', '').lower()
         
         if grouped:
             variables = Variable.get_grouped_by_filiere()
@@ -24,6 +24,12 @@ def get_variables():
             variables = Variable.get_by_filiere(filiere)
         else:
             variables = Variable.get_all()
+        
+        # Filtrer par isRoot si spécifié
+        if is_root == 'true':
+            variables = [v for v in variables if v.get('isRoot') is True]
+        elif is_root == 'false':
+            variables = [v for v in variables if v.get('isRoot') is not True]
         
         page, page_size = get_pagination_params(request)
         result = paginate_results(variables, page, page_size)
@@ -42,14 +48,22 @@ def create_variable():
         data = request.get_json()
         
         # Validation
-        is_valid, message = validate_required_fields(data, ['key', 'value', 'filiere'])
+        is_valid, message = validate_required_fields(data, ['key'])        
+        if is_valid and not data.get('isRoot', False):
+            is_valid, message = validate_required_fields(data, ['value', 'filiere'])
         if not is_valid:
             return jsonify({'message': message}), 400
         
+        # Vérifier que la variable racine existe si ce n'est pas une variable root
+        if not data.get('isRoot', False):
+            root_variable = Variable.find_by_key_and_root(data['key'], is_root=True)
+            if not root_variable:
+                return jsonify({'message': f'La variable racine {data["key"]} doit être préalablement créée'}), 400
+        
         variable_id = Variable.create(
             key=data['key'],
-            value=data['value'],
-            filiere=data['filiere'],
+            value=data.get('value', ''),
+            filiere=data.get('filiere', ''),
             description=data.get('description', ''),
             is_root=data.get('isRoot', False)
         )
@@ -88,6 +102,19 @@ def update_variable(variable_id):
     """Met à jour une variable existante (admin uniquement)."""
     try:
         data = request.get_json()
+        
+        # Validation
+        is_valid, message = validate_required_fields(data, ['key'])        
+        if is_valid and not data.get('isRoot', False):
+            is_valid, message = validate_required_fields(data, ['value', 'filiere'])
+        if not is_valid:
+            return jsonify({'message': message}), 400
+        
+        # Vérifier que la variable racine existe si ce n'est pas une variable root
+        if not data.get('isRoot', False):
+            root_variable = Variable.find_by_key_and_root(data['key'], is_root=True)
+            if not root_variable:
+                return jsonify({'message': f'La variable racine {data["key"]} doit être préalablement créée'}), 400
         
         Variable.update(variable_id, data)
         

@@ -215,3 +215,139 @@ Avec des fichiers d'autres langues :
 - README.es.md
 - README.de.md
 - README.it.md
+
+
+
+-----------------------
+
+✅ TERMINÉ - traiter les token invalides ou expirés en redirigeant l'utilisateur vers la page de login avec un message d'erreur approprié
+
+Implémentation réalisée :
+- Modification de la fonction `decode_token()` pour retourner des messages d'erreur détaillés
+- Amélioration du décorateur `token_required` pour différencier les requêtes API et web
+- Redirection automatique vers la page de login avec messages flash pour les pages web
+- Réponses JSON avec code 401 pour les API
+- Suppression automatique des cookies invalides
+- Gestion côté client (JavaScript) avec notifications avant redirection
+- Messages d'erreur appropriés selon le type d'erreur (expiré, invalide, manquant)
+- Gestion des erreurs d'accès administrateur avec redirection vers le dashboard
+- Documentation complète : docs/TOKEN_MANAGEMENT.md
+- Script de test : test_token_validation.py (tous les tests passent ✅)
+
+faire le menage :
+- supprimer les fichiers inutiles
+- recherche les consoles.log inutiles et les supprimer
+
+
+mettre en place un mecanisme multi-langue pour l'interface utilisateur :
+- utiliser Flask-Babel pour la gestion des traductions
+- créer des fichiers de traduction pour les langues suivantes :
+    - français (fr)
+    - anglais (en)
+    - espagnol (es)
+    - allemand (de)
+    - italien (it)
+- ajouter un sélecteur de langue dans le bandeau supérieur de l'application
+- stocker la langue préférée de l'utilisateur dans le profil utilisateur en base de données
+
+complete le swagger avec toutes les routes et modèles de l'API
+
+supprimer une variable racine, supprime egalement toutes les variables associées à cette racine
+
+✅ TERMINÉ - revoir le systeme des plugins d'actions pour permettre l'ajout dynamique de nouvelles actions sans modification du code principal de l'application
+✅ TERMINÉ - il y aura d'autre type de plugins à l'avenir (ex: plugins de rapports, plugins d'authentification, etc.)
+
+Architecture mise en place :
+- PluginManager : Gestionnaire générique pour tous les types de plugins
+- PluginBase : Classe de base commune à tous les plugins
+- ActionBase, ReportBase, AuthBase : Classes de base spécialisées
+- Découverte et chargement automatique des plugins
+- API REST pour gérer les plugins dynamiquement
+- Exemples de plugins : HTML Report, Local Auth
+- Documentation complète (PLUGIN_DEVELOPMENT_GUIDE.md, PLUGINS_README.md)
+- Tests unitaires (test_plugins.py)
+
+
+-----------------------
+✅ TERMINÉ - pour les actions des tests :
+- dans les page d'ajout et de modification,
+- juste avant le bouton "Ajouter une action",
+- ajouter un bouton "Ajouter une variable",
+- lors du click sur ce bouton,
+- afficher une modale avec un formulaire d'ajout de variable, uniquement le nom,
+- la validation est possible, si la variable n'existe pas déjà, et la saisie alphanumérique uniquement
+- la liste des variables (si il y a déjà des variables) s'affiche juste avec "actionsList" dans le même parent,
+- les variables sont affichées sous la format de tag avec une croix pour la suppression,
+- mettre a jour la collections "tests" en conséquence, pour ajouter un champ "variables" qui est un tableau des variables associées au test
+- étudier les impacts sur l'existant pour s'assurer que tout fonctionne correctement avec cette nouvelle fonctionnalité
+
+Implémentation réalisée :
+- Ajout du champ "variables" (Array) dans la collection "tests"
+- Modification du modèle Test pour supporter les variables
+- Modification des routes API pour gérer les variables
+- Ajout du bouton "Ajouter une variable" dans test_add.html et test_edit.html
+- Création de modales pour l'ajout de variables avec validation alphanumérique
+- Affichage des variables sous forme de badges avec bouton de suppression
+- Validation d'unicité et de format des noms de variables
+- Persistance en base de données
+- Documentation complète : docs/VARIABLES_TEST_README.md
+- Compatibilité totale avec l'existant (tests sans variables fonctionnent normalement)
+
+-----------------------
+✅ TERMINÉ - Revoir le systeme de plugins des actions pour permettre aux actions d'alimenter ou non une variable de sortie.
+- Chaque action pourra définir une ou plusieurs variables de sortie
+- Ces variables pourront être utilisées dans les actions suivantes du même test
+- Mettre à jour la documentation des plugins d'actions pour expliquer comment définir des variables de sortie
+- Mettre à jour l'interface utilisateur pour afficher les variables de sortie disponibles lors de la configuration des actions dans un test
+- ce mécanisme s'appuiera sur la méthode "get_output_variables()" de chaque action pour récupérer la liste des variables de sortie définies par l'action, cette méthode la liste des variables de sortie possibles => qui sera câblée aux potentiels variables du test
+- mettre à jour l'interface d'ajout et de modification d'un test
+
+----------------------------------------------
+✅ TERMINÉ -sur les pages d'ajout et de modification d'un test,
+- dans la liste des actions du test,
+- pour chaque action,
+- afficher la liste des variables de sortie utilisées par cette action (si il y en a),
+- dans le même parent que "<h6 class="mb-0">Action </h6>" et à la suite, aligné à droite,
+- afficher les variables de sortie sous forme de badge avec le nom de la variable,
+- mettre une couleur "success" pour les badges des variables de sortie (si la variable est bien définie dans l'action),
+- si la variable de sortie n'est pas définie dans l'action, mettre une couleur "secondary" pour le badge,
+- mettre à jour les fichiers templates/test_add.html et templates/test_edit.html en conséquence
+
+----------------------------------------------
+✅ TERMINÉ -lors de la saisie du nom d'une variable dans les actions d'un test, ne pas activer le plugin JS de suggestion des variables existantes variable-autocomplete.js
+
+
+----------------------------------------------
+✅ TERMINÉ - faire évoluer le plugin JS de suggestion des variables existantes variable-autocomplete.js pour permettre de créer plusieurs type de suggestions :
+- type "testGyver" : suggère les variables existantes (comportement actuel avec coloration actuelle)
+- type "test" : suggère les variables du test en cours
+- type "collection" : suggère les variables de collection (test_id, campain_id)
+- chaque type de suggestion doit etre dans une liste, avoir une couleur spécifique, et un format d'affichage en majuscule et un format d'insertion spécifique
+    - par exemple:
+        - type "testGyver" : couleur bleue, format d'insertion {{variable_name}}
+        - type "test" : couleur verte, format d'insertion {{app.variable_name}}
+        - type "collection" : couleur rouge, format d'insertion {{test.variable_name}}
+- faire évoluer les pages test_add.html et test_edit.html pour, lors de la saisie des paramètre d'une action, alimenter le plugin JS avec les deux types de suggestions
+
+Implémentation réalisée :
+- Refactorisation du plugin variable-autocomplete.js pour supporter plusieurs types de suggestions
+- Configuration des types avec couleurs, icônes et formats d'insertion distincts
+- Type "testGyver" : bleu (#0d6efd), format {{variable_name}}, icône fa-database
+- Type "test" : vert (#198754), format {{app.variable_name}}, icône fa-vial
+- Type "collection" : rouge (#dc3545), format {{test.variable_name}}, icône fa-layer-group
+  - Variables de collection disponibles par défaut : test_id, campain_id
+- Affichage groupé des suggestions par type avec séparateurs visuels
+- Méthode setVariables() pour définir dynamiquement les variables d'un type
+- Mise à jour automatique des suggestions dans test_add.html et test_edit.html
+- Styles CSS adaptés pour les groupes de suggestions colorées
+- Navigation au clavier fluide entre tous les types
+- Documentation complète : docs/VARIABLE_AUTOCOMPLETE_MULTITYPE.md
+- Page de test : static/test-multitype-autocomplete.html
+
+----------------------------------------------
+
+
+----------------------------------------------
+
+
+----------------------------------------------

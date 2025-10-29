@@ -9,7 +9,8 @@ def get_current_user():
     token = request.cookies.get('token')
     if token:
         payload = decode_token(token)
-        if payload:
+        # Vérifier si le payload contient une erreur
+        if payload and 'error' not in payload:
             return {
                 'id': payload.get('user_id'),
                 'role': payload.get('role')
@@ -51,6 +52,13 @@ def add_test(campain_id):
     """Page d'ajout d'un test à une campagne."""
     user = get_current_user()
     return render_template('test_add.html', user=user, campain_id=campain_id)
+
+@web_bp.route('/campains/<campain_id>/edit/test/<test_id>')
+@token_required
+def edit_test(campain_id, test_id):
+    """Page d'édition d'un test."""
+    user = get_current_user()
+    return render_template('test_edit.html', user=user, campain_id=campain_id, test_id=test_id)
 
 @web_bp.route('/admin/users')
 @token_required

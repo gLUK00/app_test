@@ -2,10 +2,10 @@
 
 ## Choisir votre langue
 - Français (défaut)
-- [English](README.en.md)
-- [Español](README.es.md)
-- [Deutsch](README.de.md)
-- [Italiano](README.it.md)
+- [English](docs/README.en.md)
+- [Español](docs/README.es.md)
+- [Deutsch](docs/README.de.md)
+- [Italiano](docs/README.it.md)
 
 ## Aperçu
 TestGyver est une application de test multi-environnements destinée à orchestrer et documenter des campagnes de tests fonctionnels ou techniques. Inspirée par l'esprit ingénieux de MacGyver, la plateforme combine flexibilité, extensibilité (plugins d'actions) et visibilité (rapports détaillés) au sein d'une interface web construite avec Flask et MongoDB.

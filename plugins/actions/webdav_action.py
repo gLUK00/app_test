@@ -3,8 +3,31 @@ import requests
 from requests.auth import HTTPBasicAuth
 from plugins.actions.action_base import ActionBase
 
+
 class WebdavAction(ActionBase):
     """Action pour effectuer des opérations WebDAV sur un serveur distant."""
+    
+    # Métadonnées du plugin
+    plugin_name = "webdav"
+    version = "1.0.0"
+    author = "TestGyver Team"
+    
+    def get_metadata(self):
+        """Retourne les métadonnées de l'action."""
+        return {
+            "name": self.plugin_name,
+            "version": self.version,
+            "author": self.author,
+            "description": "Effectue des opérations WebDAV sur un serveur distant"
+        }
+    
+    def validate_config(self, config):
+        """Valide la configuration de l'action."""
+        required_fields = ['method', 'url', 'username', 'password']
+        for field in required_fields:
+            if field not in config or not config[field]:
+                return (False, f"Le champ '{field}' est obligatoire")
+        return (True, "")
     
     def get_input_mask(self):
         """Retourne le masque de saisie pour les opérations WebDAV."""
@@ -50,6 +73,26 @@ class WebdavAction(ActionBase):
                 "label": "Corps de la requête (pour PUT)",
                 "placeholder": "Contenu du fichier ou données XML",
                 "required": False
+            }
+        ]
+    
+    def get_output_variables(self):
+        """Retourne la liste des variables de sortie pour les opérations WebDAV."""
+        return [
+            {
+                "name": "webdav_status_code",
+                "description": "Code de statut HTTP de la réponse WebDAV",
+                "type": "number"
+            },
+            {
+                "name": "webdav_response_body",
+                "description": "Corps de la réponse WebDAV",
+                "type": "string"
+            },
+            {
+                "name": "webdav_operation_success",
+                "description": "Indique si l'opération a réussi (true/false)",
+                "type": "string"
             }
         ]
     

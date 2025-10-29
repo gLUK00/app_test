@@ -1,0 +1,309 @@
+"""
+Template pour créer un nouveau plugin d'action.
+
+Copiez ce fichier et personnalisez-le selon vos besoins.
+Placez-le dans plugins/actions/ et il sera automatiquement découvert.
+"""
+from plugins.actions.action_base import ActionBase
+
+
+class TemplateAction(ActionBase):
+    """
+    Description courte de votre action.
+    
+    Cette description apparaîtra dans les métadonnées du plugin
+    et dans la documentation générée automatiquement.
+    """
+    
+    # =========================================================================
+    # MÉTADONNÉES DU PLUGIN (à personnaliser)
+    # =========================================================================
+    
+    plugin_name = "template"  # OBLIGATOIRE : Nom unique du plugin (utilisé pour l'identifier)
+    version = "1.0.0"        # OBLIGATOIRE : Version du plugin (format: MAJOR.MINOR.PATCH)
+    author = "Votre Nom"     # Auteur du plugin
+    
+    # =========================================================================
+    # MÉTHODES OBLIGATOIRES
+    # =========================================================================
+    
+    def get_metadata(self):
+        """
+        Retourne les métadonnées du plugin.
+        
+        Cette méthode est appelée pour obtenir des informations sur le plugin
+        via l'API /api/plugins/actions/template
+        
+        Returns:
+            dict: Métadonnées du plugin
+        """
+        return {
+            "name": self.plugin_name,
+            "version": self.version,
+            "author": self.author,
+            "description": "Description détaillée de votre action"
+        }
+    
+    def validate_config(self, config):
+        """
+        Valide la configuration avant l'exécution.
+        
+        Cette méthode est appelée pour vérifier que tous les paramètres
+        nécessaires sont présents et valides avant d'exécuter l'action.
+        
+        Args:
+            config (dict): Configuration à valider
+            
+        Returns:
+            tuple: (bool, str) - (succès, message d'erreur éventuel)
+            
+        Exemple:
+            if 'param_requis' not in config:
+                return (False, "Le paramètre 'param_requis' est obligatoire")
+            return (True, "")
+        """
+        # Validez vos paramètres obligatoires ici
+        required_fields = ['param1', 'param2']
+        
+        for field in required_fields:
+            if field not in config or not config[field]:
+                return (False, f"Le champ '{field}' est obligatoire")
+        
+        # Validations supplémentaires
+        # Exemple : vérifier le format, les plages de valeurs, etc.
+        
+        return (True, "")
+    
+    def get_input_mask(self):
+        """
+        Définit le formulaire de saisie pour l'action.
+        
+        Cette méthode retourne la structure du formulaire qui sera affiché
+        à l'utilisateur lors de l'ajout de cette action à un test.
+        
+        Returns:
+            list: Liste de dictionnaires définissant les champs du formulaire
+            
+        Types de champs disponibles:
+            - string: Champ texte simple
+            - number: Champ numérique
+            - boolean: Case à cocher
+            - textarea: Zone de texte multi-lignes
+            - select: Liste déroulante
+            - checkbox: Case à cocher
+            
+        Exemple de champ:
+            {
+                "name": "nom_du_champ",          # Identifiant du champ
+                "type": "string",                 # Type de champ
+                "label": "Libellé du champ",     # Texte affiché à l'utilisateur
+                "placeholder": "Texte d'aide",   # Texte d'exemple
+                "required": True                  # Champ obligatoire ou non
+            }
+        """
+        return [
+            # Exemple de champ texte simple
+            {
+                "name": "param1",
+                "type": "string",
+                "label": "Paramètre 1",
+                "placeholder": "Entrez une valeur",
+                "required": True
+            },
+            
+            # Exemple de champ numérique
+            {
+                "name": "param2",
+                "type": "number",
+                "label": "Paramètre 2",
+                "placeholder": "42",
+                "required": False
+            },
+            
+            # Exemple de zone de texte multi-lignes
+            {
+                "name": "param3",
+                "type": "textarea",
+                "label": "Paramètre 3",
+                "placeholder": "Texte long...",
+                "required": False
+            },
+            
+            # Exemple de liste déroulante
+            {
+                "name": "param4",
+                "type": "select",
+                "label": "Paramètre 4",
+                "options": ["Option 1", "Option 2", "Option 3"],
+                "required": True
+            },
+            
+            # Exemple de case à cocher
+            {
+                "name": "param5",
+                "type": "checkbox",
+                "label": "Activer cette option",
+                "required": False
+            }
+        ]
+    
+    def execute(self, action_context):
+        """
+        Exécute l'action avec les paramètres fournis.
+        
+        C'est la méthode principale qui contient la logique de votre action.
+        Elle est appelée lors de l'exécution d'un test contenant cette action.
+        
+        Args:
+            action_context (dict): Dictionnaire contenant les paramètres saisis
+                                   par l'utilisateur (selon le masque de saisie)
+        
+        Returns:
+            dict: Résultat de l'exécution avec le format:
+                {
+                    "code": 0,              # 0 = succès, autre = erreur
+                    "traces": [...],        # Liste des messages de log
+                    "result": {...}         # Données optionnelles de résultat
+                }
+        
+        Méthodes utiles:
+            - self.add_trace(message): Ajoute un message de log
+            - self.set_code(code): Définit le code de retour (0=succès, 1=erreur)
+            - self.get_result(data): Retourne le résultat formaté
+        """
+        try:
+            # ============================================================
+            # 1. RÉCUPÉRATION DES PARAMÈTRES
+            # ============================================================
+            
+            param1 = action_context.get('param1')
+            param2 = action_context.get('param2', 0)  # Valeur par défaut si non fourni
+            param3 = action_context.get('param3')
+            param4 = action_context.get('param4')
+            param5 = action_context.get('param5', False)
+            
+            self.add_trace(f"Démarrage de l'action avec param1={param1}")
+            
+            # ============================================================
+            # 2. TRAITEMENT / LOGIQUE MÉTIER
+            # ============================================================
+            
+            # Effectuez votre traitement ici
+            # Exemples :
+            # - Appeler une API
+            # - Exécuter une commande
+            # - Manipuler des fichiers
+            # - Effectuer des calculs
+            
+            self.add_trace("Traitement en cours...")
+            
+            # Simulez un traitement
+            result_data = {
+                "status": "success",
+                "processed": True,
+                "details": f"Traitement effectué avec {param1}"
+            }
+            
+            # ============================================================
+            # 3. RETOUR DU RÉSULTAT
+            # ============================================================
+            
+            # En cas de succès
+            self.set_code(0)
+            self.add_trace("Action exécutée avec succès")
+            
+            return self.get_result(result_data)
+            
+        except ValueError as ve:
+            # Gestion des erreurs de validation
+            self.set_code(1)
+            self.add_trace(f"Erreur de validation : {str(ve)}")
+            return self.get_result()
+            
+        except ConnectionError as ce:
+            # Gestion des erreurs de connexion
+            self.set_code(1)
+            self.add_trace(f"Erreur de connexion : {str(ce)}")
+            return self.get_result()
+            
+        except Exception as e:
+            # Gestion des erreurs génériques
+            self.set_code(1)
+            self.add_trace(f"Erreur inattendue : {str(e)}")
+            return self.get_result()
+    
+    # =========================================================================
+    # MÉTHODES OPTIONNELLES
+    # =========================================================================
+    
+    def cleanup(self):
+        """
+        Méthode de nettoyage (optionnelle).
+        
+        Appelée après l'exécution pour libérer des ressources.
+        Utile pour fermer des connexions, supprimer des fichiers temporaires, etc.
+        """
+        pass
+    
+    def supports_retry(self):
+        """
+        Indique si l'action supporte la réexécution en cas d'échec (optionnel).
+        
+        Returns:
+            bool: True si l'action peut être réessayée
+        """
+        return True
+    
+    def get_timeout(self):
+        """
+        Retourne le timeout par défaut pour cette action (optionnel).
+        
+        Returns:
+            int: Timeout en secondes
+        """
+        return 30
+
+
+# =============================================================================
+# NOTES DE DÉVELOPPEMENT
+# =============================================================================
+"""
+1. NOMMAGE DU FICHIER
+   - Utilisez le snake_case : ma_super_action.py
+   - Le nom doit être descriptif : http_request_action.py, ssh_action.py
+   
+2. PLUGIN_NAME
+   - Doit être unique dans l'application
+   - Préférez un nom court et descriptif
+   - Utilisera ce nom dans les URLs : /api/plugins/actions/{plugin_name}
+   
+3. VERSIONING
+   - Utilisez le versioning sémantique : MAJOR.MINOR.PATCH
+   - MAJOR : changements incompatibles
+   - MINOR : nouvelles fonctionnalités compatibles
+   - PATCH : corrections de bugs
+   
+4. DOCUMENTATION
+   - Documentez toutes vos méthodes avec des docstrings
+   - Ajoutez des exemples d'utilisation
+   - Expliquez les paramètres attendus
+   
+5. GESTION D'ERREURS
+   - Gérez toutes les exceptions possibles
+   - Retournez des messages d'erreur clairs
+   - Utilisez self.add_trace() pour le débogage
+   
+6. TESTS
+   - Testez votre plugin avant de le déployer
+   - Vérifiez tous les cas d'erreur
+   - Testez avec différentes configurations
+   
+7. DÉPENDANCES
+   - Si vous utilisez des bibliothèques externes, ajoutez-les à requirements.txt
+   - Documentez les dépendances dans le README
+   
+8. SÉCURITÉ
+   - Validez toutes les entrées utilisateur
+   - Ne loggez pas d'informations sensibles
+   - Utilisez des connexions sécurisées (HTTPS, SSH, etc.)
+"""

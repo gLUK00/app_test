@@ -51,6 +51,48 @@ body {
     flex-direction: column;
 }
 
+/* Styles pour la gestion des actions */
+.action-item {
+    transition: all 0.2s ease;
+    border-left: 3px solid var(--primary-color);
+}
+
+.action-item:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transform: translateX(2px);
+}
+
+.action-item .card-body {
+    padding: 1rem;
+}
+
+.action-item .btn-group {
+    flex-shrink: 0;
+}
+
+/* Amélioration du modal */
+.modal-lg {
+    max-width: 800px;
+}
+
+#dynamicFields {
+    border-top: 1px solid #dee2e6;
+    padding-top: 1rem;
+    margin-top: 1rem;
+}
+
+#dynamicFields:empty {
+    border: none;
+    padding: 0;
+    margin: 0;
+}
+
+/* Badges personnalisés */
+.badge {
+    font-weight: 500;
+    padding: 0.35em 0.65em;
+}
+
 /* Container principal */
 .main-container {
     flex: 1;
@@ -281,6 +323,143 @@ footer a:hover {
     border-color: var(--primary-color);
 }
 
+/* Autocomplétion des variables */
+.variable-autocomplete-suggestions {
+    position: absolute;
+    background: white;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 10000;
+    max-height: 400px;
+    overflow-y: auto;
+    font-size: 0.9rem;
+}
+
+.variable-suggestions-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.variable-suggestions-group {
+    border-bottom: 1px solid #e9ecef;
+}
+
+.variable-suggestions-group:last-child {
+    border-bottom: none;
+}
+
+.variable-suggestions-header {
+    padding: 10px 15px;
+    background: white;
+    font-weight: 600;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-left-width: 3px;
+    border-left-style: solid;
+}
+
+.variable-suggestions-header i {
+    font-size: 0.9rem;
+}
+
+.variable-suggestions-list {
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.variable-suggestion-tag {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border-left-width: 3px;
+    border-left-style: solid;
+}
+
+.variable-suggestion-tag:hover,
+.variable-suggestion-tag.selected {
+    background: #e7f1ff;
+    transform: translateX(4px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.variable-suggestion-tag i {
+    font-size: 0.9rem;
+    flex-shrink: 0;
+}
+
+.variable-suggestion-tag .variable-key {
+    font-family: 'Courier New', monospace;
+    font-weight: 600;
+    font-size: 0.9rem;
+    flex-shrink: 0;
+}
+
+.variable-suggestion-tag .variable-key strong {
+    text-decoration: underline;
+    font-weight: 700;
+}
+
+.variable-suggestion-tag .variable-desc {
+    font-size: 0.8rem;
+    color: #6c757d;
+    font-style: italic;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex: 1;
+}
+
+.variable-suggestion-tag:hover .variable-desc,
+.variable-suggestion-tag.selected .variable-desc {
+    color: #495057;
+}
+
+/* Animation d'apparition */
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.variable-autocomplete-suggestions[style*="display: block"] {
+    animation: slideDown 0.2s ease;
+}
+
+/* Scrollbar personnalisée pour les suggestions */
+.variable-autocomplete-suggestions::-webkit-scrollbar {
+    width: 6px;
+}
+
+.variable-autocomplete-suggestions::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 0 8px 8px 0;
+}
+
+.variable-autocomplete-suggestions::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 3px;
+}
+
+.variable-autocomplete-suggestions::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .login-card {
@@ -294,4 +473,14 @@ footer a:hover {
         top: 10px;
         right: 10px;
     }
+    
+    .variable-autocomplete-suggestions {
+        max-height: 250px;
+        font-size: 0.85rem;
+    }
+    
+    .variable-suggestion-tag {
+        padding: 6px 10px;
+    }
 }
+

@@ -30,8 +30,13 @@ class Campain:
         campain = collection.find_one({'_id': ObjectId(campain_id)})
         
         if campain:
+            # Récupérer les informations de l'utilisateur créateur
+            user_collection = get_collection('users')
+            user = user_collection.find_one({'_id': campain['userCreated']})
+            
             campain['_id'] = str(campain['_id'])
             campain['userCreated'] = str(campain['userCreated'])
+            campain['userCreatedName'] = user['name'] if user else 'Utilisateur inconnu'
             if isinstance(campain.get('dateCreated'), datetime):
                 campain['dateCreated'] = campain['dateCreated'].isoformat()
         
@@ -43,9 +48,15 @@ class Campain:
         collection = get_collection(Campain.collection_name)
         campains = list(collection.find().sort('dateCreated', -1))
         
+        # Récupérer les informations des utilisateurs
+        user_collection = get_collection('users')
+        
         for campain in campains:
+            user = user_collection.find_one({'_id': campain['userCreated']})
+            
             campain['_id'] = str(campain['_id'])
             campain['userCreated'] = str(campain['userCreated'])
+            campain['userCreatedName'] = user['name'] if user else 'Utilisateur inconnu'
             if isinstance(campain.get('dateCreated'), datetime):
                 campain['dateCreated'] = campain['dateCreated'].isoformat()
         
@@ -57,9 +68,15 @@ class Campain:
         collection = get_collection(Campain.collection_name)
         campains = list(collection.find({'userCreated': ObjectId(user_id)}).sort('dateCreated', -1))
         
+        # Récupérer les informations de l'utilisateur
+        user_collection = get_collection('users')
+        user = user_collection.find_one({'_id': ObjectId(user_id)})
+        user_name = user['name'] if user else 'Utilisateur inconnu'
+        
         for campain in campains:
             campain['_id'] = str(campain['_id'])
             campain['userCreated'] = str(campain['userCreated'])
+            campain['userCreatedName'] = user_name
             if isinstance(campain.get('dateCreated'), datetime):
                 campain['dateCreated'] = campain['dateCreated'].isoformat()
         

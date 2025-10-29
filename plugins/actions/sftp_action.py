@@ -3,8 +3,31 @@ import paramiko
 import io
 from plugins.actions.action_base import ActionBase
 
+
 class SFTPAction(ActionBase):
     """Action pour effectuer des opérations SFTP sur un serveur distant."""
+    
+    # Métadonnées du plugin
+    plugin_name = "sftp"
+    version = "1.0.0"
+    author = "TestGyver Team"
+    
+    def get_metadata(self):
+        """Retourne les métadonnées de l'action."""
+        return {
+            "name": self.plugin_name,
+            "version": self.version,
+            "author": self.author,
+            "description": "Effectue des opérations SFTP sur un serveur distant"
+        }
+    
+    def validate_config(self, config):
+        """Valide la configuration de l'action."""
+        required_fields = ['method', 'host', 'username', 'password']
+        for field in required_fields:
+            if field not in config or not config[field]:
+                return (False, f"Le champ '{field}' est obligatoire")
+        return (True, "")
     
     def get_input_mask(self):
         """Retourne le masque de saisie pour les opérations SFTP."""
@@ -57,6 +80,31 @@ class SFTPAction(ActionBase):
                 "label": "Contenu du fichier (pour PUT)",
                 "placeholder": "Contenu à uploader",
                 "required": False
+            }
+        ]
+    
+    def get_output_variables(self):
+        """Retourne la liste des variables de sortie pour les opérations SFTP."""
+        return [
+            {
+                "name": "sftp_file_content",
+                "description": "Contenu du fichier téléchargé (pour GET)",
+                "type": "string"
+            },
+            {
+                "name": "sftp_file_size",
+                "description": "Taille du fichier en octets",
+                "type": "number"
+            },
+            {
+                "name": "sftp_file_list",
+                "description": "Liste des fichiers (pour LIST)",
+                "type": "string"
+            },
+            {
+                "name": "sftp_operation_success",
+                "description": "Indique si l'opération a réussi (true/false)",
+                "type": "string"
             }
         ]
     

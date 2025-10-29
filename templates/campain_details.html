@@ -1,0 +1,316 @@
+{% extends "base.html" %}
+
+{% block title %}Détails de la campagne - {{ app_name }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1><i class="fas fa-clipboard-list"></i> <span id="campainName">Chargement...</span></h1>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{{ url_for('web.dashboard') }}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Retour
+            </a>
+        </div>
+    </div>
+    
+    <!-- Informations de la campagne -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-info-circle"></i> Informations
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Nom :</strong> <span id="detailName">-</span></p>
+                            <p><strong>Description :</strong> <span id="detailDescription">-</span></p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Créée le :</strong> <span id="detailDateCreated">-</span></p>
+                            <p><strong>Créée par :</strong> <span id="detailUserCreated">-</span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Liste des tests -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <span><i class="fas fa-vial"></i> Tests de la campagne</span>
+                    <a href="{{ url_for('web.add_test', campain_id=campain_id) }}" class="btn btn-sm btn-primary">
+                        <i class="fas fa-plus"></i> Ajouter un test
+                    </a>
+                </div>
+                <div class="card-body">
+                    <div id="testsLoading" class="text-center">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Chargement...</span>
+                        </div>
+                    </div>
+                    <div id="testsContainer" style="display: none;">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Informations</th>
+                                        <th>Types d'actions</th>
+                                        <th>Date de création</th>
+                                        <th style="width: 120px;">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="testsTableBody">
+                                    <!-- Les tests seront chargés ici -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div id="noTests" style="display: none;" class="text-center text-muted py-4">
+                        <i class="fas fa-inbox fa-3x mb-3"></i>
+                        <p>Aucun test dans cette campagne</p>
+                        <a href="{{ url_for('web.add_test', campain_id=campain_id) }}" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Créer le premier test
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Rapports d'exécution -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <span><i class="fas fa-chart-line"></i> Rapports d'exécution</span>
+                    <button class="btn btn-sm btn-success" id="runCampainBtn">
+                        <i class="fas fa-play"></i> Exécuter la campagne
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div id="rapportsLoading" class="text-center">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Chargement...</span>
+                        </div>
+                    </div>
+                    <div id="rapportsContainer" style="display: none;">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Date d'exécution</th>
+                                        <th>Statut</th>
+                                        <th>Tests réussis</th>
+                                        <th>Tests échoués</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="rapportsTableBody">
+                                    <!-- Les rapports seront chargés ici -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div id="noRapports" style="display: none;" class="text-center text-muted py-4">
+                        <i class="fas fa-inbox fa-3x mb-3"></i>
+                        <p>Aucun rapport d'exécution</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const campainId = '{{ campain_id }}';
+
+// Chargement des détails de la campagne
+async function loadCampainDetails() {
+    try {
+        const data = await API.get(`/api/campains/${campainId}`);
+        
+        document.getElementById('campainName').textContent = data.name;
+        document.getElementById('detailName').textContent = data.name;
+        document.getElementById('detailDescription').textContent = data.description || 'Aucune description';
+        document.getElementById('detailDateCreated').textContent = new Date(data.dateCreated).toLocaleString('fr-FR');
+        document.getElementById('detailUserCreated').textContent = data.userCreatedName || 'Utilisateur inconnu';
+        
+    } catch (error) {
+        console.error('Erreur lors du chargement de la campagne:', error);
+        showAlert('Erreur lors du chargement de la campagne', 'danger');
+    }
+}
+
+// Chargement des tests de la campagne
+async function loadTests() {
+    try {
+        const data = await API.get(`/api/tests?campain_id=${campainId}`);
+        
+        document.getElementById('testsLoading').style.display = 'none';
+        
+        if (data.data && data.data.length > 0) {
+            document.getElementById('testsContainer').style.display = 'block';
+            document.getElementById('noTests').style.display = 'none';
+            
+            const tbody = document.getElementById('testsTableBody');
+            tbody.innerHTML = data.data.map(test => {
+                const actionsCount = test.actions ? test.actions.length : 0;
+                const actionTypes = test.actions ? [...new Set(test.actions.map(a => a.type))].join(', ') : '-';
+                const testName = test.name || `Test #${test._id.substring(test._id.length - 6)}`;
+                
+                return `
+                <tr>
+                    <td>
+                        <strong>${escapeHtml(testName)}</strong>
+                        ${test.description ? `<br><small class="text-muted">${escapeHtml(test.description)}</small>` : ''}
+                        <br><small class="text-muted">${actionsCount} action(s)</small>
+                    </td>
+                    <td>${actionTypes.split(', ').map(type => `<span class="badge bg-info me-1">${escapeHtml(type.toUpperCase())}</span>`).join('')}</td>
+                    <td>${new Date(test.dateCreated).toLocaleString('fr-FR')}</td>
+                    <td>
+                        <div class="btn-group">
+                            <a href="/campains/${campainId}/edit/test/${test._id}" class="btn btn-sm btn-outline-primary" title="Modifier">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <button class="btn btn-sm btn-outline-danger" onclick="deleteTest('${test._id}')" title="Supprimer">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `;
+            }).join('');
+        } else {
+            document.getElementById('testsContainer').style.display = 'none';
+            document.getElementById('noTests').style.display = 'block';
+        }
+        
+    } catch (error) {
+        console.error('Erreur lors du chargement des tests:', error);
+        document.getElementById('testsLoading').style.display = 'none';
+        document.getElementById('noTests').style.display = 'block';
+    }
+}
+
+// Chargement des rapports
+async function loadRapports() {
+    try {
+        const data = await API.get(`/api/campains/${campainId}/rapports`);
+        
+        document.getElementById('rapportsLoading').style.display = 'none';
+        
+        if (data.rapports && data.rapports.length > 0) {
+            document.getElementById('rapportsContainer').style.display = 'block';
+            document.getElementById('noRapports').style.display = 'none';
+            
+            const tbody = document.getElementById('rapportsTableBody');
+            tbody.innerHTML = data.rapports.map(rapport => {
+                const statusBadge = rapport.status === 'success' ? 'bg-success' : 'bg-danger';
+                return `
+                    <tr>
+                        <td>${new Date(rapport.dateCreated).toLocaleString('fr-FR')}</td>
+                        <td><span class="badge ${statusBadge}">${rapport.status}</span></td>
+                        <td><span class="badge bg-success">${rapport.passed || 0}</span></td>
+                        <td><span class="badge bg-danger">${rapport.failed || 0}</span></td>
+                        <td>
+                            <button class="btn btn-sm btn-primary" onclick="viewRapport('${rapport._id}')">
+                                <i class="fas fa-eye"></i> Voir
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        } else {
+            document.getElementById('rapportsContainer').style.display = 'none';
+            document.getElementById('noRapports').style.display = 'block';
+        }
+        
+    } catch (error) {
+        console.error('Erreur lors du chargement des rapports:', error);
+        document.getElementById('rapportsLoading').style.display = 'none';
+        document.getElementById('noRapports').style.display = 'block';
+    }
+}
+
+// Suppression d'un test
+async function deleteTest(testId) {
+    if (!confirm('Êtes-vous sûr de vouloir supprimer ce test et toutes ses actions ?')) {
+        return;
+    }
+    
+    try {
+        await API.delete(`/api/tests/${testId}`);
+        Notification.success('Test supprimé avec succès');
+        loadTests();
+    } catch (error) {
+        console.error('Erreur lors de la suppression du test:', error);
+        Notification.error(error.message || 'Erreur lors de la suppression du test');
+    }
+}
+
+// Exécution de la campagne
+document.getElementById('runCampainBtn').addEventListener('click', async () => {
+    if (!confirm('Voulez-vous exécuter cette campagne ?')) {
+        return;
+    }
+    
+    try {
+        const btn = document.getElementById('runCampainBtn');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Exécution en cours...';
+        
+        await API.post(`/api/campains/${campainId}/run`, {});
+        Notification.success('Campagne exécutée avec succès');
+        
+        // Recharger les rapports après un délai
+        setTimeout(() => {
+            loadRapports();
+        }, 1000);
+        
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-play"></i> Exécuter la campagne';
+        
+    } catch (error) {
+        console.error('Erreur lors de l\'exécution de la campagne:', error);
+        Notification.error(error.message || 'Erreur lors de l\'exécution de la campagne');
+        
+        const btn = document.getElementById('runCampainBtn');
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-play"></i> Exécuter la campagne';
+    }
+});
+
+// Visualisation d'un rapport
+function viewRapport(rapportId) {
+    window.location.href = `/rapports/${rapportId}`;
+}
+
+// Fonction utilitaire pour échapper le HTML
+function escapeHtml(text) {
+    if (!text) return '';
+    const map = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#039;'
+    };
+    return String(text).replace(/[&<>"']/g, m => map[m]);
+}
+
+// Chargement initial
+document.addEventListener('DOMContentLoaded', () => {
+    loadCampainDetails();
+    loadTests();
+    loadRapports();
+});
+</script>
+{% endblock %}

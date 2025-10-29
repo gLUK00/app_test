@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+
+{% block title %}Nouvel utilisateur - {{ app_name }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1><i class="fas fa-user-plus"></i> Nouvel utilisateur</h1>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{{ url_for('web.admin_users') }}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Retour
+            </a>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-edit"></i> Informations de l'utilisateur
+                </div>
+                <div class="card-body">
+                    <form id="userForm">
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Nom complet *</label>
+                            <input type="text" class="form-control" id="name" required 
+                                   placeholder="Ex: Jean Dupont">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email *</label>
+                            <input type="email" class="form-control" id="email" required
+                                   placeholder="Ex: jean.dupont@example.com">
+                            <small class="form-text text-muted">
+                                L'adresse email servira d'identifiant de connexion
+                            </small>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Mot de passe *</label>
+                            <input type="password" class="form-control" id="password" required
+                                   placeholder="Minimum 8 caractères">
+                            <small class="form-text text-muted">
+                                Le mot de passe doit contenir au moins 8 caractères
+                            </small>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="confirmPassword" class="form-label">Confirmer le mot de passe *</label>
+                            <input type="password" class="form-control" id="confirmPassword" required
+                                   placeholder="Ressaisir le mot de passe">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="role" class="form-label">Rôle *</label>
+                            <select class="form-select" id="role" required>
+                                <option value="user" selected>Utilisateur</option>
+                                <option value="admin">Administrateur</option>
+                            </select>
+                            <small class="form-text text-muted">
+                                Les administrateurs ont accès à toutes les fonctionnalités
+                            </small>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-save"></i> Créer l'utilisateur
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.getElementById('userForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const password = document.getElementById('password').value;
+        const confirmPassword = document.getElementById('confirmPassword').value;
+        
+        // Vérifier que les mots de passe correspondent
+        if (password !== confirmPassword) {
+            Notification.error('Les mots de passe ne correspondent pas');
+            return;
+        }
+        
+        const data = {
+            name: document.getElementById('name').value.trim(),
+            email: document.getElementById('email').value.trim(),
+            password: password,
+            role: document.getElementById('role').value
+        };
+        
+        // Validation de base
+        if (!data.name || !data.email || !data.password || !data.role) {
+            Notification.error('Veuillez remplir tous les champs obligatoires');
+            return;
+        }
+        
+        try {
+            const result = await API.post('/api/users', data);
+            Notification.success('Utilisateur créé avec succès');
+            setTimeout(() => {
+                window.location.href = '/admin/users';
+            }, 1000);
+        } catch (error) {
+            Notification.error(error.message || 'Erreur lors de la création de l\'utilisateur');
+        }
+    });
+</script>
+{% endblock %}

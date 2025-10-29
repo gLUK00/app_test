@@ -1,0 +1,204 @@
+{% extends "base.html" %}
+
+{% block title %}Modifier utilisateur - {{ app_name }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1><i class="fas fa-user-edit"></i> Modifier l'utilisateur</h1>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{{ url_for('web.admin_users') }}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Retour
+            </a>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-edit"></i> Informations de l'utilisateur
+                </div>
+                <div class="card-body">
+                    <div id="loadingMessage" class="text-center py-4">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Chargement...</span>
+                        </div>
+                        <p class="mt-2">Chargement des données...</p>
+                    </div>
+                    
+                    <form id="userForm" style="display: none;">
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Nom complet *</label>
+                            <input type="text" class="form-control" id="name" required 
+                                   placeholder="Ex: Jean Dupont">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email *</label>
+                            <input type="email" class="form-control" id="email" required
+                                   placeholder="Ex: jean.dupont@example.com">
+                            <small class="form-text text-muted">
+                                L'adresse email sert d'identifiant de connexion
+                            </small>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="role" class="form-label">Rôle *</label>
+                            <select class="form-select" id="role" required>
+                                <option value="user">Utilisateur</option>
+                                <option value="admin">Administrateur</option>
+                            </select>
+                            <small class="form-text text-muted">
+                                Les administrateurs ont accès à toutes les fonctionnalités
+                            </small>
+                        </div>
+                        
+                        <hr class="my-4">
+                        
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="changePassword">
+                                <label class="form-check-label" for="changePassword">
+                                    <i class="fas fa-key"></i> Modifier le mot de passe de l'utilisateur
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div id="passwordSection" style="display: none;">
+                            <h5><i class="fas fa-lock"></i> Nouveau mot de passe</h5>
+                            <p class="text-muted small">Saisissez le nouveau mot de passe pour cet utilisateur</p>
+                            
+                            <div class="mb-3">
+                                <label for="password" class="form-label">Nouveau mot de passe *</label>
+                                <input type="password" class="form-control" id="password"
+                                       placeholder="Minimum 8 caractères">
+                                <small class="form-text text-muted">
+                                    Le mot de passe doit contenir au moins 8 caractères
+                                </small>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="confirmPassword" class="form-label">Confirmer le nouveau mot de passe *</label>
+                                <input type="password" class="form-control" id="confirmPassword"
+                                       placeholder="Ressaisir le mot de passe">
+                            </div>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-save"></i> Enregistrer les modifications
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const userId = '{{ user_id }}';
+    
+    // Gestion de l'affichage de la section mot de passe
+    document.getElementById('changePassword').addEventListener('change', function() {
+        const passwordSection = document.getElementById('passwordSection');
+        const passwordInput = document.getElementById('password');
+        const confirmPasswordInput = document.getElementById('confirmPassword');
+        
+        if (this.checked) {
+            passwordSection.style.display = 'block';
+            passwordInput.required = true;
+            confirmPasswordInput.required = true;
+        } else {
+            passwordSection.style.display = 'none';
+            passwordInput.required = false;
+            confirmPasswordInput.required = false;
+            passwordInput.value = '';
+            confirmPasswordInput.value = '';
+        }
+    });
+    
+    // Charger les données de l'utilisateur au chargement de la page
+    async function loadUserData() {
+        try {
+            const user = await API.get(`/api/users/${userId}`);
+            
+            // Remplir le formulaire
+            document.getElementById('name').value = user.name || '';
+            document.getElementById('email').value = user.email || '';
+            document.getElementById('role').value = user.role || 'user';
+            
+            // Afficher le formulaire et masquer le message de chargement
+            document.getElementById('loadingMessage').style.display = 'none';
+            document.getElementById('userForm').style.display = 'block';
+        } catch (error) {
+            Notification.error('Erreur lors du chargement des données de l\'utilisateur');
+            setTimeout(() => {
+                window.location.href = '/admin/users';
+            }, 2000);
+        }
+    }
+    
+    // Soumettre le formulaire
+    document.getElementById('userForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const changePassword = document.getElementById('changePassword').checked;
+        const password = document.getElementById('password').value;
+        const confirmPassword = document.getElementById('confirmPassword').value;
+        
+        // Vérifier les mots de passe uniquement si la case est cochée
+        if (changePassword) {
+            if (!password || !confirmPassword) {
+                Notification.error('Veuillez remplir les deux champs de mot de passe');
+                return;
+            }
+            
+            if (password !== confirmPassword) {
+                Notification.error('Les mots de passe ne correspondent pas');
+                return;
+            }
+            
+            if (password.length < 8) {
+                Notification.error('Le mot de passe doit contenir au moins 8 caractères');
+                return;
+            }
+        }
+        
+        const data = {
+            name: document.getElementById('name').value.trim(),
+            email: document.getElementById('email').value.trim(),
+            role: document.getElementById('role').value
+        };
+        
+        // Ajouter le mot de passe seulement si la case est cochée
+        if (changePassword) {
+            data.password = password;
+        }
+        
+        // Validation de base
+        if (!data.name || !data.email || !data.role) {
+            Notification.error('Veuillez remplir tous les champs obligatoires');
+            return;
+        }
+        
+        try {
+            const result = await API.put(`/api/users/${userId}`, data);
+            Notification.success('Utilisateur modifié avec succès');
+            setTimeout(() => {
+                window.location.href = '/admin/users';
+            }, 1000);
+        } catch (error) {
+            Notification.error(error.message || 'Erreur lors de la modification de l\'utilisateur');
+        }
+    });
+    
+    // Charger les données au chargement de la page
+    loadUserData();
+</script>
+{% endblock %}
