@@ -89,7 +89,7 @@
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <span><i class="fas fa-chart-line"></i> Rapports d'exécution</span>
-                    <button class="btn btn-sm btn-success" id="runCampainBtn">
+                    <button class="btn btn-sm btn-success" id="runCampainBtn" data-bs-toggle="modal" data-bs-target="#executeCampainModal">
                         <i class="fas fa-play"></i> Exécuter la campagne
                     </button>
                 </div>
@@ -104,10 +104,11 @@
                             <table class="table table-hover">
                                 <thead>
                                     <tr>
+                                        <th>Nom</th>
                                         <th>Date d'exécution</th>
+                                        <th>Environnement</th>
                                         <th>Statut</th>
-                                        <th>Tests réussis</th>
-                                        <th>Tests échoués</th>
+                                        <th>Progression</th>
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
@@ -126,6 +127,55 @@
         </div>
     </div>
 </div>
+
+<!-- Modale d'exécution de campagne -->
+<div class="modal fade" id="executeCampainModal" tabindex="-1" aria-labelledby="executeCampainModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="executeCampainModalLabel">
+                    <i class="fas fa-play-circle"></i> Exécuter la campagne
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="executeCampainForm">
+                    <div class="mb-3">
+                        <label for="rapportName" class="form-label">Nom du rapport <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="rapportName" required>
+                        <div class="form-text">Le nom sera généré automatiquement</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="filiere" class="form-label">Environnement <span class="text-danger">*</span></label>
+                        <select class="form-select" id="filiere" required>
+                            <option value="">Sélectionner un environnement...</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="stopOnFailure">
+                            <label class="form-check-label" for="stopOnFailure">
+                                Arrêter au premier échec
+                            </label>
+                            <div class="form-text">Si activé, l'exécution s'arrêtera dès qu'un test échoue</div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times"></i> Annuler
+                </button>
+                <button type="button" class="btn btn-success" id="launchCampainBtn">
+                    <i class="fas fa-play"></i> Lancer la campagne
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 {% endblock %}
 
 {% block extra_js %}
@@ -203,26 +253,60 @@ async function loadTests() {
 // Chargement des rapports
 async function loadRapports() {
     try {
-        const data = await API.get(`/api/campains/${campainId}/rapports`);
+        const data = await API.get(`/api/rapports?campain_id=${campainId}`);
         
         document.getElementById('rapportsLoading').style.display = 'none';
         
-        if (data.rapports && data.rapports.length > 0) {
+        if (data.data && data.data.length > 0) {
             document.getElementById('rapportsContainer').style.display = 'block';
             document.getElementById('noRapports').style.display = 'none';
             
             const tbody = document.getElementById('rapportsTableBody');
-            tbody.innerHTML = data.rapports.map(rapport => {
-                const statusBadge = rapport.status === 'success' ? 'bg-success' : 'bg-danger';
+            tbody.innerHTML = data.data.map(rapport => {
+                let statusBadge = '';
+                let statusIcon = '';
+                
+                switch(rapport.status) {
+                    case 'pending':
+                        statusBadge = 'bg-secondary';
+                        statusIcon = 'fa-clock';
+                        break;
+                    case 'running':
+                        statusBadge = 'bg-primary';
+                        statusIcon = 'fa-spinner fa-spin';
+                        break;
+                    case 'completed':
+                        statusBadge = 'bg-success';
+                        statusIcon = 'fa-check-circle';
+                        break;
+                    case 'failed':
+                        statusBadge = 'bg-danger';
+                        statusIcon = 'fa-times-circle';
+                        break;
+                }
+                
+                const progress = rapport.progress || 0;
+                const progressBarClass = rapport.status === 'failed' ? 'bg-danger' : 'bg-success';
+                
                 return `
                     <tr>
+                        <td><strong>${escapeHtml(rapport.details)}</strong></td>
                         <td>${new Date(rapport.dateCreated).toLocaleString('fr-FR')}</td>
-                        <td><span class="badge ${statusBadge}">${rapport.status}</span></td>
-                        <td><span class="badge bg-success">${rapport.passed || 0}</span></td>
-                        <td><span class="badge bg-danger">${rapport.failed || 0}</span></td>
+                        <td><span class="badge bg-info">${escapeHtml(rapport.filiere)}</span></td>
+                        <td><span class="badge ${statusBadge}"><i class="fas ${statusIcon}"></i> ${rapport.status}</span></td>
+                        <td>
+                            <div class="progress" style="width: 100px;">
+                                <div class="progress-bar ${progressBarClass}" role="progressbar" 
+                                     style="width: ${progress}%;" aria-valuenow="${progress}" 
+                                     aria-valuemin="0" aria-valuemax="100">${progress}%</div>
+                            </div>
+                        </td>
                         <td>
                             <button class="btn btn-sm btn-primary" onclick="viewRapport('${rapport._id}')">
                                 <i class="fas fa-eye"></i> Voir
+                            </button>
+                            <button class="btn btn-sm btn-danger ms-1" onclick="deleteRapport('${rapport._id}', '${escapeHtml(rapport.details)}')">
+                                <i class="fas fa-trash"></i> Supprimer
                             </button>
                         </td>
                     </tr>
@@ -237,6 +321,22 @@ async function loadRapports() {
         console.error('Erreur lors du chargement des rapports:', error);
         document.getElementById('rapportsLoading').style.display = 'none';
         document.getElementById('noRapports').style.display = 'block';
+    }
+}
+
+// Suppression d'un rapport
+async function deleteRapport(rapportId, rapportName) {
+    if (!confirm(`Êtes-vous sûr de vouloir supprimer le rapport "${rapportName}" ?`)) {
+        return;
+    }
+    
+    try {
+        await API.delete(`/api/rapports/${rapportId}`);
+        Notification.success('Rapport supprimé avec succès');
+        loadRapports();
+    } catch (error) {
+        console.error('Erreur lors de la suppression du rapport:', error);
+        Notification.error(error.message || 'Erreur lors de la suppression du rapport');
     }
 }
 
@@ -256,37 +356,85 @@ async function deleteTest(testId) {
     }
 }
 
-// Exécution de la campagne
-document.getElementById('runCampainBtn').addEventListener('click', async () => {
-    if (!confirm('Voulez-vous exécuter cette campagne ?')) {
+// Chargement de la modale d'exécution
+async function loadExecuteModal() {
+    try {
+        // Charger le nom généré
+        const nameData = await API.get('/api/rapports/generate-name');
+        document.getElementById('rapportName').value = nameData.name;
+        
+        // Charger les filières
+        const filieresData = await API.get('/api/rapports/filieres');
+        const filiereSelect = document.getElementById('filiere');
+        filiereSelect.innerHTML = '<option value="">Sélectionner un environnement...</option>';
+        
+        filieresData.filieres.forEach(filiere => {
+            const option = document.createElement('option');
+            option.value = filiere;
+            option.textContent = filiere;
+            filiereSelect.appendChild(option);
+        });
+        
+    } catch (error) {
+        console.error('Erreur lors du chargement de la modale:', error);
+        Notification.error('Erreur lors du chargement des données');
+    }
+}
+
+// Lancement de la campagne
+document.getElementById('launchCampainBtn').addEventListener('click', async () => {
+    const name = document.getElementById('rapportName').value.trim();
+    const filiere = document.getElementById('filiere').value;
+    const stopOnFailure = document.getElementById('stopOnFailure').checked;
+    
+    if (!name) {
+        Notification.error('Le nom du rapport est obligatoire');
+        return;
+    }
+    
+    if (!filiere) {
+        Notification.error('L\'environnement est obligatoire');
         return;
     }
     
     try {
-        const btn = document.getElementById('runCampainBtn');
+        const btn = document.getElementById('launchCampainBtn');
         btn.disabled = true;
-        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Exécution en cours...';
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Lancement...';
         
-        await API.post(`/api/campains/${campainId}/run`, {});
-        Notification.success('Campagne exécutée avec succès');
+        const result = await API.post('/api/rapports/execute', {
+            campain_id: campainId,
+            name: name,
+            filiere: filiere,
+            stop_on_failure: stopOnFailure
+        });
         
-        // Recharger les rapports après un délai
+        Notification.success('Campagne lancée avec succès');
+        
+        // Fermer la modale
+        const modal = bootstrap.Modal.getInstance(document.getElementById('executeCampainModal'));
+        modal.hide();
+        
+        // Recharger les rapports
         setTimeout(() => {
             loadRapports();
         }, 1000);
         
         btn.disabled = false;
-        btn.innerHTML = '<i class="fas fa-play"></i> Exécuter la campagne';
+        btn.innerHTML = '<i class="fas fa-play"></i> Lancer la campagne';
         
     } catch (error) {
-        console.error('Erreur lors de l\'exécution de la campagne:', error);
-        Notification.error(error.message || 'Erreur lors de l\'exécution de la campagne');
+        console.error('Erreur lors du lancement de la campagne:', error);
+        Notification.error(error.message || 'Erreur lors du lancement de la campagne');
         
-        const btn = document.getElementById('runCampainBtn');
+        const btn = document.getElementById('launchCampainBtn');
         btn.disabled = false;
-        btn.innerHTML = '<i class="fas fa-play"></i> Exécuter la campagne';
+        btn.innerHTML = '<i class="fas fa-play"></i> Lancer la campagne';
     }
 });
+
+// Charger la modale quand elle s'ouvre
+document.getElementById('executeCampainModal').addEventListener('show.bs.modal', loadExecuteModal);
 
 // Visualisation d'un rapport
 function viewRapport(rapportId) {

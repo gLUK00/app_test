@@ -9,7 +9,7 @@ class Rapport:
     collection_name = 'rapports'
     
     @staticmethod
-    def create(campain_id, result, details, filiere, tests):
+    def create(campain_id, result, details, filiere, tests, status='pending', progress=0, stop_on_failure=False):
         """Crée un nouveau rapport."""
         collection = get_collection(Rapport.collection_name)
         
@@ -19,7 +19,10 @@ class Rapport:
             'result': result,
             'details': details,
             'filiere': filiere,
-            'tests': tests
+            'tests': tests,
+            'status': status,  # pending, running, completed, failed
+            'progress': progress,  # pourcentage de progression (0-100)
+            'stopOnFailure': stop_on_failure
         }
         
         result = collection.insert_one(rapport_data)
@@ -99,6 +102,15 @@ class Rapport:
         if 'tests' in data:
             update_data['tests'] = data['tests']
         
+        if 'status' in data:
+            update_data['status'] = data['status']
+        
+        if 'progress' in data:
+            update_data['progress'] = data['progress']
+        
+        if 'stopOnFailure' in data:
+            update_data['stopOnFailure'] = data['stopOnFailure']
+        
         if update_data:
             collection.update_one({'_id': ObjectId(rapport_id)}, {'$set': update_data})
         
@@ -110,3 +122,17 @@ class Rapport:
         collection = get_collection(Rapport.collection_name)
         result = collection.delete_one({'_id': ObjectId(rapport_id)})
         return result.deleted_count > 0
+    
+    @staticmethod
+    def get_by_name(name):
+        """Trouve un rapport par son nom."""
+        collection = get_collection(Rapport.collection_name)
+        rapport = collection.find_one({'details': name})
+        
+        if rapport:
+            rapport['_id'] = str(rapport['_id'])
+            rapport['campainId'] = str(rapport['campainId'])
+            if isinstance(rapport.get('dateCreated'), datetime):
+                rapport['dateCreated'] = rapport['dateCreated'].isoformat()
+        
+        return rapport

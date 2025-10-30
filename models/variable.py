@@ -138,3 +138,33 @@ class Variable:
             variable['_id'] = str(variable['_id'])
         
         return variable
+    
+    @staticmethod
+    def get_all_filieres():
+        """Récupère la liste de toutes les filières distinctes (hors variables racines et filières vides)."""
+        collection = get_collection(Variable.collection_name)
+        
+        # Récupérer les filières distinctes en excluant :
+        # - les variables racines (isRoot = true)
+        # - les filières vides (null, "", etc.)
+        pipeline = [
+            {
+                '$match': {
+                    'isRoot': {'$ne': True},
+                    'filiere': {'$exists': True, '$ne': None, '$ne': ''}
+                }
+            },
+            {
+                '$group': {
+                    '_id': '$filiere'
+                }
+            },
+            {
+                '$sort': {'_id': 1}
+            }
+        ]
+        
+        result = list(collection.aggregate(pipeline))
+        filieres = [item['_id'] for item in result if item['_id']]
+        
+        return filieres

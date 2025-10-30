@@ -254,6 +254,13 @@ complete le swagger avec toutes les routes et modèles de l'API
 
 supprimer une variable racine, supprime egalement toutes les variables associées à cette racine
 
+construire une image docker officielle de l'application et la publier sur Docker Hub
+
+
+-----------------------
+
+
+
 ✅ TERMINÉ - revoir le systeme des plugins d'actions pour permettre l'ajout dynamique de nouvelles actions sans modification du code principal de l'application
 ✅ TERMINÉ - il y aura d'autre type de plugins à l'avenir (ex: plugins de rapports, plugins d'authentification, etc.)
 
@@ -345,9 +352,54 @@ Implémentation réalisée :
 - Page de test : static/test-multitype-autocomplete.html
 
 ----------------------------------------------
+✅ TERMINÉ - ajouter la collection (en rouge), contenant "TEST_ID" et "CAMPAIN_ID" qui seront remplacés pas {{test.test_id}} ou {{test.campain_id}}
 
+----------------------------------------------
+
+----------------------------------------------
+✅ TERMINÉ - lors de la demande d'execution d'une campagne :
+- afficher un formulaire,
+    - avec le nom de la campagne, par default contiendra le mois et l'année en cours ex : Mars 2023, si le nom existe déjà, ajouter un suffixe numérique pour le rendre unique ex : Mars 2023 (1),
+    - avec le choix de l'environnement (liste des filieres existantes dans les variables)
+    - avec les choix de la stratégie d'execution pour determiner si les tests doivents etre arretés au premier échec ou continuer jusqu'au bout (case à cocher)
+    - avec les boutons "Lancer la campagne" et "Annuler"
+    - le nom de la campagne est obligatoire et doit etre unique
+le lancement de la campagne executera un nouveau processus en arriere plan, les données d'execution de la campagne seront raffraichies vie un websocket d'écoute
+utilise Flask-SocketIO pour la gestion des websockets
+affiche dans la liste des rapports, le statut d'execution de la campagne (en cours, terminé, échoué) avec un % de progression
+lors du click sur une campagne en cours, affiche une page de détails avec la liste des tests et leur statut d'execution (en attente, en cours, réussi, échoué) avec les logs d'execution en temps réel via websocket
+
+Implémentation réalisée :
+- Installation et configuration de Flask-SocketIO avec eventlet
+- Extension du modèle Rapport avec status, progress, stopOnFailure
+- Module CampainExecutor pour l'exécution en arrière-plan
+- Modale de lancement avec nom auto-généré et validation d'unicité
+- API REST : /api/rapports/execute, /api/rapports/generate-name, /api/rapports/filieres
+- Événements WebSocket : campain_started, test_started, test_completed, campain_progress, campain_completed, campain_error
+- Page campain_details.html mise à jour avec liste des rapports et statuts
+- Nouvelle page rapport_details.html avec suivi en temps réel
+- Résolution complète des variables (TestGyver, test, collection)
+- Tests unitaires : _build/test_campain_execution.py
+- Documentation : docs/CAMPAIN_EXECUTION_README.md, docs/IMPLEMENTATION_CAMPAIN_EXECUTION.md
+
+----------------------------------------------
+✅ TERMINÉ - sur le formulaire de lancement de campagne, la liste des environnements ne doit contenir que les filières distinctes des variables existantes (pas de variables racines n'y vides)
+
+Implémentation réalisée :
+- Modification de la méthode `get_all_filieres()` dans le modèle Variable
+- Utilisation d'un pipeline d'agrégation MongoDB pour filtrer :
+  - Exclusion des variables racines (isRoot = true)
+  - Exclusion des filières vides, null ou inexistantes
+  - Tri alphabétique des filières
+- La route `/api/rapports/filieres` retourne maintenant uniquement les filières valides
 
 ----------------------------------------------
 
+créer moi une image de macgyver en mode pixel art en png avec un fond transparent
+créer un logo sur la page d'acceuil avec le slogant "Really, are you serious ?"
+illustrant l'esprit ingénieux et débrouillard de MacGyver, tout en ajoutant une touche d'humour avec le slogan.
+en mettant en avant le pixel art et le trombone
 
 ----------------------------------------------
+
+recherche si il y a des cdn utilisés dans les fichiers templates/*.html et les remplacer par des fichiers locaux dans static/ (css, js, images, etc.)

@@ -3,6 +3,7 @@
 """Application Flask principale pour TestGyver."""
 from flask import Flask, jsonify
 from flask_swagger_ui import get_swaggerui_blueprint
+from flask_socketio import SocketIO
 from utils.db import load_config
 from routes import (
     auth_bp,
@@ -16,14 +17,25 @@ from routes import (
     plugins_routes
 )
 
+# Variable globale pour l'instance SocketIO
+socketio = None
+
 def create_app():
     """Crée et configure l'application Flask."""
+    global socketio
+    
     app = Flask(__name__)
     
     # Charger la configuration
     config = load_config()
     app.config['SECRET_KEY'] = config['jwt_secret']
     app.config['JSON_AS_ASCII'] = False
+    
+    # Initialiser SocketIO
+    socketio = SocketIO(app, cors_allowed_origins="*", async_mode='eventlet')
+    
+    # Stocker socketio dans les extensions pour un accès facile
+    app.extensions['socketio'] = socketio
     
     # Enregistrer les blueprints pour les routes web
     app.register_blueprint(web_bp)
@@ -83,12 +95,16 @@ def create_app():
     
     return app
 
+# Créer l'application au niveau du module pour Flask CLI
+app = create_app()
+
 # Point d'entrée de l'application
 if __name__ == '__main__':
-    app = create_app()
     config = load_config()
     
-    app.run(
+    # Utiliser socketio.run() au lieu de app.run()
+    socketio.run(
+        app,
         host=config['app']['host'],
         port=config['app']['port'],
         debug=config['app']['debug']

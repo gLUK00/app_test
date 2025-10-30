@@ -2,7 +2,7 @@
 import requests
 from requests.auth import HTTPBasicAuth
 from plugins.actions.action_base import ActionBase
-
+from webdav4.client import Client
 
 class WebdavAction(ActionBase):
     """Action pour effectuer des opérations WebDAV sur un serveur distant."""
@@ -33,45 +33,45 @@ class WebdavAction(ActionBase):
         """Retourne le masque de saisie pour les opérations WebDAV."""
         return [
             {
-                "name": "method",
-                "type": "select",
-                "label": "Méthode WebDAV",
-                "options": ["GET", "PUT", "DELETE", "MKCOL"],
-                "required": True
-            },
-            {
                 "name": "url",
                 "type": "string",
-                "label": "URL",
-                "placeholder": "https://webdav.example.com/path/to/resource",
+                "label": "URL WebDAV",
+                "placeholder": "http(s)://serveur/webdav/chemin",
                 "required": True
             },
             {
                 "name": "username",
                 "type": "string",
-                "label": "Nom d'utilisateur",
-                "placeholder": "user",
-                "required": True
+                "label": "Utilisateur",
+                "placeholder": "Nom d'utilisateur WebDAV",
+                "required": False
             },
             {
                 "name": "password",
                 "type": "string",
                 "label": "Mot de passe",
-                "placeholder": "••••••••",
-                "required": True
-            },
-            {
-                "name": "headers",
-                "type": "textarea",
-                "label": "En-têtes HTTP (JSON)",
-                "placeholder": '{"Content-Type": "text/xml"}',
+                "placeholder": "Mot de passe WebDAV",
                 "required": False
             },
             {
-                "name": "body",
-                "type": "textarea",
-                "label": "Corps de la requête (pour PUT)",
-                "placeholder": "Contenu du fichier ou données XML",
+                "name": "action",
+                "type": "select",
+                "label": "Action WebDAV",
+                "options": ["CHECK", "INFO", "LIST", "MKDIR", "CLEAN", "COPY", "MOVE", "DOWNLOAD", "UPLOAD"],
+                "required": True
+            },
+            {
+                "name": "srcFile",
+                "type": "string",
+                "label": "Fichier source/chemin",
+                "placeholder": "pour check, info, list, clean, copy, move, download, upload",
+                "required": False
+            },
+            {
+                "name": "targFile",
+                "type": "string",
+                "label": "Fichier cible/chemin",
+                "placeholder": "pour copy, move, download, upload",
                 "required": False
             }
         ]
@@ -80,19 +80,8 @@ class WebdavAction(ActionBase):
         """Retourne la liste des variables de sortie pour les opérations WebDAV."""
         return [
             {
-                "name": "webdav_status_code",
-                "description": "Code de statut HTTP de la réponse WebDAV",
-                "type": "number"
-            },
-            {
-                "name": "webdav_response_body",
-                "description": "Corps de la réponse WebDAV",
-                "type": "string"
-            },
-            {
-                "name": "webdav_operation_success",
-                "description": "Indique si l'opération a réussi (true/false)",
-                "type": "string"
+                "name": "webdav_response",
+                "description": "Retour de la réponse de l'action du WebDAV"
             }
         ]
     
@@ -104,74 +93,64 @@ class WebdavAction(ActionBase):
             action_context: Dictionnaire contenant method, url, username, password, headers, body
         """
         try:
-            method = action_context.get('method', 'GET').upper()
             url = action_context.get('url')
-            username = action_context.get('username')
-            password = action_context.get('password')
-            headers = action_context.get('headers', {})
-            body = action_context.get('body')
+            username = action_context.get('username', '')
+            password = action_context.get('password', '')
+            action = action_context.get('action').upper()
+            src_file = action_context.get('srcFile', '')
+            targ_file = action_context.get('targFile', '')
             
-            self.add_trace(f"Préparation de l'opération WebDAV {method} vers {url}")
+            self.add_trace(f"Préparation de l'opération WebDAV {action} vers {url}")
             
-            # Parser les headers si c'est une string JSON
-            if isinstance(headers, str):
-                import json
-                headers = json.loads(headers) if headers else {}
+            auth = ()
+            if username and password:
+                self.add_trace(f"Authentification avec l'utilisateur: {username}")
+                auth = (username, password)
+            client = Client(url, auth=auth)
             
-            # Authentification de base
-            auth = HTTPBasicAuth(username, password)
-            
-            self.add_trace(f"Authentification avec l'utilisateur: {username}")
-            
-            # Effectuer la requête WebDAV
-            if method == 'GET':
-                response = requests.get(url, auth=auth, headers=headers, timeout=30)
-            elif method == 'PUT':
-                response = requests.put(url, auth=auth, headers=headers, data=body, timeout=30)
-            elif method == 'DELETE':
-                response = requests.delete(url, auth=auth, headers=headers, timeout=30)
-            elif method == 'MKCOL':
-                # MKCOL est utilisé pour créer une collection (répertoire)
-                response = requests.request('MKCOL', url, auth=auth, headers=headers, timeout=30)
-            else:
-                self.set_code(1)
-                self.add_trace(f"Méthode WebDAV non supportée: {method}")
-                return self.get_result()
-            
-            self.add_trace(f"Statut de la réponse: {response.status_code}")
-            
-            if response.status_code >= 200 and response.status_code < 300:
-                self.set_code(0)
-                self.add_trace("Opération WebDAV réussie")
-                
-                result_data = {
-                    "status_code": response.status_code,
-                    "headers": dict(response.headers),
-                    "body": response.text[:1000] if method == 'GET' else None
-                }
-                
-                return self.get_result(result_data)
-            else:
-                self.set_code(1)
-                self.add_trace(f"Erreur WebDAV: {response.status_code}")
-                return self.get_result({"status_code": response.status_code, "error": response.text[:500]})
-        
-        except requests.exceptions.Timeout:
-            self.set_code(1)
-            self.add_trace("Timeout lors de la connexion au serveur WebDAV")
-            return self.get_result()
-        
-        except requests.exceptions.ConnectionError:
-            self.set_code(1)
-            self.add_trace("Erreur de connexion au serveur WebDAV")
-            return self.get_result()
-        
-        except requests.exceptions.RequestException as e:
-            self.set_code(1)
-            self.add_trace(f"Erreur lors de la requête WebDAV: {str(e)}")
-            return self.get_result()
+            if action == "CHECK":
+                exists = client.exists(src_file)
+                status_text = 'existe' if exists else "n'existe pas"
+                self.add_trace(f"Vérification de l'existence de {src_file}: {status_text}")
+                return self.get_result( True, { "webdav_response": exists })
+            if action == "INFO":
+                info = client.info(src_file)
+                self.add_trace(f"Informations sur {src_file}: {info}")
+                return self.get_result( True, { "webdav_response": info })
+            if action == "LIST":
+                listing = client.ls(src_file)
+                self.add_trace(f"Liste des fichiers dans {src_file}: {listing}")
+                return self.get_result( True, { "webdav_response": listing })
+            if action == "MKDIR":
+                client.mkdir(src_file)
+                self.add_trace(f"Répertoire créé: {src_file}")
+                return self.get_result( True, None )
+            if action == "CLEAN":
+                client.clean(src_file)
+                self.add_trace(f"Contenu nettoyé dans: {src_file}")
+                return self.get_result( True, None )
+            if action == "COPY":
+                client.copy(src_file, targ_file)
+                self.add_trace(f"Fichier copié de {src_file} à {targ_file}")
+                return self.get_result( True, None )
+            if action == "MOVE":
+                client.move(src_file, targ_file)
+                self.add_trace(f"Fichier déplacé de {src_file} à {targ_file}")
+                return self.get_result( True, None )
+            if action == "DOWNLOAD":
+                local_path = targ_file
+                client.download_sync(remote_path=src_file, local_path=local_path)
+                self.add_trace(f"Fichier téléchargé de {src_file} à {local_path}")
+                return self.get_result( True, None )
+            if action == "UPLOAD":
+                local_path = src_file
+                client.upload_sync(remote_path=targ_file, local_path=local_path)
+                self.add_trace(f"Fichier téléchargé de {local_path} à {targ_file}")
+                return self.get_result( True, None )
+
+            raise ValueError(f"Action WebDAV inconnue: {action}")
         
         except Exception as e:
             self.set_code(1)
             self.add_trace(f"Erreur inattendue: {str(e)}")
-            return self.get_result()
+            return self.get_result( False, None )

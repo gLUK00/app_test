@@ -1,0 +1,425 @@
+{% extends "base.html" %}
+
+{% block title %}Détails du rapport - {{ app_name }}{% endblock %}
+
+{% block extra_css %}
+<style>
+.test-log {
+    background-color: #1e1e1e;
+    color: #d4d4d4;
+    padding: 15px;
+    border-radius: 5px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9rem;
+    max-height: 400px;
+    overflow-y: auto;
+    white-space: pre-wrap;
+}
+
+.test-status-pending {
+    color: #6c757d;
+}
+
+.test-status-running {
+    color: #0d6efd;
+}
+
+.test-status-passed {
+    color: #198754;
+}
+
+.test-status-failed {
+    color: #dc3545;
+}
+
+.test-status-skipped {
+    color: #ffc107;
+}
+
+.live-indicator {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    background-color: #dc3545;
+    border-radius: 50%;
+    margin-right: 5px;
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.3;
+    }
+}
+
+.accordion-button:not(.collapsed) {
+    background-color: #e7f1ff;
+    color: #0c63e4;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1><i class="fas fa-file-alt"></i> Détails du rapport</h1>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{{ url_for('web.dashboard') }}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Retour
+            </a>
+        </div>
+    </div>
+    
+    <!-- Informations du rapport -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-info-circle"></i> Informations générales
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <p><strong>Nom :</strong> <span id="rapportName">-</span></p>
+                            <p><strong>Environnement :</strong> <span class="badge bg-info" id="rapportFiliere">-</span></p>
+                        </div>
+                        <div class="col-md-4">
+                            <p><strong>Date de création :</strong> <span id="rapportDate">-</span></p>
+                            <p><strong>Statut :</strong> <span id="rapportStatus">-</span></p>
+                        </div>
+                        <div class="col-md-4">
+                            <p><strong>Progression :</strong></p>
+                            <div class="progress" style="height: 25px;">
+                                <div class="progress-bar" id="rapportProgress" role="progressbar" 
+                                     style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                                    0%
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Liste des tests -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <span>
+                        <i class="fas fa-vial"></i> Tests exécutés
+                    </span>
+                    <span id="liveIndicator" style="display: none;">
+                        <span class="live-indicator"></span>
+                        <small class="text-muted">En cours...</small>
+                    </span>
+                </div>
+                <div class="card-body">
+                    <div id="testsLoading" class="text-center">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Chargement...</span>
+                        </div>
+                    </div>
+                    
+                    <div id="testsAccordion" class="accordion" style="display: none;">
+                        <!-- Les tests seront chargés ici -->
+                    </div>
+                    
+                    <div id="noTests" style="display: none;" class="text-center text-muted py-4">
+                        <i class="fas fa-inbox fa-3x mb-3"></i>
+                        <p>Aucun test dans ce rapport</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+<script>
+const rapportId = '{{ rapport_id }}';
+let socket = null;
+let isLive = false;
+
+// Connexion WebSocket
+function initWebSocket() {
+    socket = io({
+        transports: ['websocket', 'polling']
+    });
+    
+    socket.on('connect', () => {
+        console.log('WebSocket connecté');
+        socket.emit('join_rapport', { rapport_id: rapportId });
+    });
+    
+    socket.on('campain_started', (data) => {
+        if (data.rapport_id === rapportId) {
+            console.log('Campagne démarrée');
+            isLive = true;
+            document.getElementById('liveIndicator').style.display = 'block';
+        }
+    });
+    
+    socket.on('test_started', (data) => {
+        if (data.rapport_id === rapportId) {
+            console.log('Test démarré:', data.test_id);
+            updateTestStatus(data.test_id, 'running', '');
+        }
+    });
+    
+    socket.on('test_completed', (data) => {
+        if (data.rapport_id === rapportId) {
+            console.log('Test terminé:', data.test_id, data.status);
+            updateTestStatus(data.test_id, data.status, data.logs);
+        }
+    });
+    
+    socket.on('campain_progress', (data) => {
+        if (data.rapport_id === rapportId) {
+            console.log('Progression:', data.progress);
+            updateProgress(data.progress);
+        }
+    });
+    
+    socket.on('campain_completed', (data) => {
+        if (data.rapport_id === rapportId) {
+            console.log('Campagne terminée:', data.status);
+            isLive = false;
+            document.getElementById('liveIndicator').style.display = 'none';
+            updateRapportStatus(data.status);
+            updateProgress(100);
+            Notification.success('Exécution de la campagne terminée');
+        }
+    });
+    
+    socket.on('campain_error', (data) => {
+        if (data.rapport_id === rapportId) {
+            console.error('Erreur campagne:', data.error);
+            isLive = false;
+            document.getElementById('liveIndicator').style.display = 'none';
+            Notification.error('Erreur lors de l\'exécution de la campagne');
+        }
+    });
+    
+    socket.on('disconnect', () => {
+        console.log('WebSocket déconnecté');
+    });
+}
+
+// Chargement des détails du rapport
+async function loadRapportDetails() {
+    try {
+        const data = await API.get(`/api/rapports/${rapportId}`);
+        
+        document.getElementById('rapportName').textContent = data.details || '-';
+        document.getElementById('rapportFiliere').textContent = data.filiere || '-';
+        document.getElementById('rapportDate').textContent = new Date(data.dateCreated).toLocaleString('fr-FR');
+        
+        updateRapportStatus(data.status);
+        updateProgress(data.progress || 0);
+        
+        // Si le rapport est en cours d'exécution, afficher l'indicateur live
+        if (data.status === 'running' || data.status === 'pending') {
+            isLive = true;
+            document.getElementById('liveIndicator').style.display = 'block';
+        }
+        
+        // Charger les tests
+        loadTests(data.tests || []);
+        
+    } catch (error) {
+        console.error('Erreur lors du chargement du rapport:', error);
+        Notification.error('Erreur lors du chargement du rapport');
+    }
+}
+
+// Chargement des tests
+function loadTests(tests) {
+    document.getElementById('testsLoading').style.display = 'none';
+    
+    if (tests.length === 0) {
+        document.getElementById('noTests').style.display = 'block';
+        return;
+    }
+    
+    document.getElementById('testsAccordion').style.display = 'block';
+    
+    const accordion = document.getElementById('testsAccordion');
+    accordion.innerHTML = tests.map((test, index) => {
+        const status = test.status || 'pending';
+        const logs = test.logs || 'Aucun log disponible';
+        const testId = test.testId;
+        
+        let statusIcon = '';
+        let statusClass = '';
+        let statusText = '';
+        
+        switch(status) {
+            case 'pending':
+                statusIcon = 'fa-clock';
+                statusClass = 'test-status-pending';
+                statusText = 'En attente';
+                break;
+            case 'running':
+                statusIcon = 'fa-spinner fa-spin';
+                statusClass = 'test-status-running';
+                statusText = 'En cours';
+                break;
+            case 'passed':
+                statusIcon = 'fa-check-circle';
+                statusClass = 'test-status-passed';
+                statusText = 'Réussi';
+                break;
+            case 'failed':
+                statusIcon = 'fa-times-circle';
+                statusClass = 'test-status-failed';
+                statusText = 'Échoué';
+                break;
+            case 'skipped':
+                statusIcon = 'fa-forward';
+                statusClass = 'test-status-skipped';
+                statusText = 'Ignoré';
+                break;
+        }
+        
+        return `
+            <div class="accordion-item" id="test-${testId}">
+                <h2 class="accordion-header">
+                    <button class="accordion-button ${index > 0 ? 'collapsed' : ''}" type="button" 
+                            data-bs-toggle="collapse" data-bs-target="#collapse-${testId}">
+                        <i class="fas ${statusIcon} ${statusClass} me-2"></i>
+                        Test ${index + 1} - <span class="ms-2 ${statusClass}">${statusText}</span>
+                    </button>
+                </h2>
+                <div id="collapse-${testId}" class="accordion-collapse collapse ${index === 0 ? 'show' : ''}" 
+                     data-bs-parent="#testsAccordion">
+                    <div class="accordion-body">
+                        <h6>Logs d'exécution:</h6>
+                        <div class="test-log" id="logs-${testId}">${escapeHtml(logs)}</div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+// Mise à jour du statut d'un test
+function updateTestStatus(testId, status, logs) {
+    const testElement = document.getElementById(`test-${testId}`);
+    if (!testElement) return;
+    
+    let statusIcon = '';
+    let statusClass = '';
+    let statusText = '';
+    
+    switch(status) {
+        case 'pending':
+            statusIcon = 'fa-clock';
+            statusClass = 'test-status-pending';
+            statusText = 'En attente';
+            break;
+        case 'running':
+            statusIcon = 'fa-spinner fa-spin';
+            statusClass = 'test-status-running';
+            statusText = 'En cours';
+            break;
+        case 'passed':
+            statusIcon = 'fa-check-circle';
+            statusClass = 'test-status-passed';
+            statusText = 'Réussi';
+            break;
+        case 'failed':
+            statusIcon = 'fa-times-circle';
+            statusClass = 'test-status-failed';
+            statusText = 'Échoué';
+            break;
+        case 'skipped':
+            statusIcon = 'fa-forward';
+            statusClass = 'test-status-skipped';
+            statusText = 'Ignoré';
+            break;
+    }
+    
+    const button = testElement.querySelector('.accordion-button');
+    button.innerHTML = `
+        <i class="fas ${statusIcon} ${statusClass} me-2"></i>
+        ${button.textContent.split('-')[0]} - <span class="ms-2 ${statusClass}">${statusText}</span>
+    `;
+    
+    if (logs) {
+        const logsElement = document.getElementById(`logs-${testId}`);
+        if (logsElement) {
+            logsElement.textContent = logs;
+            logsElement.scrollTop = logsElement.scrollHeight;
+        }
+    }
+}
+
+// Mise à jour de la progression
+function updateProgress(progress) {
+    const progressBar = document.getElementById('rapportProgress');
+    progressBar.style.width = `${progress}%`;
+    progressBar.setAttribute('aria-valuenow', progress);
+    progressBar.textContent = `${progress}%`;
+    
+    if (progress === 100) {
+        progressBar.classList.remove('bg-primary');
+        progressBar.classList.add('bg-success');
+    }
+}
+
+// Mise à jour du statut du rapport
+function updateRapportStatus(status) {
+    let statusBadge = '';
+    let statusText = '';
+    
+    switch(status) {
+        case 'pending':
+            statusBadge = 'bg-secondary';
+            statusText = 'En attente';
+            break;
+        case 'running':
+            statusBadge = 'bg-primary';
+            statusText = 'En cours';
+            break;
+        case 'completed':
+            statusBadge = 'bg-success';
+            statusText = 'Terminé';
+            break;
+        case 'failed':
+            statusBadge = 'bg-danger';
+            statusText = 'Échoué';
+            break;
+    }
+    
+    document.getElementById('rapportStatus').innerHTML = `<span class="badge ${statusBadge}">${statusText}</span>`;
+}
+
+// Fonction utilitaire pour échapper le HTML
+function escapeHtml(text) {
+    if (!text) return '';
+    const map = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#039;'
+    };
+    return String(text).replace(/[&<>"']/g, m => map[m]);
+}
+
+// Initialisation
+document.addEventListener('DOMContentLoaded', () => {
+    initWebSocket();
+    loadRapportDetails();
+});
+</script>
+{% endblock %}

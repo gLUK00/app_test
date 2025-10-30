@@ -105,6 +105,10 @@ class ActionBase(PluginBase):
                 "result": {}  # Données optionnelles de résultat
             }
         """
+        
+        print( "Exécution de l'action de base - à surcharger dans les sous-classes" )
+        
+        
         pass
     
     def add_trace(self, message):

@@ -107,3 +107,10 @@ def admin_variables_edit(variable_id):
     """Édition d'une variable existante."""
     user = get_current_user()
     return render_template('admin/variable_edit.html', user=user, variable_id=variable_id)
+
+@web_bp.route('/rapports/<rapport_id>')
+@token_required
+def rapport_details(rapport_id):
+    """Page de détails d'un rapport d'exécution."""
+    user = get_current_user()
+    return render_template('rapport_details.html', user=user, rapport_id=rapport_id)
