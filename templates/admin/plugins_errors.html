@@ -1,0 +1,189 @@
+{% extends "base.html" %}
+
+{% block title %}Erreurs de Plugins - TestGyver{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1><i class="fas fa-exclamation-triangle text-warning"></i> Erreurs de Plugins</h1>
+                    <p class="text-muted">Diagnostic et gestion des erreurs de chargement des plugins</p>
+                </div>
+                <div>
+                    <a href="/dashboard" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Retour au tableau de bord
+                    </a>
+                    <button class="btn btn-primary" onclick="loadErrors()">
+                        <i class="fas fa-sync-alt"></i> Rafraîchir
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistiques -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="fas fa-check-circle"></i> Plugins chargés</h5>
+                    <h2 id="loadedCount">-</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-danger text-white">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="fas fa-exclamation-circle"></i> Erreurs</h5>
+                    <h2 id="errorCount">-</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="fas fa-plug"></i> Types de plugins</h5>
+                    <h2 id="typeCount">-</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filtres -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label for="filterType" class="form-label">Type de plugin</label>
+                            <select id="filterType" class="form-select" onchange="loadErrors()">
+                                <option value="">Tous les types</option>
+                                <option value="actions">Actions</option>
+                                <option value="reports">Rapports</option>
+                                <option value="auth">Authentification</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Liste des erreurs -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-bug"></i> Détails des erreurs</h5>
+                </div>
+                <div class="card-body">
+                    <div id="loading" class="text-center">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Chargement...</span>
+                        </div>
+                    </div>
+                    <div id="errorsList" style="display: none;"></div>
+                    <div id="noErrors" style="display: none;" class="text-center text-muted py-4">
+                        <i class="fas fa-check-circle fa-3x mb-3 text-success"></i>
+                        <p>Aucune erreur de plugin détectée</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Chargement des erreurs
+async function loadErrors() {
+    const filterType = document.getElementById('filterType').value;
+    
+    try {
+        document.getElementById('loading').style.display = 'block';
+        document.getElementById('errorsList').style.display = 'none';
+        document.getElementById('noErrors').style.display = 'none';
+        
+        // Charger les statistiques
+        const statsData = await API.get('/api/plugins/stats');
+        const loadedCount = statsData.total || 0;
+        const typeCount = Object.keys(statsData.by_type || {}).length;
+        
+        document.getElementById('loadedCount').textContent = loadedCount;
+        document.getElementById('typeCount').textContent = typeCount;
+        
+        // Charger les erreurs
+        let url = '/api/plugins/errors';
+        if (filterType) {
+            url += `?plugin_type=${filterType}`;
+        }
+        
+        const data = await API.get(url);
+        
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('errorCount').textContent = data.count || 0;
+        
+        if (data.errors && data.errors.length > 0) {
+            document.getElementById('errorsList').style.display = 'block';
+            displayErrors(data.errors);
+        } else {
+            document.getElementById('noErrors').style.display = 'block';
+        }
+        
+    } catch (error) {
+        console.error('Erreur lors du chargement des erreurs:', error);
+        document.getElementById('loading').style.display = 'none';
+        Notification.error('Erreur lors du chargement des données');
+    }
+}
+
+function displayErrors(errors) {
+    const container = document.getElementById('errorsList');
+    
+    container.innerHTML = errors.map((error, index) => {
+        const timestamp = new Date(error.timestamp).toLocaleString('fr-FR');
+        const traceId = `trace-${index}`;
+        
+        return `
+            <div class="alert alert-danger mb-3">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div class="flex-grow-1">
+                        <h5 class="alert-heading">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            ${escapeHtml(error.plugin_name)}
+                            <span class="badge bg-secondary ms-2">${escapeHtml(error.plugin_type)}</span>
+                        </h5>
+                        <p class="mb-2"><strong>Erreur:</strong> ${escapeHtml(error.error)}</p>
+                        <p class="mb-2 text-muted"><small><i class="fas fa-clock"></i> ${timestamp}</small></p>
+                        
+                        <button class="btn btn-sm btn-outline-secondary" type="button" 
+                                data-bs-toggle="collapse" data-bs-target="#${traceId}">
+                            <i class="fas fa-code"></i> Voir la trace complète
+                        </button>
+                        
+                        <div class="collapse mt-3" id="${traceId}">
+                            <div class="card card-body bg-dark text-light">
+                                <pre class="mb-0"><code>${escapeHtml(error.traceback)}</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+// Charger au démarrage
+document.addEventListener('DOMContentLoaded', () => {
+    loadErrors();
+});
+</script>
+{% endblock %}

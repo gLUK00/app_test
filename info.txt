@@ -402,4 +402,171 @@ en mettant en avant le pixel art et le trombone
 
 ----------------------------------------------
 
-recherche si il y a des cdn utilisés dans les fichiers templates/*.html et les remplacer par des fichiers locaux dans static/ (css, js, images, etc.)
+✅ TERMINÉ - recherche si il y a des cdn utilisés dans les fichiers templates/*.html et les remplacer par des fichiers locaux dans static/ (css, js, images, etc.)
+
+Implémentation réalisée :
+- Téléchargement de Bootstrap 5.3.0 (CSS + JS)
+- Téléchargement de Font Awesome 6.4.0 (CSS + polices webfonts)
+- Téléchargement de Socket.IO 4.5.4 (JS)
+- Organisation dans static/vendor/ avec structure claire
+- Mise à jour de tous les templates (base.html, login.html, rapport_details.html)
+- Mise à jour des fichiers de test (test-autocomplete.html, test-multitype-autocomplete.html)
+- Correction des chemins des polices Font Awesome
+- Documentation complète : docs/CDN_TO_LOCAL_MIGRATION.md
+- Taille totale : ~729 KB
+- 7 requêtes HTTP externes éliminées
+- Amélioration de la performance, sécurité et confidentialité
+
+----------------------------------------------
+
+✅ TERMINÉ - le bouton retour de la page du détail d'un rapport conduit à la liste des campagnes, il doit conduire à la liste des rapports
+
+Implémentation réalisée :
+- Modification de la route `rapport_details` dans `routes/web_routes.py`
+- Récupération du `campain_id` depuis le rapport
+- Passage du `campain_id` au template
+- Mise à jour du template `rapport_details.html`
+- Le bouton retour redirige maintenant vers `url_for('web.campain_details', campain_id=campain_id)`
+- Fallback vers le dashboard si le campain_id n'est pas disponible
+
+----------------------------------------------
+
+
+creer un plugin d'action "IoAction" pour effectuer :
+- création de répertoire,
+- suppression de répertoire,
+- suppression de fichier,
+- écriture d'une variable dans un fichier,
+- alimentation d'une variable depuis un fichier,
+- récupère une liste de fichiers dans un répertoire avec possibilité de filtrer par extension
+
+----------------------------------------------
+
+
+✅ TERMINÉ - creer une entrée dans le fichier de configuration.json pour définir le répertoire de travail des campagnes "workdir".
+- lors de la création d'une campagne, créer un répertoire dans ce workdir avec l'id de la campagne
+- lors de la suppression d'une campagne, supprimer le répertoire correspondant dans le workdir
+- lors du démarrage de l'application, vérifier que le répertoire workdir existe, sinon le créer et supprimer les répertoires orphelins
+
+Implémentation réalisée :
+- Ajout de l'entrée "workdir": "./workdir" dans configuration.json
+- Création du module utils/workdir.py avec les fonctions :
+  - get_workdir() : récupère le chemin du workdir depuis la config
+  - ensure_workdir_exists() : vérifie et crée le workdir, supprime les orphelins
+  - create_campain_workdir(campain_id) : crée le répertoire d'une campagne
+  - delete_campain_workdir(campain_id) : supprime le répertoire d'une campagne
+  - get_campain_workdir(campain_id) : récupère le chemin du répertoire
+- Modification de app.py pour initialiser le workdir au démarrage
+- Modification de routes/campains_routes.py :
+  - Création du répertoire lors de la création d'une campagne
+  - Suppression du répertoire lors de la suppression d'une campagne
+- Ajout de workdir/ au .gitignore
+- Script de test : _build/test_workdir_management.py
+- ⚠️ Note : Utilisation systématique de python3 au lieu de python
+
+----------------------------------------------
+
+
+✅ TERMINÉ - dans la gestion d'une campagne, ajouter une section "Fichiers" entre "informations" et "Tests de la campagne"
+- cette section liste les fichiers présents dans le répertoire de travail de la campagne
+- avec un bouton "Télécharger" pour chaque fichier
+- avec un bouton "Supprimer" pour chaque fichier
+- avec un bouton "Ajouter un fichier" qui ouvre une modale pour uploader un fichier dans le répertoire de travail de la campagne,
+    - le formulaire d'upload doit contenir un champ de sélection de fichier et un bouton "Uploader"
+    - un champ de saisie pour renommer le fichier avant l'upload (optionnel)
+- gérer les routes API nécessaires pour l'upload,
+    le téléchargement et la suppression des fichiers dans le répertoire de travail de la campagne
+- la liste des fichiers doit se raffraichir automatiquement après chaque opération (upload, suppression) via websocket
+- la liste affiche le nom du fichier, sa taille (en Ko) et sa date de dernière modification
+
+Implémentation réalisée :
+- Ajout des routes API dans routes/campains_routes.py :
+  - GET /api/campains/:id/files : Liste les fichiers
+  - POST /api/campains/:id/files : Upload un fichier (avec option de renommage)
+  - GET /api/campains/:id/files/:filename : Télécharge un fichier
+  - DELETE /api/campains/:id/files/:filename : Supprime un fichier
+  - Émission d'événements WebSocket files_updated après upload/suppression
+- Modification de templates/campain_details.html :
+  - Ajout de la section "Fichiers" entre Informations et Tests
+  - Tableau avec nom, taille (Ko), date de modification et boutons d'action
+  - Modale d'upload avec sélection de fichier et champ de renommage optionnel
+  - JavaScript pour CRUD complet et écoute WebSocket
+- Modification de app.py :
+  - Ajout des gestionnaires join/leave pour les rooms WebSocket
+- Sécurité :
+  - Utilisation de secure_filename() pour sécuriser les noms de fichiers
+  - Vérification d'existence de la campagne pour toutes les opérations
+  - Token JWT requis pour toutes les routes
+- Rafraîchissement automatique via WebSocket dans la room campain_{campain_id}
+- Documentation complète : 
+  - docs/FILES_MANAGEMENT.md (documentation détaillée)
+  - docs/FILES_MANAGEMENT_SUMMARY.md (résumé de l'implémentation)
+  - docs/FILES_MANAGEMENT_QUICKSTART.md (guide de test rapide)
+- Script de test : _build/test_files_management.py
+
+----------------------------------------------
+
+creer un plugin d'action "IoAction" pour effectuer :
+- création de répertoire,
+- suppression de répertoire,
+- suppression de fichier,
+- écriture d'une variable dans un fichier,
+- alimentation d'une variable depuis un fichier,
+- récupère une liste de fichiers dans un répertoire avec possibilité de filtrer par extension
+
+----------------------------------------------
+
+mettre en place un mecanisme multi-langue pour l'interface utilisateur :
+- utiliser Flask-Babel pour la gestion des traductions
+- créer des fichiers de traduction pour les langues suivantes :
+    - français (fr)
+    - anglais (en)
+    - espagnol (es)
+    - allemand (de)
+    - italien (it)
+- ajouter un sélecteur de langue dans le bandeau supérieur de l'application
+- stocker la langue préférée de l'utilisateur dans le profil utilisateur en base de données
+
+----------------------------------------------
+
+complete le swagger avec toutes les routes et modèles de l'API
+
+----------------------------------------------
+
+supprimer une variable racine, supprime egalement toutes les variables associées à cette racine
+
+----------------------------------------------
+
+construire une image docker officielle de l'application et la publier sur Docker Hub
+
+----------------------------------------------
+
+✅ TERMINÉ - lors de la saisie des variables des actions d'un test,
+- ajouter au mécanisme d'autocomplete des variables,
+- dans la même section que "test.test_id" et "test.campain_id",
+- "test.files_dir" qui correspond au "files" de la campagne,
+- "test.work_dir" qui correspond au répertoire de travail de la campagne
+- le format d'insertion sera {{test.files_dir}} et {{test.work_dir}}
+- messure les impacts sur l'existant et teste que tout fonctionne correctement
+
+Implémentation réalisée :
+- Modification de static/js/variable-autocomplete.js :
+  - Ajout de files_dir dans initCollectionVariables()
+  - Ajout de work_dir dans initCollectionVariables()
+  - Descriptions ajoutées pour chaque variable
+- Modification de utils/campain_executor.py :
+  - Import de get_campain_workdir depuis utils.workdir
+  - Import de Path depuis pathlib
+  - Calcul des chemins files_dir et work_dir basés sur le campain_id
+  - Ajout de test.files_dir dans variables_dict
+  - Ajout de test.work_dir dans variables_dict
+- Variables de collection disponibles :
+  - {{test.test_id}} : ID du test en cours
+  - {{test.campain_id}} : ID de la campagne
+  - {{test.files_dir}} : Chemin absolu vers workdir/{campain_id}/files
+  - {{test.work_dir}} : Chemin absolu vers workdir/{campain_id}/work
+- Compatibilité totale avec l'existant (aucun impact négatif)
+- Documentation complète : docs/COLLECTION_VARIABLES_FILES_WORK.md
+- Script de test : _build/test_collection_variables.py (tous les tests passent ✅)
+
+----------------------------------------------

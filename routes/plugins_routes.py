@@ -181,6 +181,69 @@ def reload_plugins_by_type(current_user, plugin_type):
         return jsonify({"error": str(e)}), 500
 
 
+@plugins_routes.route('/api/plugins/errors', methods=['GET'])
+@token_required
+def get_plugin_errors(current_user):
+    """
+    Récupère les erreurs de chargement des plugins.
+    ---
+    tags:
+      - Plugins
+    security:
+      - Bearer: []
+    parameters:
+      - name: plugin_type
+        in: query
+        type: string
+        required: false
+        description: Type de plugin (actions, reports, auth)
+    responses:
+      200:
+        description: Liste des erreurs de plugins
+        schema:
+          type: object
+          properties:
+            success:
+              type: boolean
+            errors:
+              type: array
+              items:
+                type: object
+                properties:
+                  plugin_name:
+                    type: string
+                  plugin_type:
+                    type: string
+                  error:
+                    type: string
+                  traceback:
+                    type: string
+                  timestamp:
+                    type: string
+    """
+    try:
+        plugin_type = request.args.get('plugin_type')
+        all_errors = []
+        
+        if plugin_type:
+            # Récupérer les erreurs d'un type spécifique
+            manager = plugin_registry.get_manager(plugin_type)
+            if manager:
+                all_errors = manager.get_errors()
+        else:
+            # Récupérer toutes les erreurs
+            for manager in plugin_registry.managers.values():
+                all_errors.extend(manager.get_errors())
+        
+        return jsonify({
+            "success": True,
+            "count": len(all_errors),
+            "errors": all_errors
+        }), 200
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
 @plugins_routes.route('/api/plugins/stats', methods=['GET'])
 @token_required
 def get_plugin_stats(current_user):

@@ -20,5 +20,6 @@
         "token_expiration_minutes": 60,
         "password_min_length": 8
     },
+    "workdir": "./workdir",
     "version": "1.0.0"
 }

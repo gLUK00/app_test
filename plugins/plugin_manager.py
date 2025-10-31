@@ -2,6 +2,8 @@
 import os
 import importlib
 import inspect
+import traceback
+from datetime import datetime
 from abc import ABC
 
 
@@ -22,6 +24,7 @@ class PluginManager:
         self.plugin_type = plugin_type
         self.base_class = base_class
         self.plugins = {}
+        self.errors = []  # Liste des erreurs de chargement
         self._plugin_dir = os.path.join(
             os.path.dirname(__file__),
             plugin_type
@@ -71,7 +74,16 @@ class PluginManager:
                     print(f"Plugin '{plugin_key}' chargé avec succès ({obj.__name__})")
         
         except Exception as e:
-            print(f"Erreur lors du chargement du plugin {module_name}: {str(e)}")
+            error_info = {
+                'plugin_name': module_name,
+                'plugin_type': self.plugin_type,
+                'error': str(e),
+                'traceback': traceback.format_exc(),
+                'timestamp': datetime.now().isoformat()
+            }
+            self.errors.append(error_info)
+            print(f"❌ Erreur lors du chargement du plugin {module_name}: {str(e)}")
+            print(f"   Détails: {traceback.format_exc()}")
     
     def _get_plugin_key(self, plugin_class, module_name):
         """
@@ -116,9 +128,32 @@ class PluginManager:
         """
         return self.plugins
     
+    def get_errors(self):
+        """
+        Retourne la liste des erreurs de chargement de plugins.
+        
+        Returns:
+            list: Liste des erreurs avec détails
+        """
+        return self.errors
+    
+    def has_errors(self):
+        """
+        Vérifie s'il y a des erreurs de chargement.
+        
+        Returns:
+            bool: True si des erreurs existent
+        """
+        return len(self.errors) > 0
+    
+    def clear_errors(self):
+        """Efface la liste des erreurs."""
+        self.errors.clear()
+    
     def reload_plugins(self):
         """Recharge tous les plugins (utile pour le développement)."""
         self.plugins.clear()
+        self.errors.clear()
         return self.discover_plugins()
     
     def register_plugin(self, plugin_name, plugin_class):

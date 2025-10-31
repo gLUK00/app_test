@@ -38,6 +38,48 @@
         </div>
     </div>
     
+    <!-- Section Fichiers -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <span><i class="fas fa-folder-open"></i> Fichiers</span>
+                    <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#uploadFileModal">
+                        <i class="fas fa-upload"></i> Ajouter un fichier
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div id="filesLoading" class="text-center">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Chargement...</span>
+                        </div>
+                    </div>
+                    <div id="filesContainer" style="display: none;">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Nom du fichier</th>
+                                        <th>Taille (Ko)</th>
+                                        <th>Date de modification</th>
+                                        <th style="width: 150px;">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="filesTableBody">
+                                    <!-- Les fichiers seront chargés ici -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div id="noFiles" style="display: none;" class="text-center text-muted py-4">
+                        <i class="fas fa-inbox fa-3x mb-3"></i>
+                        <p>Aucun fichier dans cette campagne</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
     <!-- Liste des tests -->
     <div class="row mb-4">
         <div class="col-12">
@@ -170,6 +212,42 @@
                 </button>
                 <button type="button" class="btn btn-success" id="launchCampainBtn">
                     <i class="fas fa-play"></i> Lancer la campagne
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modale d'upload de fichier -->
+<div class="modal fade" id="uploadFileModal" tabindex="-1" aria-labelledby="uploadFileModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="uploadFileModalLabel">
+                    <i class="fas fa-upload"></i> Ajouter un fichier
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="uploadFileForm" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <label for="fileInput" class="form-label">Fichier <span class="text-danger">*</span></label>
+                        <input type="file" class="form-control" id="fileInput" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="customFileName" class="form-label">Renommer le fichier (optionnel)</label>
+                        <input type="text" class="form-control" id="customFileName" placeholder="Laissez vide pour conserver le nom original">
+                        <div class="form-text">Vous pouvez renommer le fichier avant l'upload</div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times"></i> Annuler
+                </button>
+                <button type="button" class="btn btn-primary" id="uploadFileBtn">
+                    <i class="fas fa-upload"></i> Uploader
                 </button>
             </div>
         </div>
@@ -454,9 +532,154 @@ function escapeHtml(text) {
     return String(text).replace(/[&<>"']/g, m => map[m]);
 }
 
+// ===== GESTION DES FICHIERS =====
+
+// Chargement de la liste des fichiers
+async function loadFiles() {
+    try {
+        const data = await API.get(`/api/campains/${campainId}/files`);
+        
+        document.getElementById('filesLoading').style.display = 'none';
+        
+        if (data.files && data.files.length > 0) {
+            document.getElementById('filesContainer').style.display = 'block';
+            document.getElementById('noFiles').style.display = 'none';
+            
+            const tbody = document.getElementById('filesTableBody');
+            tbody.innerHTML = data.files.map(file => {
+                const modifiedDate = new Date(file.modified).toLocaleString('fr-FR');
+                
+                return `
+                <tr>
+                    <td>
+                        <i class="fas fa-file"></i> ${escapeHtml(file.name)}
+                    </td>
+                    <td>${file.size}</td>
+                    <td>${modifiedDate}</td>
+                    <td>
+                        <button class="btn btn-sm btn-success" onclick="downloadFile('${escapeHtml(file.name)}')">
+                            <i class="fas fa-download"></i>
+                        </button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteFile('${escapeHtml(file.name)}')">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+                `;
+            }).join('');
+        } else {
+            document.getElementById('filesContainer').style.display = 'none';
+            document.getElementById('noFiles').style.display = 'block';
+        }
+        
+    } catch (error) {
+        console.error('Erreur lors du chargement des fichiers:', error);
+        document.getElementById('filesLoading').style.display = 'none';
+        document.getElementById('noFiles').style.display = 'block';
+    }
+}
+
+// Upload d'un fichier
+document.getElementById('uploadFileBtn').addEventListener('click', async () => {
+    const fileInput = document.getElementById('fileInput');
+    const customFileName = document.getElementById('customFileName').value.trim();
+    
+    if (!fileInput.files || fileInput.files.length === 0) {
+        Notification.warning('Veuillez sélectionner un fichier');
+        return;
+    }
+    
+    const file = fileInput.files[0];
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    if (customFileName) {
+        formData.append('customName', customFileName);
+    }
+    
+    const btn = document.getElementById('uploadFileBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Upload en cours...';
+    
+    try {
+        const token = localStorage.getItem('token');
+        const response = await fetch(`/api/campains/${campainId}/files`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            },
+            body: formData
+        });
+        
+        const data = await response.json();
+        
+        if (!response.ok) {
+            throw new Error(data.message || 'Erreur lors de l\'upload');
+        }
+        
+        Notification.success(data.message || 'Fichier uploadé avec succès');
+        
+        // Fermer la modale
+        const modal = bootstrap.Modal.getInstance(document.getElementById('uploadFileModal'));
+        modal.hide();
+        
+        // Réinitialiser le formulaire
+        document.getElementById('uploadFileForm').reset();
+        
+        // Recharger la liste des fichiers (sera aussi fait via WebSocket)
+        loadFiles();
+        
+    } catch (error) {
+        console.error('Erreur lors de l\'upload:', error);
+        Notification.error(error.message || 'Erreur lors de l\'upload du fichier');
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-upload"></i> Uploader';
+    }
+});
+
+// Téléchargement d'un fichier
+function downloadFile(filename) {
+    const token = localStorage.getItem('token');
+    window.location.href = `/api/campains/${campainId}/files/${encodeURIComponent(filename)}?token=${token}`;
+}
+
+// Suppression d'un fichier
+async function deleteFile(filename) {
+    if (!confirm(`Êtes-vous sûr de vouloir supprimer le fichier "${filename}" ?`)) {
+        return;
+    }
+    
+    try {
+        await API.delete(`/api/campains/${campainId}/files/${encodeURIComponent(filename)}`);
+        Notification.success('Fichier supprimé avec succès');
+        
+        // Recharger la liste des fichiers (sera aussi fait via WebSocket)
+        loadFiles();
+        
+    } catch (error) {
+        console.error('Erreur lors de la suppression:', error);
+        Notification.error(error.message || 'Erreur lors de la suppression du fichier');
+    }
+}
+
+// WebSocket pour les mises à jour en temps réel des fichiers
+const socket = io();
+
+// Rejoindre la room de la campagne
+socket.emit('join', { room: `campain_${campainId}` });
+
+// Écouter les événements de mise à jour des fichiers
+socket.on('files_updated', (data) => {
+    if (data.campain_id === campainId) {
+        loadFiles();
+    }
+});
+
 // Chargement initial
 document.addEventListener('DOMContentLoaded', () => {
     loadCampainDetails();
+    loadFiles();
     loadTests();
     loadRapports();
 });

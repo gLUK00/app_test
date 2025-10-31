@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test - Variables de Collection (files_dir & work_dir)</title>
+    <link href="/static/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/vendor/fontawesome/css/all.min.css">
+    <style>
+        body {
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+        .demo-section {
+            background: white;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .variable-badge {
+            display: inline-block;
+            padding: 5px 10px;
+            margin: 5px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 14px;
+        }
+        .variable-badge.red {
+            background-color: #f8d7da;
+            color: #dc3545;
+            border: 1px solid #dc3545;
+        }
+        .example-code {
+            background-color: #f4f4f4;
+            padding: 15px;
+            border-radius: 4px;
+            font-family: monospace;
+            margin: 10px 0;
+        }
+        .success-box {
+            background-color: #d1e7dd;
+            border: 1px solid #198754;
+            color: #0f5132;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1><i class="fas fa-vial"></i> Test des Nouvelles Variables de Collection</h1>
+        <p class="lead">Démonstration de l'autocomplétion avec files_dir et work_dir</p>
+
+        <!-- Section 1: Variables Disponibles -->
+        <div class="demo-section">
+            <h2><i class="fas fa-layer-group text-danger"></i> Variables de Collection Disponibles</h2>
+            <p>Les variables suivantes sont maintenant disponibles dans l'autocomplétion :</p>
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>Variables Existantes</h5>
+                    <span class="variable-badge red">
+                        <i class="fas fa-layer-group"></i> TEST_ID
+                    </span>
+                    <span class="variable-badge red">
+                        <i class="fas fa-layer-group"></i> CAMPAIN_ID
+                    </span>
+                </div>
+                <div class="col-md-6">
+                    <h5>Nouvelles Variables</h5>
+                    <span class="variable-badge red">
+                        <i class="fas fa-layer-group"></i> FILES_DIR
+                    </span>
+                    <span class="variable-badge red">
+                        <i class="fas fa-layer-group"></i> WORK_DIR
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 2: Format d'Insertion -->
+        <div class="demo-section">
+            <h2><i class="fas fa-code"></i> Format d'Insertion</h2>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Variable</th>
+                        <th>Format</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>test_id</code></td>
+                        <td><code>{{test.test_id}}</code></td>
+                        <td>ID du test en cours d'exécution</td>
+                    </tr>
+                    <tr>
+                        <td><code>campain_id</code></td>
+                        <td><code>{{test.campain_id}}</code></td>
+                        <td>ID de la campagne</td>
+                    </tr>
+                    <tr class="table-success">
+                        <td><code>files_dir</code></td>
+                        <td><code>{{test.files_dir}}</code></td>
+                        <td><strong>Répertoire des fichiers de la campagne</strong></td>
+                    </tr>
+                    <tr class="table-success">
+                        <td><code>work_dir</code></td>
+                        <td><code>{{test.work_dir}}</code></td>
+                        <td><strong>Répertoire de travail de la campagne</strong></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Section 3: Exemples d'Utilisation -->
+        <div class="demo-section">
+            <h2><i class="fas fa-lightbulb"></i> Exemples d'Utilisation</h2>
+            
+            <h5>1. Lire un fichier de configuration</h5>
+            <div class="example-code">
+                {{test.files_dir}}/config.json
+            </div>
+            <div class="success-box">
+                <i class="fas fa-check-circle"></i> Se résout en : <code>./workdir/507f1f77bcf86cd799439011/files/config.json</code>
+            </div>
+
+            <h5>2. Créer un fichier temporaire</h5>
+            <div class="example-code">
+                {{test.work_dir}}/output.txt
+            </div>
+            <div class="success-box">
+                <i class="fas fa-check-circle"></i> Se résout en : <code>./workdir/507f1f77bcf86cd799439011/work/output.txt</code>
+            </div>
+
+            <h5>3. Commande SSH avec fichiers</h5>
+            <div class="example-code">
+                python3 /app/process.py --input {{test.files_dir}}/data.csv --output {{test.work_dir}}/result.json
+            </div>
+
+            <h5>4. URL de fichier local</h5>
+            <div class="example-code">
+                file://{{test.files_dir}}/document.pdf
+            </div>
+        </div>
+
+        <!-- Section 4: Test d'Autocomplétion -->
+        <div class="demo-section">
+            <h2><i class="fas fa-keyboard"></i> Test d'Autocomplétion</h2>
+            <p>Essayez de taper <code>{{test.</code> dans le champ ci-dessous pour voir l'autocomplétion en action :</p>
+            
+            <div class="mb-3">
+                <label for="testInput" class="form-label">Champ de test</label>
+                <input type="text" class="form-control" id="testInput" placeholder="Tapez {{test. pour déclencher l'autocomplétion">
+                <small class="form-text text-muted">
+                    Tapez <code>{{test.</code> pour voir les suggestions de variables de collection
+                </small>
+            </div>
+
+            <div class="mb-3">
+                <label for="testTextarea" class="form-label">Zone de texte</label>
+                <textarea class="form-control" id="testTextarea" rows="4" placeholder="Tapez {{test. pour déclencher l'autocomplétion"></textarea>
+            </div>
+        </div>
+
+        <!-- Section 5: Structure des Répertoires -->
+        <div class="demo-section">
+            <h2><i class="fas fa-folder-tree"></i> Structure des Répertoires</h2>
+            <pre class="example-code">
+workdir/
+└── {campain_id}/
+    ├── files/      ← <strong>{{test.files_dir}}</strong>
+    │   ├── config.json
+    │   ├── data.csv
+    │   └── script.sh
+    └── work/       ← <strong>{{test.work_dir}}</strong>
+        ├── temp1.txt
+        └── output.log
+            </pre>
+        </div>
+
+        <!-- Section 6: Avantages -->
+        <div class="demo-section">
+            <h2><i class="fas fa-star"></i> Avantages</h2>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title"><i class="fas fa-portable-wifi text-primary"></i> Portabilité</h5>
+                            <p class="card-text">Les tests fonctionnent sur n'importe quel environnement sans modification des chemins</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title"><i class="fas fa-tools text-success"></i> Maintenabilité</h5>
+                            <p class="card-text">Changement du workdir ? Les tests continuent de fonctionner</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title"><i class="fas fa-eye text-info"></i> Clarté</h5>
+                            <p class="card-text">Variables explicites pour une meilleure lisibilité</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title"><i class="fas fa-magic text-warning"></i> Autocomplétion</h5>
+                            <p class="card-text">Suggestions intelligentes pendant la saisie</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center mt-4">
+            <a href="/dashboard" class="btn btn-primary">
+                <i class="fas fa-arrow-left"></i> Retour au Dashboard
+            </a>
+            <a href="/static/test-multitype-autocomplete.html" class="btn btn-secondary">
+                <i class="fas fa-vial"></i> Voir tous les types de variables
+            </a>
+        </div>
+    </div>
+
+    <script src="/static/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="/static/js/variable-autocomplete.js"></script>
+    <script>
+        // Initialiser l'autocomplétion
+        const autocomplete = new VariableAutocomplete({
+            apiEndpoint: '/api/variables?isRoot=true'
+        });
+
+        // Ajouter quelques variables de test pour la démonstration
+        autocomplete.setVariables('test', [
+            'output_var1',
+            'output_var2',
+            'result'
+        ]);
+
+        console.log('Variables de collection disponibles:', autocomplete.variablesByType.collection);
+    </script>
+</body>
+</html>

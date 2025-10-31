@@ -3,8 +3,9 @@
 """Application Flask principale pour TestGyver."""
 from flask import Flask, jsonify
 from flask_swagger_ui import get_swaggerui_blueprint
-from flask_socketio import SocketIO
+from flask_socketio import SocketIO, join_room, leave_room
 from utils.db import load_config
+from utils.workdir import ensure_workdir_exists
 from routes import (
     auth_bp,
     users_bp,
@@ -32,10 +33,27 @@ def create_app():
     app.config['JSON_AS_ASCII'] = False
     
     # Initialiser SocketIO
-    socketio = SocketIO(app, cors_allowed_origins="*", async_mode='eventlet')
+    socketio = SocketIO(app, cors_allowed_origins="*")
     
     # Stocker socketio dans les extensions pour un accès facile
     app.extensions['socketio'] = socketio
+    
+    # Gestionnaires d'événements WebSocket
+    @socketio.on('join')
+    def handle_join(data):
+        """Permet à un client de rejoindre une room."""
+        room = data.get('room')
+        if room:
+            join_room(room)
+            print(f"Client rejoint la room: {room}")
+    
+    @socketio.on('leave')
+    def handle_leave(data):
+        """Permet à un client de quitter une room."""
+        room = data.get('room')
+        if room:
+            leave_room(room)
+            print(f"Client quitte la room: {room}")
     
     # Enregistrer les blueprints pour les routes web
     app.register_blueprint(web_bp)
@@ -101,6 +119,13 @@ app = create_app()
 # Point d'entrée de l'application
 if __name__ == '__main__':
     config = load_config()
+    
+    # Initialiser le répertoire de travail au démarrage
+    print("\n" + "="*60)
+    print("Initialisation du répertoire de travail des campagnes")
+    print("="*60)
+    ensure_workdir_exists()
+    print("="*60 + "\n")
     
     # Utiliser socketio.run() au lieu de app.run()
     socketio.run(

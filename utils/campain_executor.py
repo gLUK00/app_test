@@ -1,12 +1,14 @@
 """Module pour l'exécution des campagnes de tests en arrière-plan."""
 import threading
 from datetime import datetime
+from pathlib import Path
 from bson import ObjectId
 from models.test import Test
 from models.rapport import Rapport
 from models.variable import Variable
 from plugins.plugin_manager import PluginManager
 from plugins.actions.action_base import ActionBase
+from utils.workdir import get_campain_workdir
 import traceback
 import re
 
@@ -58,9 +60,16 @@ class CampainExecutor:
             variables = Variable.get_by_filiere(filiere)
             variables_dict = {var['key']: var['value'] for var in variables}
             
+            # Récupérer les chemins du workdir de la campagne
+            campain_workdir = Path(get_campain_workdir(campain_id))
+            files_dir = str(campain_workdir / "files")
+            work_dir = str(campain_workdir / "work")
+            
             # Ajouter les variables de collection
             variables_dict['test.test_id'] = None  # Sera mis à jour pour chaque test
             variables_dict['test.campain_id'] = campain_id
+            variables_dict['test.files_dir'] = files_dir
+            variables_dict['test.work_dir'] = work_dir
             
             total_tests = len(tests)
             executed_tests = []
@@ -216,10 +225,11 @@ class CampainExecutor:
                         
                         # Récupérer les variables de sortie
                         output_vars = action_plugin.get_output_variables()
-                        for var_name in output_vars:
-                            if var_name in result.get('output', {}) and var_name in test_variables:
-                                test_variables[var_name] = result['output'][var_name]
-                                logs.append(f"[{datetime.now().strftime('%H:%M:%S')}] 📝 Variable '{var_name}' = {result['output'][var_name]}")
+                        for var_def in output_vars:
+                            var_name = var_def.get('name') if isinstance(var_def, dict) else var_def
+                            if var_name in result.get('output_variables', {}) and var_name in test_variables:
+                                test_variables[var_name] = result['output_variables'][var_name]
+                                logs.append(f"[{datetime.now().strftime('%H:%M:%S')}] 📝 Variable '{var_name}' = {result['output_variables'][var_name]}")
                     else:
                         logs.append(f"[{datetime.now().strftime('%H:%M:%S')}] ❌ Action échouée: {result.get('message', 'Erreur inconnue')}")
                         status = 'failed'
@@ -230,7 +240,9 @@ class CampainExecutor:
                         logs.append(result['logs'])
                 
                 except Exception as e:
+                    error_trace = traceback.format_exc()
                     logs.append(f"[{datetime.now().strftime('%H:%M:%S')}] ❌ Erreur lors de l'exécution: {str(e)}")
+                    logs.append(f"[{datetime.now().strftime('%H:%M:%S')}] 📋 Trace:\n{error_trace}")
                     status = 'failed'
                     break
             
@@ -240,7 +252,9 @@ class CampainExecutor:
                 logs.append(f"[{datetime.now().strftime('%H:%M:%S')}] ❌ Test échoué")
         
         except Exception as e:
+            error_trace = traceback.format_exc()
             logs.append(f"[{datetime.now().strftime('%H:%M:%S')}] ❌ Erreur: {str(e)}")
+            logs.append(f"[{datetime.now().strftime('%H:%M:%S')}] 📋 Trace:\n{error_trace}")
             status = 'failed'
         
         return {
@@ -270,12 +284,14 @@ class CampainExecutor:
             # Remplacer les variables de test {{app.variable_name}}
             def replace_test(match):
                 var_name = match.group(1)
-                return str(test_variables.get(var_name, match.group(0)))
+                full_key = f"app.{var_name}"
+                return str(test_variables.get(full_key, match.group(0)))
             
             # Remplacer les variables de collection {{test.variable_name}}
             def replace_collection(match):
                 var_name = match.group(1)
-                return str(variables_dict.get(var_name, match.group(0)))
+                full_key = f"test.{var_name}"
+                return str(variables_dict.get(full_key, match.group(0)))
             
             value = re.sub(r'\{\{([^.}]+)\}\}', replace_testgyver, value)
             value = re.sub(r'\{\{app\.([^}]+)\}\}', replace_test, value)

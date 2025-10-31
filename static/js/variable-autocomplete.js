@@ -73,7 +73,9 @@ class VariableAutocomplete {
     initCollectionVariables() {
         this.setVariables('collection', [
             { key: 'test_id', description: 'ID du test en cours' },
-            { key: 'campain_id', description: 'ID de la campagne' }
+            { key: 'campain_id', description: 'ID de la campagne' },
+            { key: 'files_dir', description: 'Répertoire des fichiers de la campagne' },
+            { key: 'work_dir', description: 'Répertoire de travail de la campagne' }
         ]);
     }
     

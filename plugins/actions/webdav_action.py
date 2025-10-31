@@ -1,6 +1,5 @@
 """Action pour effectuer des opérations WebDAV."""
-import requests
-from requests.auth import HTTPBasicAuth
+import os
 from plugins.actions.action_base import ActionBase
 from webdav4.client import Client
 
@@ -11,6 +10,32 @@ class WebdavAction(ActionBase):
     plugin_name = "webdav"
     version = "1.0.0"
     author = "TestGyver Team"
+    
+    def _is_directory(self, client, path):
+        """
+        Vérifie si un chemin est un répertoire en utilisant la méthode info().
+        
+        Args:
+            client: Instance du client WebDAV
+            path: Chemin à vérifier (avec ou sans slash final)
+        
+        Returns:
+            bool: True si c'est un répertoire, False sinon
+        """
+        try:
+            # Normaliser le chemin avec slash final pour les répertoires
+            check_path = path.rstrip('/') + '/'
+            info = client.info(check_path)
+            # Vérifier si c'est une collection (répertoire)
+            return info.get('type') == 'directory'
+        except Exception:
+            # Si info échoue, essayer avec ls
+            try:
+                check_path = path.rstrip('/') + '/'
+                client.ls(check_path, detail=False)
+                return True  # Si ls réussit, c'est un répertoire
+            except Exception:
+                return False  # Si les deux échouent, ce n'est pas un répertoire
     
     def get_metadata(self):
         """Retourne les métadonnées de l'action."""
@@ -57,7 +82,7 @@ class WebdavAction(ActionBase):
                 "name": "action",
                 "type": "select",
                 "label": "Action WebDAV",
-                "options": ["CHECK", "INFO", "LIST", "MKDIR", "CLEAN", "COPY", "MOVE", "DOWNLOAD", "UPLOAD"],
+                "options": ["CHECK", "INFO", "LIST", "MKDIR", "CLEAN", "MOVE", "DOWNLOAD", "UPLOAD"],
                 "required": True
             },
             {
@@ -122,30 +147,39 @@ class WebdavAction(ActionBase):
                 self.add_trace(f"Liste des fichiers dans {src_file}: {listing}")
                 return self.get_result( True, { "webdav_response": listing })
             if action == "MKDIR":
-                client.mkdir(src_file)
+                # Créer récursivement les répertoires si nécessaire
+                self._mkdir_recursive(client, src_file)
                 self.add_trace(f"Répertoire créé: {src_file}")
-                return self.get_result( True, None )
+                return self.get_result( True, { "webdav_response": True } )
             if action == "CLEAN":
                 client.clean(src_file)
                 self.add_trace(f"Contenu nettoyé dans: {src_file}")
-                return self.get_result( True, None )
-            if action == "COPY":
-                client.copy(src_file, targ_file)
-                self.add_trace(f"Fichier copié de {src_file} à {targ_file}")
-                return self.get_result( True, None )
+                return self.get_result( True, { "webdav_response": True } )
             if action == "MOVE":
                 client.move(src_file, targ_file)
                 self.add_trace(f"Fichier déplacé de {src_file} à {targ_file}")
-                return self.get_result( True, None )
+                return self.get_result( True, { "webdav_response": True } )
             if action == "DOWNLOAD":
                 local_path = targ_file
-                client.download_sync(remote_path=src_file, local_path=local_path)
+                client.download_file(remote_path=src_file, local_path=local_path)
                 self.add_trace(f"Fichier téléchargé de {src_file} à {local_path}")
-                return self.get_result( True, None )
+                return self.get_result( True, { "webdav_response": True } )
             if action == "UPLOAD":
+                
                 local_path = src_file
-                client.upload_sync(remote_path=targ_file, local_path=local_path)
-                self.add_trace(f"Fichier téléchargé de {local_path} à {targ_file}")
+                
+                # Vérifier si src_file est un fichier ou un répertoire
+                if os.path.isfile(local_path):
+                    # Upload d'un seul fichier
+                    client.upload_file(from_path=local_path, to_path=targ_file)
+                    self.add_trace(f"Fichier uploadé de {local_path} à {targ_file}")
+                elif os.path.isdir(local_path):
+                    # Upload récursif d'un répertoire
+                    self._upload_directory_recursive(client, local_path, targ_file)
+                    self.add_trace(f"Répertoire uploadé de {local_path} à {targ_file}")
+                else:
+                    raise ValueError(f"Le chemin local '{local_path}' n'existe pas ou n'est ni un fichier ni un répertoire")
+                
                 return self.get_result( True, None )
 
             raise ValueError(f"Action WebDAV inconnue: {action}")
@@ -154,3 +188,90 @@ class WebdavAction(ActionBase):
             self.set_code(1)
             self.add_trace(f"Erreur inattendue: {str(e)}")
             return self.get_result( False, None )
+    
+    def _upload_directory_recursive(self, client, local_dir, remote_dir):
+        """
+        Upload récursif d'un répertoire local vers WebDAV.
+        
+        Args:
+            client: Instance du client WebDAV
+            local_dir: Chemin local du répertoire à uploader
+            remote_dir: Chemin distant WebDAV de destination
+        """
+        
+        # Normaliser les chemins
+        local_dir = local_dir.rstrip(os.sep)
+        remote_dir = remote_dir.rstrip('/')
+        
+        # Créer le répertoire distant s'il n'existe pas
+        # WebDAV nécessite un slash final pour les collections/répertoires
+        remote_dir_with_slash = remote_dir + '/'
+        if not self._is_directory(client, remote_dir_with_slash):
+            self._mkdir_recursive(client, remote_dir)
+        
+        # Parcourir tous les fichiers et sous-répertoires
+        for item in os.listdir(local_dir):
+            local_path = os.path.join(local_dir, item)
+            remote_path = f"{remote_dir}/{item}"
+            
+            if os.path.isfile(local_path):
+                # Upload du fichier
+                client.upload_file(from_path=local_path, to_path=remote_path)
+                self.add_trace(f"Fichier uploadé: {local_path} -> {remote_path}")
+            elif os.path.isdir(local_path):
+                # Appel récursif pour le sous-répertoire
+                self._upload_directory_recursive(client, local_path, remote_path)
+    
+    def _mkdir_recursive(self, client, path):
+        """
+        Crée récursivement les répertoires nécessaires.
+        
+        Args:
+            client: Instance du client WebDAV
+            path: Chemin complet du répertoire à créer
+        """
+        # Normaliser le chemin (enlever les slashes multiples et trailing slash)
+        path = path.rstrip('/')
+        
+        # Si le répertoire existe déjà, ne rien faire
+        # WebDAV nécessite un slash final pour les collections/répertoires
+        try:
+            if self._is_directory(client, path):
+                self.add_trace(f"Le répertoire {path} existe déjà")
+                return
+        except Exception:
+            # Si la vérification échoue, le répertoire n'existe probablement pas, on continue
+            pass
+        
+        # Diviser le chemin en parties
+        parts = [p for p in path.split('/') if p]
+        
+        # Construire et créer chaque niveau
+        current_path = ''
+        for part in parts:
+            current_path = f"{current_path}/{part}" if current_path else part
+            
+            # Vérifier si ce niveau existe déjà en utilisant notre méthode
+            # WebDAV nécessite un slash final pour les collections/répertoires
+            try:
+                if self._is_directory(client, current_path):
+                    # Le répertoire existe déjà, passer au suivant
+                    continue
+            except Exception:
+                # La vérification a échoué, le répertoire n'existe pas, on va le créer
+                pass
+            
+            # Créer le répertoire
+            try:
+                client.mkdir(current_path)
+                self.add_trace(f"Sous-répertoire créé: {current_path}")
+            except Exception as e:
+                # Vérifier si l'erreur est due au fait que le répertoire existe déjà
+                error_msg = str(e).lower()
+                if 'exists' in error_msg or 'already' in error_msg or '405' in error_msg:
+                    # Le répertoire existe déjà, continuer
+                    self.add_trace(f"Le sous-répertoire {current_path} existe déjà")
+                    continue
+                # Autre erreur, la propager
+                self.add_trace(f"Erreur lors de la création de {current_path}: {str(e)}")
+                raise

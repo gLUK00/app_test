@@ -1,6 +1,7 @@
 """Routes web pour les pages de l'application."""
 from flask import Blueprint, render_template, redirect, url_for, request
 from utils.auth import token_required, admin_required, decode_token
+from models.rapport import Rapport
 
 web_bp = Blueprint('web', __name__)
 
@@ -113,4 +114,17 @@ def admin_variables_edit(variable_id):
 def rapport_details(rapport_id):
     """Page de détails d'un rapport d'exécution."""
     user = get_current_user()
-    return render_template('rapport_details.html', user=user, rapport_id=rapport_id)
+    
+    # Récupérer le rapport pour obtenir le campain_id
+    rapport = Rapport.find_by_id(rapport_id)
+    campain_id = str(rapport['campainId']) if rapport and 'campainId' in rapport else None
+    
+    return render_template('rapport_details.html', user=user, rapport_id=rapport_id, campain_id=campain_id)
+
+@web_bp.route('/admin/plugins/errors')
+@token_required
+@admin_required
+def admin_plugins_errors():
+    """Page de diagnostic des erreurs de plugins (admin uniquement)."""
+    user = get_current_user()
+    return render_template('admin/plugins_errors.html', user=user)

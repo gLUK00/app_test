@@ -69,9 +69,15 @@
             <h1><i class="fas fa-file-alt"></i> Détails du rapport</h1>
         </div>
         <div class="col-md-4 text-end">
+            {% if campain_id %}
+            <a href="{{ url_for('web.campain_details', campain_id=campain_id) }}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Retour
+            </a>
+            {% else %}
             <a href="{{ url_for('web.dashboard') }}" class="btn btn-secondary">
                 <i class="fas fa-arrow-left"></i> Retour
             </a>
+            {% endif %}
         </div>
     </div>
     
@@ -143,7 +149,6 @@
 {% endblock %}
 
 {% block extra_js %}
-<script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
 <script>
 const rapportId = '{{ rapport_id }}';
 let socket = null;

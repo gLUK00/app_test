@@ -11,3 +11,6 @@ venv/
 
 # IDE files
 .idea/
+
+# Working directories
+workdir/
