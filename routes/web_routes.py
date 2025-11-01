@@ -61,6 +61,13 @@ def edit_test(campain_id, test_id):
     user = get_current_user()
     return render_template('test_edit.html', user=user, campain_id=campain_id, test_id=test_id)
 
+@web_bp.route('/test/<test_id>/execute')
+@token_required
+def test_execute(test_id):
+    """Page d'exécution d'un test."""
+    user = get_current_user()
+    return render_template('test_execute.html', user=user, test_id=test_id)
+
 @web_bp.route('/admin/users')
 @token_required
 @admin_required

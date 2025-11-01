@@ -5,18 +5,21 @@
 {% block content %}
 <div class="container mt-4">
     <div class="row mb-4">
-        <div class="col-md-8">
+        <div class="col-md-6">
             <h1><i class="fas fa-edit"></i> Modifier un test</h1>
         </div>
-        <div class="col-md-4 text-end">
+        <div class="col-md-6 text-end">
+            <button id="btnSaveAndExecute" class="btn btn-success me-2">
+                <i class="fas fa-play-circle"></i> Enregistrer et lancer le test
+            </button>
             <a href="{{ url_for('web.campain_details', campain_id=campain_id) }}" class="btn btn-secondary">
                 <i class="fas fa-arrow-left"></i> Retour
             </a>
         </div>
     </div>
     
-    <div class="row">
-        <div class="col-md-10 mx-auto">
+     <div class="row mb-4">
+        <div class="col-12">
             <div class="card mb-4">
                 <div class="card-header">
                     <i class="fas fa-vial"></i> Informations du test
@@ -89,11 +92,7 @@
                         <label for="actionType" class="form-label">Type d'action *</label>
                         <select class="form-select" id="actionType" required>
                             <option value="">-- Sélectionner un type --</option>
-                            <option value="http">HTTP Request</option>
-                            <option value="ftp">FTP</option>
-                            <option value="sftp">SFTP</option>
-                            <option value="ssh">SSH</option>
-                            <option value="webdav">WebDAV</option>
+                            <!-- Les options seront chargées dynamiquement -->
                         </select>
                     </div>
                     
@@ -147,37 +146,10 @@
 {% endblock %}
 
 {% block extra_js %}
+<script src="{{ url_for('static', filename='test_actions.js') }}"></script>
 <script>
     const campainId = '{{ campain_id }}';
     const testId = '{{ test_id }}';
-    let actionMasks = {};
-    let actionOutputVariables = {};
-    let actions = [];
-    let variables = [];
-    let editingActionIndex = -1;
-    let actionModal;
-    let variableModal;
-    
-    // Charger tous les masques de saisie au chargement de la page
-    async function loadActionMasks() {
-        try {
-            const result = await API.get('/api/actions/masks');
-            actionMasks = result;
-        } catch (error) {
-            console.error('Erreur lors du chargement des masques:', error);
-            Notification.error('Erreur lors du chargement des types d\'actions');
-        }
-    }
-    
-    async function loadActionOutputVariables() {
-        try {
-            const result = await API.get('/api/actions/output-variables');
-            actionOutputVariables = result;
-            console.log('Action output variables chargées:', actionOutputVariables);
-        } catch (error) {
-            console.error('Erreur lors du chargement des variables de sortie:', error);
-        }
-    }
     
     // Charger les données du test
     async function loadTestData() {
@@ -189,428 +161,20 @@
             document.getElementById('testDescription').value = test.description || '';
             
             // Charger les variables en premier (nécessaire pour les badges)
-            variables = test.variables || [];
-            renderVariablesList();
+            testActionsManager.variables = test.variables || [];
+            testActionsManager.renderVariablesList();
             
             // Charger les actions ensuite (pour que les badges aient accès aux variables)
-            actions = test.actions || [];
-            renderActionsList();
+            testActionsManager.actions = test.actions || [];
+            testActionsManager.renderActionsList();
         } catch (error) {
             console.error('Erreur lors du chargement du test:', error);
             Notification.error('Erreur lors du chargement du test');
         }
     }
     
-    // Fonction pour générer un champ de formulaire dynamiquement
-    function createFormField(field) {
-        const divWrapper = document.createElement('div');
-        divWrapper.className = 'mb-3';
-        
-        const label = document.createElement('label');
-        label.className = 'form-label';
-        label.setAttribute('for', field.name);
-        label.textContent = field.label + (field.required ? ' *' : '');
-        divWrapper.appendChild(label);
-        
-        let input;
-        
-        if (field.type === 'select') {
-            input = document.createElement('select');
-            input.className = 'form-select';
-            
-            // Option par défaut
-            const defaultOption = document.createElement('option');
-            defaultOption.value = '';
-            defaultOption.textContent = '-- Sélectionner --';
-            input.appendChild(defaultOption);
-            
-            // Ajouter les options
-            field.options.forEach(option => {
-                const opt = document.createElement('option');
-                opt.value = option;
-                opt.textContent = option;
-                input.appendChild(opt);
-            });
-        } else if (field.type === 'textarea') {
-            input = document.createElement('textarea');
-            input.className = 'form-control';
-            input.rows = 3;
-        } else if (field.type === 'number') {
-            input = document.createElement('input');
-            input.type = 'number';
-            input.className = 'form-control';
-        } else {
-            // Par défaut, input text
-            input = document.createElement('input');
-            input.type = field.type === 'string' ? 'text' : field.type;
-            input.className = 'form-control';
-        }
-        
-        input.id = field.name;
-        input.name = field.name;
-        
-        if (field.placeholder) {
-            input.placeholder = field.placeholder;
-        }
-        
-        if (field.required) {
-            input.required = true;
-        }
-        
-        divWrapper.appendChild(input);
-        
-        // Ajouter un texte d'aide si nécessaire
-        if (field.name === 'headers' || field.name === 'body') {
-            const small = document.createElement('small');
-            small.className = 'form-text text-muted';
-            small.textContent = 'Format JSON valide';
-            divWrapper.appendChild(small);
-        }
-        
-        return divWrapper;
-    }
-    
-    // Fonction pour afficher les champs dynamiques selon le type sélectionné
-    function displayDynamicFields(actionType, currentParameters = {}) {
-        const dynamicFieldsContainer = document.getElementById('dynamicFields');
-        dynamicFieldsContainer.innerHTML = '';
-        
-        if (!actionType || !actionMasks[actionType]) {
-            document.getElementById('outputVariablesSection').style.display = 'none';
-            return;
-        }
-        
-        const mask = actionMasks[actionType];
-        
-        // Créer d'abord tous les champs
-        mask.forEach(field => {
-            const fieldElement = createFormField(field);
-            dynamicFieldsContainer.appendChild(fieldElement);
-        });
-        
-        // Ensuite remplir les valeurs si elles existent
-        if (currentParameters && Object.keys(currentParameters).length > 0) {
-            mask.forEach(field => {
-                if (currentParameters.hasOwnProperty(field.name)) {
-                    const input = document.getElementById(field.name);
-                    if (input) {
-                        const value = currentParameters[field.name];
-                        if (typeof value === 'object' && value !== null) {
-                            input.value = JSON.stringify(value, null, 2);
-                        } else if (value !== null && value !== undefined) {
-                            input.value = value;
-                        }
-                    }
-                }
-            });
-        }
-        
-        // Afficher les variables de sortie disponibles
-        displayOutputVariables(actionType, currentParameters.output_mapping || {});
-    }
-    
-    // Fonction pour afficher les variables de sortie disponibles
-    function displayOutputVariables(actionType, currentMapping = {}) {
-        const outputSection = document.getElementById('outputVariablesSection');
-        const outputList = document.getElementById('outputVariablesList');
-        
-        if (!actionType || !actionOutputVariables[actionType] || actionOutputVariables[actionType].length === 0) {
-            outputSection.style.display = 'none';
-            return;
-        }
-        
-        outputSection.style.display = 'block';
-        outputList.innerHTML = '';
-        
-        const outputVars = actionOutputVariables[actionType];
-        outputVars.forEach(outputVar => {
-            const div = document.createElement('div');
-            div.className = 'mb-3 p-3 border rounded';
-            
-            let html = `
-                <div class="form-check mb-2">
-                    <input class="form-check-input output-var-checkbox" type="checkbox" 
-                           id="output_${outputVar.name}" 
-                           data-var-name="${outputVar.name}"
-                           ${currentMapping[outputVar.name] ? 'checked' : ''}>
-                    <label class="form-check-label fw-bold" for="output_${outputVar.name}">
-                        ${outputVar.name}
-                    </label>
-                </div>
-                <small class="text-muted d-block mb-2">${outputVar.description}</small>
-                <div class="output-mapping-section" id="mapping_${outputVar.name}" 
-                     style="display: ${currentMapping[outputVar.name] ? 'block' : 'none'};">
-                    <label class="form-label small">Mapper à la variable du test:</label>
-                    <select class="form-select form-select-sm output-var-mapping" 
-                            data-var-name="${outputVar.name}">
-                        <option value="">-- Sélectionner une variable --</option>
-                        ${variables.map(v => `<option value="${v}" ${currentMapping[outputVar.name] === v ? 'selected' : ''}>${v}</option>`).join('')}
-                    </select>
-                </div>
-            `;
-            
-            div.innerHTML = html;
-            outputList.appendChild(div);
-            
-            // Gérer l'affichage du mapping
-            const checkbox = div.querySelector('.output-var-checkbox');
-            const mappingSection = div.querySelector('.output-mapping-section');
-            
-            checkbox.addEventListener('change', (e) => {
-                mappingSection.style.display = e.target.checked ? 'block' : 'none';
-            });
-        });
-    }
-    
-    // Écouter le changement du type d'action
-    document.getElementById('actionType').addEventListener('change', (e) => {
-        // Ne pas écraser les valeurs si on est en train d'éditer
-        // On passe un objet vide pour réinitialiser les champs
-        displayDynamicFields(e.target.value, {});
-    });
-    
-    // Fonction pour formater et afficher les données "value" de manière indentée
-    function formatActionValue(value) {
-        if (!value || typeof value !== 'object' || Object.keys(value).length === 0) {
-            return '';
-        }
-        
-        let html = '<div class="mt-2" style="font-size: 0.85rem;">';
-        html += '<div class="text-muted mb-1"><strong>Paramètres :</strong></div>';
-        html += '<div style="font-family: monospace; background-color: #f8f9fa; padding: 8px; border-radius: 4px; border-left: 3px solid #0d6efd;">';
-        
-        for (const [key, val] of Object.entries(value)) {
-            // Exclure output_mapping de l'affichage car ce n'est pas un paramètre de l'action
-            if (key === 'output_mapping') {
-                continue;
-            }
-            
-            if (val !== null && val !== undefined && val !== '') {
-                let displayValue = val;
-                
-                // Formater les objets JSON
-                if (typeof val === 'object') {
-                    displayValue = JSON.stringify(val, null, 2);
-                    html += `<div style="margin-bottom: 6px;">`;
-                    html += `<span style="color: #0d6efd; font-weight: 500;">${key}:</span>`;
-                    html += `<pre style="margin: 2px 0 0 20px; font-size: 0.8rem; color: #495057;">${displayValue}</pre>`;
-                    html += `</div>`;
-                } else {
-                    // Tronquer les valeurs trop longues
-                    if (typeof displayValue === 'string' && displayValue.length > 100) {
-                        displayValue = displayValue.substring(0, 100) + '...';
-                    }
-                    html += `<div style="margin-bottom: 4px; margin-left: 0px;">`;
-                    html += `<span style="color: #0d6efd; font-weight: 500;">${key}:</span> `;
-                    html += `<span style="color: #495057;">${displayValue}</span>`;
-                    html += `</div>`;
-                }
-            }
-        }
-        
-        html += '</div></div>';
-        return html;
-    }
-    
-    // Fonction pour afficher la liste des actions
-    function renderActionsList() {
-        const actionsList = document.getElementById('actionsList');
-        
-        if (actions.length === 0) {
-            actionsList.innerHTML = '<p class="text-muted text-center">Aucune action ajoutée. Cliquez sur "Ajouter une action" pour commencer.</p>';
-            return;
-        }
-        
-        actionsList.innerHTML = actions.map((action, index) => {
-            // Récupérer les variables de sortie mappées pour cette action
-            let outputBadges = '';
-            if (action.value && action.value.output_mapping && Object.keys(action.value.output_mapping).length > 0) {
-                const outputMapping = action.value.output_mapping;
-                
-                outputBadges = Object.entries(outputMapping).map(([outputVar, testVar]) => {
-                    // Vérifier si la variable de test existe toujours dans le test
-                    const isVariableValid = variables.includes(testVar);
-                    const badgeColor = isVariableValid ? 'success' : 'secondary';
-                    
-                    return `<span class="badge bg-${badgeColor} me-1" style="font-size: 0.75rem;">${outputVar} → ${testVar}</span>`;
-                }).join('');
-            }
-            
-            return `
-            <div class="card mb-2 action-item" data-index="${index}">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-start">
-                        <div class="flex-grow-1">
-                            <div class="d-flex align-items-center justify-content-between mb-2">
-                                <div class="d-flex align-items-center">
-                                    <span class="badge bg-secondary me-2">#${index + 1}</span>
-                                    <h6 class="mb-0">Action </h6>
-                                    <span class="badge bg-primary ms-2">${action.type.toUpperCase()}</span>
-                                </div>
-                                ${outputBadges ? `<div class="d-flex align-items-center flex-wrap">${outputBadges}</div>` : ''}
-                            </div>
-                            ${formatActionValue(action.value)}
-                        </div>
-                        <div class="btn-group ms-3" style="flex-shrink: 0;">
-                            ${index > 0 ? `<button class="btn btn-sm btn-outline-secondary" onclick="moveAction(${index}, -1)" title="Monter">
-                                <i class="fas fa-arrow-up"></i>
-                            </button>` : ''}
-                            ${index < actions.length - 1 ? `<button class="btn btn-sm btn-outline-secondary" onclick="moveAction(${index}, 1)" title="Descendre">
-                                <i class="fas fa-arrow-down"></i>
-                            </button>` : ''}
-                            <button class="btn btn-sm btn-outline-primary" onclick="editAction(${index})" title="Modifier">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="btn btn-sm btn-outline-danger" onclick="deleteAction(${index})" title="Supprimer">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `;
-        }).join('');
-    }
-    
-    // Fonction pour ouvrir le modal d'ajout d'action
-    document.getElementById('addActionBtn').addEventListener('click', () => {
-        editingActionIndex = -1;
-        document.getElementById('actionModalTitle').textContent = 'Ajouter une action';
-        document.getElementById('actionForm').reset();
-        document.getElementById('dynamicFields').innerHTML = '';
-        actionModal.show();
-    });
-    
-    // Fonction pour éditer une action
-    window.editAction = (index) => {
-        editingActionIndex = index;
-        const action = actions[index];
-        
-        document.getElementById('actionModalTitle').textContent = 'Modifier l\'action';
-        
-        // Ne pas faire reset() car cela efface aussi le select
-        // À la place, juste vider les champs dynamiques
-        document.getElementById('dynamicFields').innerHTML = '';
-        
-        // Définir le type d'action
-        const selectElement = document.getElementById('actionType');
-        selectElement.value = action.type;
-        
-        // Afficher les champs avec les valeurs
-        displayDynamicFields(action.type, action.value || {});
-        
-        actionModal.show();
-    };
-    
-    // Fonction pour supprimer une action
-    window.deleteAction = (index) => {
-        if (confirm('Êtes-vous sûr de vouloir supprimer cette action ?')) {
-            actions.splice(index, 1);
-            renderActionsList();
-            Notification.success('Action supprimée');
-        }
-    };
-    
-    // Fonction pour déplacer une action
-    window.moveAction = (index, direction) => {
-        const newIndex = index + direction;
-        if (newIndex < 0 || newIndex >= actions.length) return;
-        
-        const temp = actions[index];
-        actions[index] = actions[newIndex];
-        actions[newIndex] = temp;
-        
-        renderActionsList();
-    };
-    
-    // Sauvegarder l'action (ajout ou modification)
-    document.getElementById('saveActionBtn').addEventListener('click', () => {
-        const actionType = document.getElementById('actionType').value;
-        
-        if (!actionType) {
-            Notification.error('Veuillez sélectionner un type d\'action');
-            return;
-        }
-        
-        // Collecter les données du formulaire
-        const actionData = {};
-        const dynamicFields = document.getElementById('dynamicFields');
-        const inputs = dynamicFields.querySelectorAll('input, select, textarea');
-        
-        console.log('Nombre d\'inputs trouvés:', inputs.length);
-        
-        // Vérifier les champs requis
-        let allRequiredFilled = true;
-        inputs.forEach(input => {
-            if (input.required && !input.value.trim()) {
-                allRequiredFilled = false;
-                console.log('Champ requis non rempli:', input.name);
-            }
-        });
-        
-        if (!allRequiredFilled) {
-            Notification.error('Veuillez remplir tous les champs obligatoires');
-            return;
-        }
-        
-        inputs.forEach(input => {
-            const value = input.value.trim();
-            console.log(`Input ${input.name} = "${value}"`);
-            
-            // Collecter même les champs vides (sauf pour les champs non requis)
-            if (input.name) {
-                // Essayer de parser le JSON si le champ contient du JSON
-                if ((input.name === 'headers' || input.name === 'body') && value) {
-                    try {
-                        actionData[input.name] = JSON.parse(value);
-                    } catch (error) {
-                        actionData[input.name] = value;
-                    }
-                } else if (input.type === 'number') {
-                    actionData[input.name] = value ? parseInt(value) : null;
-                } else {
-                    actionData[input.name] = value;
-                }
-            }
-        });
-        
-        // Récupérer le mapping des variables de sortie
-        const outputMapping = {};
-        document.querySelectorAll('.output-var-checkbox:checked').forEach(checkbox => {
-            const varName = checkbox.dataset.varName;
-            const mappingSelect = document.querySelector(`.output-var-mapping[data-var-name="${varName}"]`);
-            if (mappingSelect && mappingSelect.value) {
-                outputMapping[varName] = mappingSelect.value;
-            }
-        });
-        
-        if (Object.keys(outputMapping).length > 0) {
-            actionData.output_mapping = outputMapping;
-        }
-        
-        console.log('Données collectées:', actionData);
-        
-        const action = {
-            type: actionType,
-            value: actionData
-        };
-        
-        console.log('Action finale:', action);
-        
-        if (editingActionIndex >= 0) {
-            actions[editingActionIndex] = action;
-            Notification.success('Action modifiée avec succès');
-        } else {
-            actions.push(action);
-            Notification.success('Action ajoutée avec succès');
-        }
-        
-        renderActionsList();
-        actionModal.hide();
-    });
-    
-    // Mettre à jour le test
-    document.getElementById('updateTestBtn').addEventListener('click', async () => {
+    // Fonction pour mettre à jour le test
+    async function updateTest() {
         console.log('=== DÉBUT DE LA MISE À JOUR DU TEST ===');
         
         const testName = document.getElementById('testName').value;
@@ -621,173 +185,70 @@
         
         if (!testName) {
             Notification.error('Veuillez saisir un nom pour le test');
-            return;
+            return false;
         }
         
-        if (actions.length === 0) {
+        if (testActionsManager.actions.length === 0) {
             Notification.error('Veuillez ajouter au moins une action au test');
-            return;
+            return false;
         }
         
-        console.log('Nombre d\'actions:', actions.length);
-        console.log('Nombre de variables:', variables.length);
+        console.log('Nombre d\'actions:', testActionsManager.actions.length);
+        console.log('Nombre de variables:', testActionsManager.variables.length);
         
         const data = {
-            actions: actions,
+            actions: testActionsManager.actions,
             name: testName,
             description: testDescription,
-            variables: variables
+            variables: testActionsManager.variables
         };
         
         console.log('Données à envoyer au serveur:', data);
-        console.log('Actions:', JSON.stringify(actions, null, 2));
-        console.log('Variables:', JSON.stringify(variables, null, 2));
+        console.log('Actions:', JSON.stringify(testActionsManager.actions, null, 2));
+        console.log('Variables:', JSON.stringify(testActionsManager.variables, null, 2));
         
         try {
             console.log('Envoi de la requête PUT à:', `/api/tests/${testId}`);
             const response = await API.put(`/api/tests/${testId}`, data);
             console.log('Réponse du serveur:', response);
+            return true;
+        } catch (error) {
+            console.error('Erreur lors de la mise à jour:', error);
+            Notification.error('Erreur lors de la mise à jour du test: ' + error.message);
+            return false;
+        }
+    }
+    
+    // Mettre à jour le test
+    document.getElementById('updateTestBtn').addEventListener('click', async () => {
+        const success = await updateTest();
+        if (success) {
             Notification.success('Test mis à jour avec succès');
             setTimeout(() => {
                 window.location.href = `/campains/${campainId}`;
             }, 1000);
-        } catch (error) {
-            console.error('Erreur lors de la mise à jour:', error);
-            Notification.error('Erreur lors de la mise à jour du test: ' + error.message);
         }
     });
     
-    // Supprimer le test
-    document.getElementById('deleteTestBtn').addEventListener('click', async () => {
-        if (!confirm('Êtes-vous sûr de vouloir supprimer ce test ? Cette action est irréversible.')) {
-            return;
-        }
-        
-        try {
-            await API.delete(`/api/tests/${testId}`);
-            Notification.success('Test supprimé avec succès');
+    // Enregistrer et lancer le test
+    document.getElementById('btnSaveAndExecute').addEventListener('click', async () => {
+        const success = await updateTest();
+        if (success) {
+            Notification.success('Test mis à jour avec succès');
             setTimeout(() => {
-                window.location.href = `/campains/${campainId}`;
+                window.location.href = `/test/${testId}/execute`;
             }, 1000);
-        } catch (error) {
-            Notification.error('Erreur lors de la suppression du test: ' + error.message);
         }
     });
-    
-    // Fonction pour afficher la liste des variables
-    function renderVariablesList() {
-        const variablesList = document.getElementById('variablesList');
-        
-        if (variables.length === 0) {
-            variablesList.innerHTML = '';
-            return;
-        }
-        
-        let html = '<div class="mb-3">';
-        html += '<div class="text-muted mb-2"><strong>Variables associées :</strong></div>';
-        html += '<div class="d-flex flex-wrap gap-2">';
-        
-        variables.forEach((variable, index) => {
-            html += `
-                <span class="badge bg-info d-flex align-items-center" style="font-size: 0.9rem; padding: 0.5rem 0.7rem;">
-                    <i class="fas fa-tag me-2"></i>
-                    ${variable}
-                    <button type="button" class="btn-close btn-close-white ms-2" 
-                            onclick="removeVariable(${index})" 
-                            style="font-size: 0.6rem;"
-                            title="Supprimer"></button>
-                </span>
-            `;
-        });
-        
-        html += '</div></div>';
-        variablesList.innerHTML = html;
-    }
-    
-    // Fonction pour ouvrir le modal d'ajout de variable
-    document.getElementById('addVariableBtn').addEventListener('click', () => {
-        document.getElementById('variableForm').reset();
-        variableModal.show();
-    });
-    
-    // Fonction pour sauvegarder une variable
-    document.getElementById('saveVariableBtn').addEventListener('click', () => {
-        const variableName = document.getElementById('variableName').value.trim();
-        
-        if (!variableName) {
-            Notification.error('Veuillez saisir un nom de variable');
-            return;
-        }
-        
-        // Validation alphanumérique
-        const alphanumRegex = /^[a-zA-Z0-9_]+$/;
-        if (!alphanumRegex.test(variableName)) {
-            Notification.error('Le nom de la variable doit contenir uniquement des caractères alphanumériques et underscore');
-            return;
-        }
-        
-        // Vérifier si la variable existe déjà
-        if (variables.includes(variableName)) {
-            Notification.error('Cette variable existe déjà');
-            return;
-        }
-        
-        variables.push(variableName);
-        renderVariablesList();
-        renderActionsList(); // Actualiser les badges de variables de sortie
-        variableModal.hide();
-        Notification.success('Variable ajoutée avec succès');
-    });
-    
-    // Fonction pour supprimer une variable
-    window.removeVariable = (index) => {
-        if (confirm('Êtes-vous sûr de vouloir supprimer cette variable ?')) {
-            variables.splice(index, 1);
-            renderVariablesList();
-            renderActionsList(); // Actualiser les badges de variables de sortie
-            Notification.success('Variable supprimée');
-        }
-    };
     
     // Initialisation
     document.addEventListener('DOMContentLoaded', async () => {
-        actionModal = new bootstrap.Modal(document.getElementById('actionModal'));
-        variableModal = new bootstrap.Modal(document.getElementById('variableModal'));
-        await loadActionMasks();
-        await loadActionOutputVariables();
+        testActionsManager = new TestActionsManager();
+        await testActionsManager.init();
         await loadTestData();
-        
-        // Initialiser l'autocomplétion des variables
-        window.variableAutocomplete = new VariableAutocomplete({
-            apiEndpoint: '/api/variables?isRoot=true&page_size=100'
-        });
-        
-        // Mettre à jour les suggestions de variables du test
-        updateTestVariablesSuggestions();
     });
-    
-    /**
-     * Met à jour les suggestions de variables du test dans l'autocomplétion
-     */
-    function updateTestVariablesSuggestions() {
-        if (window.variableAutocomplete) {
-            window.variableAutocomplete.setVariables('test', variables);
-        }
-    }
-    
-    // Fonction originale modifiée pour mettre à jour les suggestions
-    const originalRenderVariablesList = renderVariablesList;
-    renderVariablesList = function() {
-        originalRenderVariablesList();
-        updateTestVariablesSuggestions();
-    };
-    
-    const originalRemoveVariable = window.removeVariable;
-    window.removeVariable = function(index) {
-        originalRemoveVariable(index);
-        updateTestVariablesSuggestions();
-    };
 </script>
 {% endblock %}
+
 
 

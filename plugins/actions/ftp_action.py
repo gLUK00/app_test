@@ -9,6 +9,7 @@ class FTPAction(ActionBase):
     
     # Métadonnées du plugin
     plugin_name = "ftp"
+    label = "FTP"
     version = "1.0.0"
     author = "TestGyver Team"
     

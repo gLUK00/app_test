@@ -484,3 +484,13 @@ footer a:hover {
     }
 }
 
+/* Barres de progression - Hauteur cohérente avec les badges */
+.progress {
+    height: 20px;
+}
+
+.progress-bar {
+    line-height: 20px;
+    font-size: 0.875rem;
+}
+

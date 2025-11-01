@@ -8,6 +8,7 @@ class SSHAction(ActionBase):
     
     # Métadonnées du plugin
     plugin_name = "ssh"
+    label = "SSH"
     version = "1.0.0"
     author = "TestGyver Team"
     

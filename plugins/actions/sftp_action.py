@@ -9,6 +9,7 @@ class SFTPAction(ActionBase):
     
     # Métadonnées du plugin
     plugin_name = "sftp"
+    label = "SFTP"
     version = "1.0.0"
     author = "TestGyver Team"
     

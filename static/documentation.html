@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentation - TestGyver</title>
+    <link href="/static/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/vendor/fontawesome/css/all.min.css">
+    <style>
+        body {
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .doc-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .header-section {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        .header-section h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        .doc-card {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .doc-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 12px rgba(0,0,0,0.15);
+        }
+        .doc-card h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+        .doc-card .icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            color: #764ba2;
+        }
+        .doc-card p {
+            color: #666;
+            margin-bottom: 15px;
+        }
+        .doc-card .btn {
+            width: 100%;
+        }
+        .category-badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        .badge-test {
+            background-color: #e3f2fd;
+            color: #1976d2;
+        }
+        .badge-feature {
+            background-color: #f3e5f5;
+            color: #7b1fa2;
+        }
+        .badge-new {
+            background-color: #e8f5e9;
+            color: #388e3c;
+        }
+        .footer-links {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(255,255,255,0.9);
+            border-radius: 10px;
+        }
+        .footer-links a {
+            margin: 0 15px;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .footer-links a:hover {
+            color: #764ba2;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="doc-container">
+        <!-- Header -->
+        <div class="header-section">
+            <h1><i class="fas fa-book-open"></i> Documentation TestGyver</h1>
+            <p class="lead">Documentation interactive, exemples et pages de test</p>
+        </div>
+
+        <!-- Grid de documentation -->
+        <div class="row">
+            <!-- Test Autocomplétion -->
+            <div class="col-md-6">
+                <div class="doc-card">
+                    <div class="text-center">
+                        <div class="icon">
+                            <i class="fas fa-magic"></i>
+                        </div>
+                        <span class="category-badge badge-test">Test</span>
+                    </div>
+                    <h3>Autocomplétion Simple</h3>
+                    <p>
+                        Page de test pour l'autocomplétion basique des variables.
+                        Permet de tester les suggestions de variables dans un champ de saisie.
+                    </p>
+                    <p><strong>Fonctionnalités :</strong></p>
+                    <ul>
+                        <li>Test de l'autocomplétion de base</li>
+                        <li>Variables simples</li>
+                        <li>Interface de démonstration</li>
+                    </ul>
+                    <a href="/static/test-autocomplete.html" class="btn btn-primary">
+                        <i class="fas fa-external-link-alt"></i> Ouvrir
+                    </a>
+                </div>
+            </div>
+
+            <!-- Test Autocomplétion Multi-type -->
+            <div class="col-md-6">
+                <div class="doc-card">
+                    <div class="text-center">
+                        <div class="icon">
+                            <i class="fas fa-layer-group"></i>
+                        </div>
+                        <span class="category-badge badge-feature">Fonctionnalité</span>
+                    </div>
+                    <h3>Autocomplétion Multi-type</h3>
+                    <p>
+                        Démonstration complète de l'autocomplétion avec plusieurs types de variables :
+                        TestGyver, Test et Collection.
+                    </p>
+                    <p><strong>Types de variables :</strong></p>
+                    <ul>
+                        <li><i class="fas fa-vial" style="color: #007bff;"></i> TestGyver (bleu)</li>
+                        <li><i class="fas fa-flask" style="color: #28a745;"></i> Test (vert)</li>
+                        <li><i class="fas fa-layer-group" style="color: #dc3545;"></i> Collection (rouge)</li>
+                    </ul>
+                    <a href="/static/test-multitype-autocomplete.html" class="btn btn-primary">
+                        <i class="fas fa-external-link-alt"></i> Ouvrir
+                    </a>
+                </div>
+            </div>
+
+            <!-- Test Socket.IO -->
+            <div class="col-md-6">
+                <div class="doc-card">
+                    <div class="text-center">
+                        <div class="icon">
+                            <i class="fas fa-plug"></i>
+                        </div>
+                        <span class="category-badge badge-test">Test</span>
+                    </div>
+                    <h3>Test Socket.IO</h3>
+                    <p>
+                        Page de diagnostic pour tester la connexion WebSocket avec Socket.IO.
+                        Affiche l'état de la connexion et les événements en temps réel.
+                    </p>
+                    <p><strong>Tests disponibles :</strong></p>
+                    <ul>
+                        <li>État de la connexion Socket.IO</li>
+                        <li>Événements de connexion/déconnexion</li>
+                        <li>Journal des messages</li>
+                    </ul>
+                    <a href="/static/test-socketio.html" class="btn btn-primary">
+                        <i class="fas fa-external-link-alt"></i> Ouvrir
+                    </a>
+                </div>
+            </div>
+
+            <!-- Test Variables de Collection -->
+            <div class="col-md-6">
+                <div class="doc-card">
+                    <div class="text-center">
+                        <div class="icon">
+                            <i class="fas fa-folder-open"></i>
+                        </div>
+                        <span class="category-badge badge-new">Nouveau</span>
+                    </div>
+                    <h3>Variables de Collection (files_dir & work_dir)</h3>
+                    <p>
+                        Démonstration des nouvelles variables de collection pour accéder aux
+                        répertoires de fichiers et de travail des campagnes.
+                    </p>
+                    <p><strong>Variables disponibles :</strong></p>
+                    <ul>
+                        <li><code>{{test.files_dir}}</code> - Répertoire des fichiers</li>
+                        <li><code>{{test.work_dir}}</code> - Répertoire de travail</li>
+                        <li>Exemples d'utilisation pratiques</li>
+                    </ul>
+                    <a href="/static/test-collection-variables.html" class="btn btn-primary">
+                        <i class="fas fa-external-link-alt"></i> Ouvrir
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ressources Additionnelles -->
+        <div class="header-section">
+            <h2><i class="fas fa-external-link-alt"></i> Ressources Additionnelles</h2>
+            <div class="row mt-4">
+                <div class="col-md-4">
+                    <div class="card border-primary">
+                        <div class="card-body text-center">
+                            <i class="fas fa-code fa-3x text-primary mb-3"></i>
+                            <h5>Documentation API</h5>
+                            <p>Interface Swagger pour explorer l'API REST</p>
+                            <a href="/swagger" target="_blank" class="btn btn-outline-primary">
+                                <i class="fas fa-book"></i> Swagger UI
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card border-success">
+                        <div class="card-body text-center">
+                            <i class="fas fa-home fa-3x text-success mb-3"></i>
+                            <h5>Dashboard</h5>
+                            <p>Retour à l'interface principale de TestGyver</p>
+                            <a href="/dashboard" class="btn btn-outline-success">
+                                <i class="fas fa-tachometer-alt"></i> Dashboard
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card border-info">
+                        <div class="card-body text-center">
+                            <i class="fas fa-book-reader fa-3x text-info mb-3"></i>
+                            <h5>Documentation Markdown</h5>
+                            <p>Documentation technique complète dans /docs</p>
+                            <a href="https://github.com/gLUK00/app_test/tree/main/docs" target="_blank" class="btn btn-outline-info">
+                                <i class="fab fa-github"></i> GitHub
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer-links">
+            <i class="fas fa-info-circle"></i>
+            <strong>TestGyver</strong> - Système de tests automatisés
+            <br>
+            <a href="/dashboard"><i class="fas fa-arrow-left"></i> Retour au Dashboard</a> |
+            <a href="/swagger" target="_blank"><i class="fas fa-book"></i> API</a> |
+            <a href="https://github.com/gLUK00/app_test" target="_blank"><i class="fab fa-github"></i> GitHub</a>
+        </div>
+    </div>
+
+    <script src="/static/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

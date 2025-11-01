@@ -6,6 +6,8 @@ from flask_swagger_ui import get_swaggerui_blueprint
 from flask_socketio import SocketIO, join_room, leave_room
 from utils.db import load_config
 from utils.workdir import ensure_workdir_exists
+from utils.campain_executor import CampainExecutor
+from utils.test_executor import TestExecutor
 from routes import (
     auth_bp,
     users_bp,
@@ -38,6 +40,12 @@ def create_app():
     # Stocker socketio dans les extensions pour un accès facile
     app.extensions['socketio'] = socketio
     
+    # Initialiser les exécuteurs
+    campain_executor = CampainExecutor(socketio)
+    test_executor = TestExecutor(socketio)
+    app.config['CAMPAIN_EXECUTOR'] = campain_executor
+    app.config['TEST_EXECUTOR'] = test_executor
+    
     # Gestionnaires d'événements WebSocket
     @socketio.on('join')
     def handle_join(data):
@@ -46,6 +54,24 @@ def create_app():
         if room:
             join_room(room)
             print(f"Client rejoint la room: {room}")
+    
+    @socketio.on('join_rapport')
+    def handle_join_rapport(data):
+        """Permet à un client de rejoindre la room d'un rapport."""
+        rapport_id = data.get('rapport_id')
+        if rapport_id:
+            room = f'rapport_{rapport_id}'
+            join_room(room)
+            print(f"Client rejoint la room du rapport: {room}")
+    
+    @socketio.on('join_test')
+    def handle_join_test(data):
+        """Permet à un client de rejoindre la room d'un test."""
+        test_id = data.get('test_id')
+        if test_id:
+            room = f'test_{test_id}'
+            join_room(room)
+            print(f"Client rejoint la room du test: {room}")
     
     @socketio.on('leave')
     def handle_leave(data):

@@ -202,6 +202,9 @@ function initWebSocket() {
             updateRapportStatus(data.status);
             updateProgress(100);
             Notification.success('Exécution de la campagne terminée');
+            
+            // Recharger les détails du rapport pour s'assurer de la synchronisation
+            loadRapportDetails();
         }
     });
     

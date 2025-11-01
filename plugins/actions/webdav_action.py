@@ -1,19 +1,20 @@
 """Action pour effectuer des opérations WebDAV."""
 import os
 from plugins.actions.action_base import ActionBase
-from webdav4.client import Client
+from utils.webdav_utils import WebDAVClient
 
 class WebdavAction(ActionBase):
     """Action pour effectuer des opérations WebDAV sur un serveur distant."""
     
     # Métadonnées du plugin
     plugin_name = "webdav"
+    label = "WebDAV"
     version = "1.0.0"
     author = "TestGyver Team"
     
     def _is_directory(self, client, path):
         """
-        Vérifie si un chemin est un répertoire en utilisant la méthode info().
+        Vérifie si un chemin est un répertoire.
         
         Args:
             client: Instance du client WebDAV
@@ -22,20 +23,7 @@ class WebdavAction(ActionBase):
         Returns:
             bool: True si c'est un répertoire, False sinon
         """
-        try:
-            # Normaliser le chemin avec slash final pour les répertoires
-            check_path = path.rstrip('/') + '/'
-            info = client.info(check_path)
-            # Vérifier si c'est une collection (répertoire)
-            return info.get('type') == 'directory'
-        except Exception:
-            # Si info échoue, essayer avec ls
-            try:
-                check_path = path.rstrip('/') + '/'
-                client.ls(check_path, detail=False)
-                return True  # Si ls réussit, c'est un répertoire
-            except Exception:
-                return False  # Si les deux échouent, ce n'est pas un répertoire
+        return client.is_directory(path)
     
     def get_metadata(self):
         """Retourne les métadonnées de l'action."""
@@ -82,21 +70,21 @@ class WebdavAction(ActionBase):
                 "name": "action",
                 "type": "select",
                 "label": "Action WebDAV",
-                "options": ["CHECK", "INFO", "LIST", "MKDIR", "CLEAN", "MOVE", "DOWNLOAD", "UPLOAD"],
+                "options": ["CHECK", "INFO", "LIST", "MKDIR", "REMOVE", "MOVE", "DOWNLOAD", "UPLOAD"],
                 "required": True
             },
             {
                 "name": "srcFile",
                 "type": "string",
                 "label": "Fichier source/chemin",
-                "placeholder": "pour check, info, list, clean, copy, move, download, upload",
+                "placeholder": "pour check, info, list, remove, move, download, upload",
                 "required": False
             },
             {
                 "name": "targFile",
                 "type": "string",
                 "label": "Fichier cible/chemin",
-                "placeholder": "pour copy, move, download, upload",
+                "placeholder": "pour move, download, upload",
                 "required": False
             }
         ]
@@ -127,11 +115,8 @@ class WebdavAction(ActionBase):
             
             self.add_trace(f"Préparation de l'opération WebDAV {action} vers {url}")
             
-            auth = ()
-            if username and password:
-                self.add_trace(f"Authentification avec l'utilisateur: {username}")
-                auth = (username, password)
-            client = Client(url, auth=auth)
+            # Utiliser notre client WebDAV personnalisé
+            client = WebDAVClient(url, username, password)
             
             if action == "CHECK":
                 exists = client.exists(src_file)
@@ -143,7 +128,7 @@ class WebdavAction(ActionBase):
                 self.add_trace(f"Informations sur {src_file}: {info}")
                 return self.get_result( True, { "webdav_response": info })
             if action == "LIST":
-                listing = client.ls(src_file)
+                listing = client.list_directory(src_file)
                 self.add_trace(f"Liste des fichiers dans {src_file}: {listing}")
                 return self.get_result( True, { "webdav_response": listing })
             if action == "MKDIR":
@@ -151,9 +136,10 @@ class WebdavAction(ActionBase):
                 self._mkdir_recursive(client, src_file)
                 self.add_trace(f"Répertoire créé: {src_file}")
                 return self.get_result( True, { "webdav_response": True } )
-            if action == "CLEAN":
-                client.clean(src_file)
-                self.add_trace(f"Contenu nettoyé dans: {src_file}")
+            if action == "REMOVE":
+                # Utiliser la méthode delete avec récursivité
+                client.delete(src_file, recursive=True)
+                self.add_trace(f"Ressource supprimée: {src_file}")
                 return self.get_result( True, { "webdav_response": True } )
             if action == "MOVE":
                 client.move(src_file, targ_file)
@@ -171,7 +157,7 @@ class WebdavAction(ActionBase):
                 # Vérifier si src_file est un fichier ou un répertoire
                 if os.path.isfile(local_path):
                     # Upload d'un seul fichier
-                    client.upload_file(from_path=local_path, to_path=targ_file)
+                    client.upload_file(local_path=local_path, remote_path=targ_file)
                     self.add_trace(f"Fichier uploadé de {local_path} à {targ_file}")
                 elif os.path.isdir(local_path):
                     # Upload récursif d'un répertoire
@@ -216,7 +202,7 @@ class WebdavAction(ActionBase):
             
             if os.path.isfile(local_path):
                 # Upload du fichier
-                client.upload_file(from_path=local_path, to_path=remote_path)
+                client.upload_file(local_path=local_path, remote_path=remote_path)
                 self.add_trace(f"Fichier uploadé: {local_path} -> {remote_path}")
             elif os.path.isdir(local_path):
                 # Appel récursif pour le sous-répertoire
@@ -275,3 +261,21 @@ class WebdavAction(ActionBase):
                 # Autre erreur, la propager
                 self.add_trace(f"Erreur lors de la création de {current_path}: {str(e)}")
                 raise
+    
+    def _list_directory_propfind(self, client, dir_path):
+        """
+        Liste le contenu d'un répertoire.
+        
+        Args:
+            client: Instance du client WebDAV
+            dir_path: Chemin du répertoire à lister (avec slash final)
+        
+        Returns:
+            Liste de dictionnaires avec 'name' et 'type' pour chaque élément
+        """
+        items = client.list_directory(dir_path)
+        
+        for item in items:
+            self.add_trace(f"  - Trouvé: {item['name']} (type: {item['type']})")
+        
+        return items

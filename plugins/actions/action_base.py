@@ -11,6 +11,7 @@ class ActionBase(PluginBase):
     
     # Métadonnées du plugin (à surcharger dans les sous-classes)
     plugin_name = None  # Nom unique de l'action (ex: 'http', 'ssh', etc.)
+    label = None  # Label d'affichage (ex: 'HTTP Request', 'I/O (Fichiers)', etc.)
     
     def __init__(self):
         """Initialise l'action."""

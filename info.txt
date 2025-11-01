@@ -506,15 +506,73 @@ Implémentation réalisée :
 
 ----------------------------------------------
 
-creer un plugin d'action "IoAction" pour effectuer :
+✅ TERMINÉ - creer un plugin d'action "IoAction" pour effectuer :
 - création de répertoire,
 - suppression de répertoire,
 - suppression de fichier,
 - écriture d'une variable dans un fichier,
 - alimentation d'une variable depuis un fichier,
+- lecture d'une variable depuis un fichier,
 - récupère une liste de fichiers dans un répertoire avec possibilité de filtrer par extension
+variables d'entrée :
+- operation : string (create_dir, delete_dir, delete_file, write_variable, read_variable, list_files)
+- path : string (chemin du répertoire ou du fichier)
+- variable_name : string (nom de la variable à écrire ou lire, requis pour write_variable et read_variable)
+- file_extension : string (extension des fichiers à lister, optionnel pour list_files)
+variables de sortie :
+- file_list : array (liste des fichiers trouvés, pour list_files)
+- file_content : string (contenu du fichier lu, pour read_variable)
 
 ----------------------------------------------
+
+✅ TERMINÉ - creer un plugin d'action "VarAction" pour effectuer :
+- convertir une variable en multiple types (int, float, bool, list, dict, json)
+variables d'entrée :
+- variable_name : liste des variables du test (nom de la variable à convertir)
+    - definir un nouveau type de variable "type": "select-var-test" dans le masque de saisie des actions
+    - qui permettra de selectionner une variable parmi les variables du test en cours
+- target_type : string (type cible : int, float, bool, list, dict, json)
+variables de sortie :
+- converted_value : mixed (valeur convertie de la variable)
+
+Implémentation réalisée :
+- Création du plugin VarAction (plugins/actions/var_action.py)
+  - Métadonnées : plugin_name="var", label="Variables (Conversion)"
+  - Masque de saisie avec 2 champs :
+    * variable_name (type: select-var-test) : sélection parmi les variables du test
+    * target_type (type: select) : choix du type cible
+  - Variable de sortie : converted_value
+  - Support de 6 types de conversion : int, float, bool, list, dict, json
+- Nouveau type de champ "select-var-test" implémenté dans static/test_actions.js
+  - Génère dynamiquement une liste déroulante des variables du test
+  - Réutilisable pour d'autres plugins nécessitant une sélection de variable
+- Conversions intelligentes :
+  - int/float : conversion standard avec gestion d'erreur
+  - bool : gestion intelligente des strings ('true', 'false', 'yes', 'no', '1', '0')
+  - list : parsing JSON ou encapsulation selon le type source
+  - dict : parsing JSON avec validation
+  - json : sérialisation avec formatage indenté
+- Gestion complète des erreurs avec messages détaillés
+- Documentation complète : docs/VAR_ACTION_README.md
+  - Description du plugin et de ses fonctionnalités
+  - Nouveau type de champ "select-var-test" documenté
+  - Exemples d'utilisation et scénarios complets
+  - Recommandations et bonnes pratiques
+- Tests unitaires : _build/test_var_action.py (tous les tests passent ✅)
+  - Tests des métadonnées et du masque de saisie
+  - Tests de validation de configuration
+  - Tests de toutes les conversions (int, float, bool, list, dict, json)
+  - Tests des cas d'erreur
+- Tests d'intégration : _build/test_var_action_integration.py (tous les tests passent ✅)
+  - Test avec résolution de multiples variables
+  - Scénario réel de validation d'API REST
+  - Chaînage de conversions multiples
+- Intégration API validée :
+  - Plugin visible dans /api/actions/labels : "Variables (Conversion)"
+  - Masque disponible dans /api/actions/masks
+  - Variable de sortie dans /api/actions/output-variables
+
+-------------------------------------------------
 
 mettre en place un mecanisme multi-langue pour l'interface utilisateur :
 - utiliser Flask-Babel pour la gestion des traductions
@@ -568,5 +626,29 @@ Implémentation réalisée :
 - Compatibilité totale avec l'existant (aucun impact négatif)
 - Documentation complète : docs/COLLECTION_VARIABLES_FILES_WORK.md
 - Script de test : _build/test_collection_variables.py (tous les tests passent ✅)
+
+----------------------------------------------
+✅ TERMINÉ - créer une page d'exécution d'un seul test :
+- accessible via /web/test/:id/execute
+- affiche les informations du test
+- avec un bouton "Lancer le test"
+- lors du click sur ce bouton,
+- execute le test en arrière plan
+- affiche les logs d'execution en temps réel via websocket
+- affiche le statut d'execution (en attente, en cours, réussi, échoué)
+disponible sur :
+- mettre un lien "Enregistrer et lancer le test" dans les pages d'ajout et de modification d'un test, intégrer un bouton à droite du titre avant le bouton "Retour"
+- sur la liste des tests, ajouter un bouton "Lancer le test" pour chaque test et lors du click, lancer le test et rediriger vers la page d'execution du test
+----------------------------------------------
+
+----------------------------------------------
+
+----------------------------------------------
+
+----------------------------------------------
+
+----------------------------------------------
+
+----------------------------------------------
 
 ----------------------------------------------

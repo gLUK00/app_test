@@ -54,7 +54,7 @@ class CampainExecutor:
             self.socketio.emit('campain_started', {
                 'rapport_id': rapport_id,
                 'campain_id': campain_id
-            })
+            }, room=f'rapport_{rapport_id}')
             
             # Récupérer les variables de l'environnement
             variables = Variable.get_by_filiere(filiere)
@@ -94,7 +94,7 @@ class CampainExecutor:
                 self.socketio.emit('test_started', {
                     'rapport_id': rapport_id,
                     'test_id': test_id
-                })
+                }, room=f'rapport_{rapport_id}')
                 
                 # Récupérer les variables du test
                 test = Test.find_by_id(test_id)
@@ -123,12 +123,12 @@ class CampainExecutor:
                     'test_id': test_id,
                     'status': test_result['status'],
                     'logs': test_result['logs']
-                })
+                }, room=f'rapport_{rapport_id}')
                 
                 self.socketio.emit('campain_progress', {
                     'rapport_id': rapport_id,
                     'progress': progress
-                })
+                }, room=f'rapport_{rapport_id}')
             
             # Finaliser le rapport
             final_status = 'completed' if global_success else 'failed'
@@ -146,7 +146,7 @@ class CampainExecutor:
                 'rapport_id': rapport_id,
                 'status': final_status,
                 'result': final_result
-            })
+            }, room=f'rapport_{rapport_id}')
             
         except Exception as e:
             # En cas d'erreur, mettre à jour le rapport
@@ -161,7 +161,7 @@ class CampainExecutor:
             self.socketio.emit('campain_error', {
                 'rapport_id': rapport_id,
                 'error': error_msg
-            })
+            }, room=f'rapport_{rapport_id}')
     
     def _execute_test(self, test_id, variables_dict, filiere):
         """
@@ -194,7 +194,7 @@ class CampainExecutor:
             test_variables = {}
             if 'variables' in test:
                 for var_name in test['variables']:
-                    test_variables[var_name] = None
+                    test_variables['app.'+var_name] = None
             
             # Exécuter chaque action
             actions = test.get('actions', [])
@@ -202,6 +202,7 @@ class CampainExecutor:
                 action_type = action_data.get('type')
                 action_value = action_data.get('value', {})
                 
+                logs.append( "--------------------------------" )
                 logs.append(f"[{datetime.now().strftime('%H:%M:%S')}] Exécution de l'action {action_index + 1}/{len(actions)}: {action_type}")
                 
                 # Remplacer les variables dans les valeurs de l'action
@@ -223,21 +224,31 @@ class CampainExecutor:
                     if result.get('result'):
                         logs.append(f"[{datetime.now().strftime('%H:%M:%S')}] ✅ Action réussie")
                         
-                        # Récupérer les variables de sortie
-                        output_vars = action_plugin.get_output_variables()
-                        for var_def in output_vars:
-                            var_name = var_def.get('name') if isinstance(var_def, dict) else var_def
-                            if var_name in result.get('output_variables', {}) and var_name in test_variables:
-                                test_variables[var_name] = result['output_variables'][var_name]
-                                logs.append(f"[{datetime.now().strftime('%H:%M:%S')}] 📝 Variable '{var_name}' = {result['output_variables'][var_name]}")
+                        # Ajouter les traces de l'action si présentes
+                        if result.get('traces'):
+                            for trace in result['traces']:
+                                logs.append(f"[{datetime.now().strftime('%H:%M:%S')}] 📋 {trace}")
+
+                        # Récupérer les variables de sortie si output_mapping est défini
+                        output_mapping = action_value.get('output_mapping', {})
+                        if output_mapping:
+                            output_values = result.get('output_variables', {})
+                            
+                            # Pour chaque mapping défini (nom_sortie_plugin -> nom_variable_test)
+                            for plugin_var_name, test_var_name in output_mapping.items():
+                                if plugin_var_name in output_values:
+                                    # Stocker la variable de sortie avec le préfixe app.
+                                    full_var_name = f"app.{test_var_name}"
+                                    test_variables[full_var_name] = output_values[plugin_var_name]
+                                    logs.append(f"[{datetime.now().strftime('%H:%M:%S')}] 📝 Variable '{test_var_name}' = {output_values[plugin_var_name]}")
                     else:
                         logs.append(f"[{datetime.now().strftime('%H:%M:%S')}] ❌ Action échouée: {result.get('message', 'Erreur inconnue')}")
+                        # Ajouter les traces même en cas d'échec
+                        if result.get('traces'):
+                            for trace in result['traces']:
+                                logs.append(f"[{datetime.now().strftime('%H:%M:%S')}] 📋 {trace}")
                         status = 'failed'
                         break
-                    
-                    # Ajouter les logs de l'action
-                    if result.get('logs'):
-                        logs.append(result['logs'])
                 
                 except Exception as e:
                     error_trace = traceback.format_exc()

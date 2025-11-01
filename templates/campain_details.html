@@ -104,7 +104,7 @@
                                         <th>Informations</th>
                                         <th>Types d'actions</th>
                                         <th>Date de création</th>
-                                        <th style="width: 120px;">Actions</th>
+                                        <th style="width: 160px;">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody id="testsTableBody">
@@ -305,6 +305,9 @@ async function loadTests() {
                     <td>${new Date(test.dateCreated).toLocaleString('fr-FR')}</td>
                     <td>
                         <div class="btn-group">
+                            <button class="btn btn-sm btn-outline-success" onclick="executeTest('${test._id}')" title="Lancer le test">
+                                <i class="fas fa-play"></i>
+                            </button>
                             <a href="/campains/${campainId}/edit/test/${test._id}" class="btn btn-sm btn-outline-primary" title="Modifier">
                                 <i class="fas fa-edit"></i>
                             </a>
@@ -379,12 +382,12 @@ async function loadRapports() {
                                      aria-valuemin="0" aria-valuemax="100">${progress}%</div>
                             </div>
                         </td>
-                        <td>
+                        <td align="right">
                             <button class="btn btn-sm btn-primary" onclick="viewRapport('${rapport._id}')">
-                                <i class="fas fa-eye"></i> Voir
+                                <i class="fas fa-eye"></i>
                             </button>
                             <button class="btn btn-sm btn-danger ms-1" onclick="deleteRapport('${rapport._id}', '${escapeHtml(rapport.details)}')">
-                                <i class="fas fa-trash"></i> Supprimer
+                                <i class="fas fa-trash"></i>
                             </button>
                         </td>
                     </tr>
@@ -416,6 +419,12 @@ async function deleteRapport(rapportId, rapportName) {
         console.error('Erreur lors de la suppression du rapport:', error);
         Notification.error(error.message || 'Erreur lors de la suppression du rapport');
     }
+}
+
+// Exécution d'un test individuel
+function executeTest(testId) {
+    // Rediriger vers la page d'exécution du test
+    window.location.href = `/test/${testId}/execute`;
 }
 
 // Suppression d'un test

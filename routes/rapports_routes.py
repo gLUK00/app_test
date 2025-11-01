@@ -1,5 +1,5 @@
 """Routes API pour la gestion des rapports."""
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, current_app
 from datetime import datetime
 from models.rapport import Rapport
 from models.campain import Campain
@@ -8,31 +8,18 @@ from models.variable import Variable
 from utils.auth import token_required
 from utils.pagination import get_pagination_params, paginate_results
 from utils.validation import validate_required_fields
-from utils.campain_executor import CampainExecutor
 
 rapports_bp = Blueprint('rapports_api', __name__, url_prefix='/api/rapports')
-
-# Instance de l'exécuteur de campagne
-executor = None
-
-def get_socketio():
-    """Récupère l'instance SocketIO depuis l'application Flask."""
-    from flask import current_app
-    return current_app.extensions.get('socketio')
-
-def init_executor():
-    """Initialise l'exécuteur de campagne."""
-    global executor
-    socketio = get_socketio()
-    if executor is None and socketio:
-        executor = CampainExecutor(socketio)
 
 @rapports_bp.route('/execute', methods=['POST'])
 @token_required
 def execute_campain():
     """Lance l'exécution d'une campagne."""
     try:
-        init_executor()
+        # Récupérer l'exécuteur depuis l'app
+        executor = current_app.config.get('CAMPAIN_EXECUTOR')
+        if not executor:
+            return jsonify({'message': 'Exécuteur de campagne non disponible'}), 500
         
         data = request.get_json()
         

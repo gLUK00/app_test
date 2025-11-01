@@ -1,6 +1,7 @@
 """Routes API pour la gestion des tests."""
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, current_app
 from models.test import Test
+from models.variable import Variable
 from utils.auth import token_required
 from utils.pagination import get_pagination_params, paginate_results
 from utils.validation import validate_required_fields
@@ -123,6 +124,52 @@ def add_action(test_id):
         Test.add_action(test_id, data)
         
         return jsonify({'message': 'Action ajoutée avec succès'}), 200
+    
+    except Exception as e:
+        return jsonify({'message': f'Erreur serveur: {str(e)}'}), 500
+
+@tests_bp.route('/filieres', methods=['GET'])
+@token_required
+def get_filieres():
+    """Récupère la liste des filières disponibles."""
+    try:
+        filieres = Variable.get_all_filieres()
+        return jsonify(filieres), 200
+    
+    except Exception as e:
+        return jsonify({'message': f'Erreur serveur: {str(e)}'}), 500
+
+@tests_bp.route('/<test_id>/execute', methods=['POST'])
+@token_required
+def execute_test(test_id):
+    """Lance l'exécution d'un test individuel."""
+    try:
+        data = request.get_json()
+        
+        # Validation
+        is_valid, message = validate_required_fields(data, ['filiere'])
+        if not is_valid:
+            return jsonify({'message': message}), 400
+        
+        filiere = data['filiere']
+        
+        # Vérifier que le test existe
+        test = Test.find_by_id(test_id)
+        if not test:
+            return jsonify({'message': 'Test non trouvé'}), 404
+        
+        # Récupérer le test_executor depuis l'app
+        test_executor = current_app.config.get('TEST_EXECUTOR')
+        if not test_executor:
+            return jsonify({'message': 'Exécuteur de test non disponible'}), 500
+        
+        # Lancer l'exécution
+        test_executor.execute_test(test_id, filiere)
+        
+        return jsonify({
+            'message': 'Exécution du test lancée',
+            'test_id': test_id
+        }), 200
     
     except Exception as e:
         return jsonify({'message': f'Erreur serveur: {str(e)}'}), 500

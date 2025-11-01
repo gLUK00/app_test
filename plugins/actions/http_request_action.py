@@ -8,6 +8,7 @@ class HTTPRequestAction(ActionBase):
     
     # Métadonnées du plugin
     plugin_name = "http"
+    label = "HTTP Request"
     version = "1.0.0"
     author = "TestGyver Team"
     

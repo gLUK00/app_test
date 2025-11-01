@@ -66,3 +66,24 @@ def get_output_variables(action_type):
         return jsonify({'type': action_type, 'output_variables': output_vars}), 200
     except Exception as e:
         return jsonify({'message': f'Erreur serveur: {str(e)}'}), 500
+
+@actions_bp.route('/labels', methods=['GET'])
+def get_all_labels():
+    """Récupère tous les labels d'affichage pour tous les types d'actions."""
+    try:
+        actions = get_all_actions()
+        labels = {}
+        
+        for action_type, action_info in actions.items():
+            action_instance = get_action(action_type)
+            if action_instance:
+                # Utiliser le label de la classe ou générer un label par défaut
+                if hasattr(action_instance, 'label') and action_instance.label:
+                    labels[action_type] = action_instance.label
+                else:
+                    # Fallback: capitaliser le type d'action
+                    labels[action_type] = action_type.replace('_', ' ').replace('-', ' ').title()
+        
+        return jsonify(labels), 200
+    except Exception as e:
+        return jsonify({'message': f'Erreur serveur: {str(e)}'}), 500
