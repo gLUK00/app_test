@@ -59,6 +59,41 @@
     background-color: #e7f1ff;
     color: #0c63e4;
 }
+
+.accordion-button {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    gap: 1rem;
+}
+
+.accordion-button .test-main {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex: 1;
+    min-width: 0;
+    flex-wrap: wrap;
+}
+
+.accordion-button .test-main .status-icon {
+    margin-right: 0.35rem;
+}
+
+.accordion-button .test-main .test-status {
+    margin-left: 0.35rem;
+}
+
+.accordion-button .test-meta {
+    margin-left: auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    color: #6c757d;
+    font-size: 0.9rem;
+    white-space: nowrap;
+}
 </style>
 {% endblock %}
 
@@ -90,15 +125,21 @@
                 </div>
                 <div class="card-body">
                     <div class="row">
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <p><strong>Nom :</strong> <span id="rapportName">-</span></p>
                             <p><strong>Environnement :</strong> <span class="badge bg-info" id="rapportFiliere">-</span></p>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <p><strong>Date de création :</strong> <span id="rapportDate">-</span></p>
                             <p><strong>Statut :</strong> <span id="rapportStatus">-</span></p>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-3">
+                            <p><strong>Temps d'exécution :</strong></p>
+                            <p class="fs-4 text-primary mb-0">
+                                <i class="fas fa-stopwatch"></i> <span id="rapportExecutionTime">-</span>
+                            </p>
+                        </div>
+                        <div class="col-md-3">
                             <p><strong>Progression :</strong></p>
                             <div class="progress" style="height: 25px;">
                                 <div class="progress-bar" id="rapportProgress" role="progressbar" 
@@ -234,6 +275,13 @@ async function loadRapportDetails() {
         updateRapportStatus(data.status);
         updateProgress(data.progress || 0);
         
+        // Afficher le temps d'exécution de la campagne
+        if (data.executionTimeMs) {
+            document.getElementById('rapportExecutionTime').textContent = formatExecutionTime(data.executionTimeMs);
+        } else {
+            document.getElementById('rapportExecutionTime').textContent = '-';
+        }
+        
         // Si le rapport est en cours d'exécution, afficher l'indicateur live
         if (data.status === 'running' || data.status === 'pending') {
             isLive = true;
@@ -264,7 +312,7 @@ function loadTests(tests) {
     accordion.innerHTML = tests.map((test, index) => {
         const status = test.status || 'pending';
         const logs = test.logs || 'Aucun log disponible';
-        const testId = test.testId;
+        const testId = test.testId || test.id || `test-${index + 1}`;
         
         let statusIcon = '';
         let statusClass = '';
@@ -298,18 +346,33 @@ function loadTests(tests) {
                 break;
         }
         
+        // Formatage du temps d'exécution du test
+        const executionTime = test.executionTimeMs ? formatExecutionTime(test.executionTimeMs) : '-';
+        const displayTitle = getTestDisplayTitle(test, index);
+        const escapedTitle = escapeHtml(displayTitle);
+        
         return `
-            <div class="accordion-item" id="test-${testId}">
+            <div class="accordion-item" id="test-${testId}" data-test-title="${escapedTitle}">
                 <h2 class="accordion-header">
                     <button class="accordion-button ${index > 0 ? 'collapsed' : ''}" type="button" 
                             data-bs-toggle="collapse" data-bs-target="#collapse-${testId}">
-                        <i class="fas ${statusIcon} ${statusClass} me-2"></i>
-                        Test ${index + 1} - <span class="ms-2 ${statusClass}">${statusText}</span>
+                        <span class="test-main">
+                            <i class="fas ${statusIcon} ${statusClass} status-icon"></i>
+                            <span class="test-title">${escapedTitle}</span>
+                            <span class="${statusClass} test-status">${statusText}</span>
+                        </span>
+                        <span class="test-meta">
+                            <i class="fas fa-stopwatch"></i>
+                            <span class="test-execution-time">${executionTime}</span>
+                        </span>
                     </button>
                 </h2>
                 <div id="collapse-${testId}" class="accordion-collapse collapse ${index === 0 ? 'show' : ''}" 
                      data-bs-parent="#testsAccordion">
                     <div class="accordion-body">
+                        <div class="mb-3">
+                            <strong>Temps d'exécution:</strong> ${executionTime}
+                        </div>
                         <h6>Logs d'exécution:</h6>
                         <div class="test-log" id="logs-${testId}">${escapeHtml(logs)}</div>
                     </div>
@@ -323,6 +386,7 @@ function loadTests(tests) {
 function updateTestStatus(testId, status, logs) {
     const testElement = document.getElementById(`test-${testId}`);
     if (!testElement) return;
+    const title = testElement.dataset.testTitle || `#${testId}`;
     
     let statusIcon = '';
     let statusClass = '';
@@ -357,10 +421,21 @@ function updateTestStatus(testId, status, logs) {
     }
     
     const button = testElement.querySelector('.accordion-button');
-    button.innerHTML = `
-        <i class="fas ${statusIcon} ${statusClass} me-2"></i>
-        ${button.textContent.split('-')[0]} - <span class="ms-2 ${statusClass}">${statusText}</span>
-    `;
+    if (button) {
+        const iconElement = button.querySelector('.status-icon');
+        if (iconElement) {
+            iconElement.className = `fas ${statusIcon} ${statusClass} status-icon`;
+        }
+        const titleElement = button.querySelector('.test-title');
+        if (titleElement) {
+            titleElement.textContent = title;
+        }
+        const statusElement = button.querySelector('.test-status');
+        if (statusElement) {
+            statusElement.className = `${statusClass} test-status`;
+            statusElement.textContent = statusText;
+        }
+    }
     
     if (logs) {
         const logsElement = document.getElementById(`logs-${testId}`);
@@ -422,6 +497,31 @@ function escapeHtml(text) {
         "'": '&#039;'
     };
     return String(text).replace(/[&<>"']/g, m => map[m]);
+}
+
+function getTestDisplayTitle(test, index) {
+    const name = (test.name || '').trim();
+    const description = (test.description || '').trim();
+    if (name && description) {
+        return `${name} - ${description}`;
+    }
+    return name || description || `Test ${index + 1}`;
+}
+
+// Fonction pour formater le temps d'exécution
+function formatExecutionTime(milliseconds) {
+    if (!milliseconds || milliseconds === 0) return '-';
+    
+    if (milliseconds < 1000) {
+        return `${milliseconds} ms`;
+    } else if (milliseconds < 60000) {
+        const seconds = (milliseconds / 1000).toFixed(2);
+        return `${seconds} s`;
+    } else {
+        const minutes = Math.floor(milliseconds / 60000);
+        const seconds = ((milliseconds % 60000) / 1000).toFixed(0);
+        return `${minutes} min ${seconds} s`;
+    }
 }
 
 // Initialisation

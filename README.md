@@ -88,8 +88,18 @@ TestGyver est une application de test multi-environnements destinée à orchestr
 4. Accédez à l'application sur `http://localhost:5000`.
 
 ## Scripts utiles
-- `start.sh` : script d'entrée standardisé (utilisé aussi par Docker). Assurez-vous qu'il est exécutable (`chmod +x start.sh`).
-- `flask` CLI : gérer les actions de maintenance (création d'utilisateurs admin, migrations éventuelles, etc.).
+- **`init/create_user.py`** : création d'utilisateurs (admin ou user) en mode interactif ou ligne de commande
+  ```bash
+  # Mode interactif (recommandé)
+  python3 init/create_user.py
+  
+  # Ligne de commande
+  python3 init/create_user.py -n "Admin" -e admin@test.com -p Password123 -r admin
+  ```
+  Voir [init/CREATE_USER_README.md](init/CREATE_USER_README.md) pour plus de détails.
+- **`init/init_database.py`** : initialisation complète de la base de données avec collections et index
+- **`start.sh`** : script d'entrée standardisé (utilisé aussi par Docker). Assurez-vous qu'il est exécutable (`chmod +x start.sh`).
+- **`flask` CLI** : gérer les actions de maintenance (migrations éventuelles, etc.).
 
 ## Conteneurisation
 1. Construisez l'image :

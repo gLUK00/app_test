@@ -90,8 +90,39 @@ class ActionBase(PluginBase):
         """
         pass
     
+    def get_js_show_form(self):
+        """
+        Retourne le code JavaScript à exécuter lors de l'affichage du formulaire.
+        Cette fonction est appelée après la génération des champs dynamiques.
+        
+        Returns:
+            str: Code JavaScript de la fonction jsShowForm ou None
+            La fonction JavaScript doit avoir la signature:
+            function jsShowForm(actionConfig) {
+                // actionConfig: objet contenant les valeurs actuelles des champs
+                // Pas de valeur de retour
+            }
+        """
+        return None
+    
+    def get_js_validate_form(self):
+        """
+        Retourne le code JavaScript à exécuter lors de la validation du formulaire.
+        Cette fonction est appelée avant la soumission du formulaire.
+        
+        Returns:
+            str: Code JavaScript de la fonction jsValidateForm ou None
+            La fonction JavaScript doit avoir la signature:
+            function jsValidateForm(actionConfig) {
+                // actionConfig: objet contenant les valeurs actuelles des champs
+                // Retourne un objet: {isValid: boolean, errorMessage: string}
+                return {isValid: true, errorMessage: ''};
+            }
+        """
+        return None
+    
     @abstractmethod
-    def execute(self, action_context):
+    def execute(self, action_context, test_variables=None):
         """
         Exécute l'action avec le contexte fourni.
         

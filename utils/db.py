@@ -25,6 +25,22 @@ def get_db_connection():
         raise Exception(f"Impossible de se connecter à MongoDB: {e}")
 
 def get_collection(collection_name):
-    """Retourne une collection MongoDB spécifique."""
+    """Retourne une collection MongoDB spécifique avec le préfixe configuré."""
     db = get_db_connection()
-    return db[collection_name]
+    config = load_config()
+    mongo_config = config['mongo']
+    
+    # Récupérer le préfixe depuis la configuration (vide "" par défaut)
+    prefix = mongo_config.get('prefix', '')
+    
+    # Appliquer le préfixe au nom de la collection
+    prefixed_collection_name = f"{prefix}{collection_name}"
+    
+    return db[prefixed_collection_name]
+
+def is_soft_delete_enabled():
+    """Vérifie si la suppression logique est activée dans la configuration."""
+    config = load_config()
+    mongo_config = config.get('mongo', {})
+    return mongo_config.get('soft_delete', False)
+

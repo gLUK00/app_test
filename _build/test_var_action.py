@@ -63,10 +63,10 @@ def test_output_variables():
     output_vars = action.get_output_variables()
     
     assert len(output_vars) == 1, "Doit retourner 1 variable de sortie"
-    assert 'converted_value' in output_vars, "La variable 'converted_value' doit exister"
+    assert output_vars[0]['name'] == 'converted_value', "La variable 'converted_value' doit exister"
     
     print("✅ Variables de sortie correctes")
-    print(f"   Variables: {', '.join(output_vars)}")
+    print(f"   Variables: {output_vars[0]['name']}")
 
 
 def test_validation():

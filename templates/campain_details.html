@@ -6,9 +6,17 @@
 <div class="container mt-4">
     <div class="row mb-4">
         <div class="col-md-8">
-            <h1><i class="fas fa-clipboard-list"></i> <span id="campainName">Chargement...</span></h1>
+            <h1>
+                <i class="fas fa-clipboard-list"></i> 
+                <span id="campainName">Chargement...</span>
+                <i id="editCampainNameIcon" class="fas fa-pencil-alt ms-2" style="cursor: pointer; font-size: 0.7em; color: #6c757d;" title="Renommer la campagne"></i>
+                <input type="text" id="campainNameInput" class="form-control d-inline-block" style="display: none !important; width: auto; max-width: 500px;" />
+            </h1>
         </div>
         <div class="col-md-4 text-end">
+            <button class="btn btn-info me-2" data-bs-toggle="modal" data-bs-target="#exportCampainModal">
+                <i class="fas fa-file-export"></i> Exporter la campagne
+            </button>
             <a href="{{ url_for('web.dashboard') }}" class="btn btn-secondary">
                 <i class="fas fa-arrow-left"></i> Retour
             </a>
@@ -19,7 +27,7 @@
     <div class="row mb-4">
         <div class="col-12">
             <div class="card">
-                <div class="card-header">
+                <div class="card-header campain-info-header">
                     <i class="fas fa-info-circle"></i> Informations
                 </div>
                 <div class="card-body">
@@ -42,15 +50,15 @@
     <div class="row mb-4">
         <div class="col-12">
             <div class="card">
-                <div class="card-header d-flex justify-content-between align-items-center">
+                <div class="card-header campain-files-header d-flex justify-content-between align-items-center">
                     <span><i class="fas fa-folder-open"></i> Fichiers</span>
-                    <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#uploadFileModal">
+                    <button class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#uploadFileModal">
                         <i class="fas fa-upload"></i> Ajouter un fichier
                     </button>
                 </div>
                 <div class="card-body">
                     <div id="filesLoading" class="text-center">
-                        <div class="spinner-border text-primary" role="status">
+                        <div class="spinner-border text-warning" role="status">
                             <span class="visually-hidden">Chargement...</span>
                         </div>
                     </div>
@@ -86,7 +94,7 @@
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <span><i class="fas fa-vial"></i> Tests de la campagne</span>
-                    <a href="{{ url_for('web.add_test', campain_id=campain_id) }}" class="btn btn-sm btn-primary">
+                    <a href="{{ url_for('web.add_test', campain_id=campain_id) }}" class="btn btn-sm btn-light">
                         <i class="fas fa-plus"></i> Ajouter un test
                     </a>
                 </div>
@@ -129,9 +137,9 @@
     <div class="row mb-4">
         <div class="col-12">
             <div class="card">
-                <div class="card-header d-flex justify-content-between align-items-center">
+                <div class="card-header campain-rapport-header d-flex justify-content-between align-items-center">
                     <span><i class="fas fa-chart-line"></i> Rapports d'exécution</span>
-                    <button class="btn btn-sm btn-success" id="runCampainBtn" data-bs-toggle="modal" data-bs-target="#executeCampainModal">
+                    <button class="btn btn-sm btn-light" id="runCampainBtn" data-bs-toggle="modal" data-bs-target="#executeCampainModal">
                         <i class="fas fa-play"></i> Exécuter la campagne
                     </button>
                 </div>
@@ -254,11 +262,46 @@
     </div>
 </div>
 
+<!-- Modale d'export de campagne -->
+<div class="modal fade" id="exportCampainModal" tabindex="-1" aria-labelledby="exportCampainModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exportCampainModalLabel">
+                    <i class="fas fa-file-export"></i> Exporter la campagne
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Vous êtes sur le point d'exporter cette campagne au format JSON.</p>
+                <div class="form-check mb-3">
+                    <input class="form-check-input" type="checkbox" id="includeFilesCheckbox">
+                    <label class="form-check-label" for="includeFilesCheckbox">
+                        Inclure les fichiers du répertoire de travail
+                    </label>
+                    <div class="form-text">
+                        Si coché, les fichiers seront encodés en base64 dans le fichier JSON.
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times"></i> Annuler
+                </button>
+                <button type="button" class="btn btn-info" id="confirmExportBtn">
+                    <i class="fas fa-file-export"></i> Exporter
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 {% endblock %}
 
 {% block extra_js %}
 <script>
-const campainId = '{{ campain_id }}';
+const campainId = '{{ campain_id }}'.trim();
+console.log('🆔 ID Campagne initialisé:', campainId);
 
 // Chargement des détails de la campagne
 async function loadCampainDetails() {
@@ -289,10 +332,14 @@ async function loadTests() {
             document.getElementById('noTests').style.display = 'none';
             
             const tbody = document.getElementById('testsTableBody');
-            tbody.innerHTML = data.data.map(test => {
+            tbody.innerHTML = data.data.map((test, index) => {
                 const actionsCount = test.actions ? test.actions.length : 0;
                 const actionTypes = test.actions ? [...new Set(test.actions.map(a => a.type))].join(', ') : '-';
                 const testName = test.name || `Test #${test._id.substring(test._id.length - 6)}`;
+                
+                // Déterminer si les boutons up/down doivent être désactivés
+                const isFirst = index === 0;
+                const isLast = index === data.data.length - 1;
                 
                 return `
                 <tr>
@@ -305,6 +352,14 @@ async function loadTests() {
                     <td>${new Date(test.dateCreated).toLocaleString('fr-FR')}</td>
                     <td>
                         <div class="btn-group">
+                            <button class="btn btn-sm btn-outline-secondary" onclick="moveTestUp('${test._id}')" 
+                                    title="Monter" ${isFirst ? 'disabled' : ''}>
+                                <i class="fas fa-arrow-up"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-secondary" onclick="moveTestDown('${test._id}')" 
+                                    title="Descendre" ${isLast ? 'disabled' : ''}>
+                                <i class="fas fa-arrow-down"></i>
+                            </button>
                             <button class="btn btn-sm btn-outline-success" onclick="executeTest('${test._id}')" title="Lancer le test">
                                 <i class="fas fa-play"></i>
                             </button>
@@ -333,6 +388,9 @@ async function loadTests() {
 
 // Chargement des rapports
 async function loadRapports() {
+    if (isRapportsLoading) return;
+    isRapportsLoading = true;
+    
     try {
         const data = await API.get(`/api/rapports?campain_id=${campainId}`);
         
@@ -342,42 +400,25 @@ async function loadRapports() {
             document.getElementById('rapportsContainer').style.display = 'block';
             document.getElementById('noRapports').style.display = 'none';
             
+            // Rejoindre les rooms des rapports actifs
+            joinActiveRapportRooms(data.data);
+            
             const tbody = document.getElementById('rapportsTableBody');
+            // Sauvegarder les largeurs actuelles si elles existent pour éviter le saut
+            
             tbody.innerHTML = data.data.map(rapport => {
-                let statusBadge = '';
-                let statusIcon = '';
-                
-                switch(rapport.status) {
-                    case 'pending':
-                        statusBadge = 'bg-secondary';
-                        statusIcon = 'fa-clock';
-                        break;
-                    case 'running':
-                        statusBadge = 'bg-primary';
-                        statusIcon = 'fa-spinner fa-spin';
-                        break;
-                    case 'completed':
-                        statusBadge = 'bg-success';
-                        statusIcon = 'fa-check-circle';
-                        break;
-                    case 'failed':
-                        statusBadge = 'bg-danger';
-                        statusIcon = 'fa-times-circle';
-                        break;
-                }
-                
                 const progress = rapport.progress || 0;
-                const progressBarClass = rapport.status === 'failed' ? 'bg-danger' : 'bg-success';
+                const progressBarClass = getProgressBarClass(rapport.status);
                 
                 return `
-                    <tr>
+                    <tr data-rapport-id="${rapport._id}" data-rapport-status="${rapport.status}">
                         <td><strong>${escapeHtml(rapport.details)}</strong></td>
                         <td>${new Date(rapport.dateCreated).toLocaleString('fr-FR')}</td>
                         <td><span class="badge bg-info">${escapeHtml(rapport.filiere)}</span></td>
-                        <td><span class="badge ${statusBadge}"><i class="fas ${statusIcon}"></i> ${rapport.status}</span></td>
+                        <td class="rapport-status">${renderStatusBadge(rapport.status)}</td>
                         <td>
                             <div class="progress" style="width: 100px;">
-                                <div class="progress-bar ${progressBarClass}" role="progressbar" 
+                                <div class="progress-bar ${progressBarClass} rapport-progress-bar" role="progressbar" 
                                      style="width: ${progress}%;" aria-valuenow="${progress}" 
                                      aria-valuemin="0" aria-valuemax="100">${progress}%</div>
                             </div>
@@ -393,6 +434,18 @@ async function loadRapports() {
                     </tr>
                 `;
             }).join('');
+
+            // Réappliquer les progressions connues (pour gérer les race conditions)
+            data.data.forEach(rapport => {
+                if (rapportProgressMap.has(rapport._id)) {
+                    const latest = rapportProgressMap.get(rapport._id);
+                    // Si la progression en mémoire est plus récente/avancée que celle de la DB, on l'applique
+                    // On suppose que l'événement WebSocket est plus "frais" que la DB
+                    if (latest.status === 'running' && latest.progress > (rapport.progress || 0)) {
+                        updateRapportProgressUI(rapport._id, latest.progress, latest.status);
+                    }
+                }
+            });
         } else {
             document.getElementById('rapportsContainer').style.display = 'none';
             document.getElementById('noRapports').style.display = 'block';
@@ -402,6 +455,8 @@ async function loadRapports() {
         console.error('Erreur lors du chargement des rapports:', error);
         document.getElementById('rapportsLoading').style.display = 'none';
         document.getElementById('noRapports').style.display = 'block';
+    } finally {
+        isRapportsLoading = false;
     }
 }
 
@@ -440,6 +495,30 @@ async function deleteTest(testId) {
     } catch (error) {
         console.error('Erreur lors de la suppression du test:', error);
         Notification.error(error.message || 'Erreur lors de la suppression du test');
+    }
+}
+
+// Déplacement d'un test vers le haut
+async function moveTestUp(testId) {
+    try {
+        await API.post(`/api/tests/${testId}/move-up`, {});
+        Notification.success('Test déplacé vers le haut');
+        loadTests();
+    } catch (error) {
+        console.error('Erreur lors du déplacement du test:', error);
+        Notification.error(error.message || 'Impossible de déplacer le test');
+    }
+}
+
+// Déplacement d'un test vers le bas
+async function moveTestDown(testId) {
+    try {
+        await API.post(`/api/tests/${testId}/move-down`, {});
+        Notification.success('Test déplacé vers le bas');
+        loadTests();
+    } catch (error) {
+        console.error('Erreur lors du déplacement du test:', error);
+        Notification.error(error.message || 'Impossible de déplacer le test');
     }
 }
 
@@ -496,16 +575,21 @@ document.getElementById('launchCampainBtn').addEventListener('click', async () =
             stop_on_failure: stopOnFailure
         });
         
+        // IMPORTANT: Rejoindre immédiatement la room du rapport pour recevoir les événements
+        if (result.rapport_id) {
+            const rapportRoom = `rapport_${result.rapport_id}`;
+            socket.emit('join', { room: rapportRoom });
+            activeRapports.add(result.rapport_id);
+        }
+        
         Notification.success('Campagne lancée avec succès');
         
         // Fermer la modale
         const modal = bootstrap.Modal.getInstance(document.getElementById('executeCampainModal'));
         modal.hide();
         
-        // Recharger les rapports
-        setTimeout(() => {
-            loadRapports();
-        }, 1000);
+        // Recharger les rapports immédiatement (pas de timeout)
+        loadRapports();
         
         btn.disabled = false;
         btn.innerHTML = '<i class="fas fa-play"></i> Lancer la campagne';
@@ -539,6 +623,25 @@ function escapeHtml(text) {
         "'": '&#039;'
     };
     return String(text).replace(/[&<>"']/g, m => map[m]);
+}
+
+const STATUS_CONFIG = {
+    pending: { badgeClass: 'bg-secondary', icon: 'fa-clock' },
+    running: { badgeClass: 'bg-primary', icon: 'fa-spinner fa-spin' },
+    completed: { badgeClass: 'bg-success', icon: 'fa-check-circle' },
+    failed: { badgeClass: 'bg-danger', icon: 'fa-times-circle' }
+};
+
+function renderStatusBadge(status) {
+    const config = STATUS_CONFIG[status] || STATUS_CONFIG.pending;
+    return `<span class="badge ${config.badgeClass}"><i class="fas ${config.icon}"></i> ${status}</span>`;
+}
+
+function getProgressBarClass(status) {
+    if (status === 'failed') return 'bg-danger';
+    if (status === 'running') return 'bg-primary';
+    if (status === 'pending') return 'bg-secondary';
+    return 'bg-success';
 }
 
 // ===== GESTION DES FICHIERS =====
@@ -672,21 +775,303 @@ async function deleteFile(filename) {
     }
 }
 
-// WebSocket pour les mises à jour en temps réel des fichiers
+// WebSocket pour les mises à jour en temps réel des fichiers et rapports
 const socket = io();
 
-// Rejoindre la room de la campagne
-socket.emit('join', { room: `campain_${campainId}` });
+// Tracker les rapports actifs pour rejoindre leurs rooms
+let activeRapports = new Set();
+// Tracker la progression pour gérer les race conditions avec le rechargement
+const rapportProgressMap = new Map();
+
+// Gestion de la connexion WebSocket
+socket.on('connect', () => {
+    console.log('✅ WebSocket connecté, ID:', socket.id);
+    
+    if (campainId) {
+        socket.emit('join', { room: `campain_${campainId}` });
+        console.log(`🔌 Joined room: campain_${campainId}`);
+    }
+    
+    // Recharger les rapports pour être sûr d'être à jour
+    loadRapports();
+});
+
+socket.on('disconnect', () => {
+    console.log('❌ WebSocket déconnecté');
+});
+
+const PROGRESS_BAR_CLASSES = ['bg-success', 'bg-danger', 'bg-primary', 'bg-secondary'];
+
+let isRapportsLoading = false;
+
+function findRapportRow(rapportId) {
+    const selector = `[data-rapport-id="${rapportId}"]`;
+    const row = document.querySelector(selector);
+    if (!row) {
+        console.warn(`[UI] findRapportRow: Aucun élément trouvé pour le sélecteur ${selector}`);
+        // Debug: lister tous les IDs disponibles pour aider au diagnostic
+        const allRows = document.querySelectorAll('tr[data-rapport-id]');
+        const availableIds = Array.from(allRows).map(r => r.dataset.rapportId);
+        console.log(`[UI] IDs disponibles dans le DOM (${availableIds.length}):`, availableIds);
+        return null;
+    }
+    return row;
+}
+
+function applyStatusToRow(row, status) {
+    row.dataset.rapportStatus = status;
+    const statusCell = row.querySelector('.rapport-status');
+    if (statusCell) {
+        statusCell.innerHTML = renderStatusBadge(status);
+    }
+    const progressBar = row.querySelector('.rapport-progress-bar');
+    if (progressBar) {
+        PROGRESS_BAR_CLASSES.forEach(cls => progressBar.classList.remove(cls));
+        progressBar.classList.add(getProgressBarClass(status));
+    }
+}
+
+function updateRapportStatusUI(rapportId, status) {
+    console.log(`[UI] Mise à jour statut rapport ${rapportId}: ${status}`);
+    const row = findRapportRow(rapportId);
+    if (!row) return;
+    applyStatusToRow(row, status);
+}
+
+function updateRapportProgressUI(rapportId, progress, forcedStatus = null) {
+    console.log(`[UI] Mise à jour progression rapport ${rapportId}: ${progress}% (status: ${forcedStatus})`);
+    
+    const row = findRapportRow(rapportId);
+    if (!row) {
+        console.error(`[UI] ÉCHEC Mise à jour: Ligne introuvable pour rapport ${rapportId}`);
+        return;
+    }
+    
+    if (forcedStatus) {
+        applyStatusToRow(row, forcedStatus);
+    }
+    
+    const progressBar = row.querySelector('.rapport-progress-bar');
+    if (progressBar) {
+        console.log(`[UI] Application largeur barre: ${progress}%`);
+        progressBar.style.width = `${progress}%`;
+        progressBar.textContent = `${progress}%`;
+        progressBar.setAttribute('aria-valuenow', progress);
+    } else {
+        console.error(`[UI] Élément .rapport-progress-bar introuvable dans la ligne du rapport ${rapportId}`);
+    }
+}
 
 // Écouter les événements de mise à jour des fichiers
 socket.on('files_updated', (data) => {
-    if (data.campain_id === campainId) {
+    if (String(data.campain_id) === String(campainId)) {
         loadFiles();
     }
 });
 
+// Écouter les événements de progression de campagne
+socket.on('campain_started', (data) => {
+    console.log('📥 [WebSocket] campain_started:', data);
+    // Si le rapport n'est pas trouvé, on recharge la liste
+    if (!findRapportRow(data.rapport_id)) {
+        console.log('⚠️ Rapport non trouvé au démarrage, rechargement...');
+        loadRapports();
+    } else {
+        updateRapportProgressUI(data.rapport_id, 0, 'running');
+    }
+});
+
+socket.on('campain_progress', (data) => {
+    console.log('📥 [WebSocket] campain_progress:', data);
+    
+    // Sauvegarder la progression
+    rapportProgressMap.set(data.rapport_id, {
+        progress: data.progress ?? 0,
+        status: 'running'
+    });
+    
+    updateRapportProgressUI(data.rapport_id, data.progress ?? 0, 'running');
+});
+
+socket.on('campain_completed', (data) => {
+    console.log('📥 [WebSocket] campain_completed:', data);
+    const progressValue = data.progress ?? 100;
+    
+    // Sauvegarder l'état final
+    rapportProgressMap.set(data.rapport_id, {
+        progress: progressValue,
+        status: data.status || 'completed'
+    });
+    
+    updateRapportProgressUI(data.rapport_id, progressValue, data.status || 'completed');
+    // Rafraîchir pour récupérer les détails finaux (logs, dates, etc.)
+    loadRapports();
+});
+
+socket.on('test_started', (data) => {
+    console.log('Test démarré:', data);
+});
+
+socket.on('test_completed', (data) => {
+    console.log('Test terminé:', data);
+});
+
+socket.on('campain_error', (data) => {
+    console.log('Erreur de campagne:', data);
+    updateRapportStatusUI(data.rapport_id, 'failed');
+    loadRapports();
+    Notification.error('Erreur lors de l\'exécution de la campagne');
+});
+
+// Fonction pour rejoindre les rooms des rapports actifs
+function joinActiveRapportRooms(rapports) {
+    // Sur la page de détails de campagne, on est déjà abonné à la room de la campagne
+    // qui reçoit tous les événements. Pas besoin de rejoindre les rooms individuelles des rapports
+    // pour éviter de recevoir les événements en double.
+    return;
+}
+
 // Chargement initial
 document.addEventListener('DOMContentLoaded', () => {
+    // Gestion de l'export
+    document.getElementById('confirmExportBtn').addEventListener('click', async () => {
+        const includeFiles = document.getElementById('includeFilesCheckbox').checked;
+        const modal = bootstrap.Modal.getInstance(document.getElementById('exportCampainModal'));
+        
+        try {
+            const token = localStorage.getItem('token');
+            const url = `/api/campains/${campainId}/export?include_files=${includeFiles}`;
+            
+            // Notification de début
+            Notification.info('Export en cours...');
+            
+            const response = await fetch(url, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Erreur lors de l\'export');
+            }
+            
+            // Récupérer le nom du fichier depuis le header Content-Disposition
+            const contentDisposition = response.headers.get('Content-Disposition');
+            let filename = 'campain_export.json';
+            if (contentDisposition) {
+                const filenameMatch = contentDisposition.match(/filename="?([^"]+)"?/);
+                if (filenameMatch && filenameMatch.length === 2) {
+                    filename = filenameMatch[1];
+                }
+            }
+            
+            // Créer un blob et déclencher le téléchargement
+            const blob = await response.blob();
+            const downloadUrl = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = downloadUrl;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(downloadUrl);
+            document.body.removeChild(a);
+            
+            modal.hide();
+            Notification.success('Export réussi');
+            
+        } catch (error) {
+            console.error('Erreur export:', error);
+            Notification.error(error.message);
+            modal.hide();
+        }
+    });
+
+    // Gestion du renommage de la campagne
+    const campainNameSpan = document.getElementById('campainName');
+    const campainNameInput = document.getElementById('campainNameInput');
+    const editIcon = document.getElementById('editCampainNameIcon');
+    let originalName = '';
+    let isEditing = false;
+
+    // S'assurer que l'input est masqué au départ (force le masquage)
+    if (campainNameInput) {
+        campainNameInput.style.display = 'none';
+        campainNameInput.style.visibility = 'hidden';
+    }
+    if (campainNameSpan) {
+        campainNameSpan.style.display = 'inline';
+    }
+    if (editIcon) {
+        editIcon.style.display = 'inline';
+    }
+
+    editIcon.addEventListener('click', function() {
+        if (isEditing) return;
+        
+        isEditing = true;
+        originalName = campainNameSpan.textContent;
+        campainNameInput.value = originalName;
+        campainNameSpan.style.display = 'none';
+        editIcon.style.display = 'none';
+        campainNameInput.style.display = 'inline-block';
+        campainNameInput.style.visibility = 'visible';
+        campainNameInput.focus();
+        campainNameInput.select();
+    });
+
+    campainNameInput.addEventListener('keydown', async function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            const newName = campainNameInput.value.trim();
+            
+            if (!newName) {
+                Notification.error('Le nom de la campagne ne peut pas être vide');
+                campainNameInput.focus();
+                return;
+            }
+            
+            if (newName === originalName) {
+                // Pas de changement, annuler l'édition
+                cancelEdit();
+                return;
+            }
+            
+            try {
+                const data = await API.put(`/api/campains/${campainId}/rename`, { name: newName });
+                campainNameSpan.textContent = newName;
+                document.getElementById('detailName').textContent = newName;
+                Notification.success('Campagne renommée avec succès');
+                cancelEdit();
+            } catch (error) {
+                console.error('Erreur renommage:', error);
+                Notification.error(error.message || 'Erreur lors du renommage de la campagne');
+                campainNameInput.focus();
+            }
+        } else if (e.key === 'Escape') {
+            e.preventDefault();
+            cancelEdit();
+        }
+    });
+
+    campainNameInput.addEventListener('blur', function() {
+        // Annuler l'édition après un court délai pour permettre à Enter de se déclencher
+        setTimeout(() => {
+            if (isEditing) {
+                cancelEdit();
+            }
+        }, 200);
+    });
+
+    function cancelEdit() {
+        isEditing = false;
+        campainNameSpan.style.display = 'inline';
+        editIcon.style.display = 'inline';
+        campainNameInput.style.display = 'none';
+        campainNameInput.style.visibility = 'hidden';
+    }
+
     loadCampainDetails();
     loadFiles();
     loadTests();

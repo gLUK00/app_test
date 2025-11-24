@@ -17,11 +17,19 @@ def get_tests():
         
         if campain_id:
             tests = Test.get_by_campain(campain_id)
+            result = {
+                'data': tests,
+                'pagination': {
+                    'page': 1,
+                    'page_size': len(tests),
+                    'total': len(tests),
+                    'total_pages': 1
+                }
+            }
         else:
             tests = Test.get_all()
-        
-        page, page_size = get_pagination_params(request)
-        result = paginate_results(tests, page, page_size)
+            page, page_size = get_pagination_params(request)
+            result = paginate_results(tests, page, page_size)
         
         return jsonify(result), 200
     
@@ -170,6 +178,36 @@ def execute_test(test_id):
             'message': 'Exécution du test lancée',
             'test_id': test_id
         }), 200
+    
+    except Exception as e:
+        return jsonify({'message': f'Erreur serveur: {str(e)}'}), 500
+
+@tests_bp.route('/<test_id>/move-up', methods=['POST'])
+@token_required
+def move_test_up(test_id):
+    """Déplace un test vers le haut dans l'ordre d'exécution."""
+    try:
+        success = Test.move_up(test_id)
+        
+        if not success:
+            return jsonify({'message': 'Impossible de déplacer le test (déjà en première position ou test introuvable)'}), 400
+        
+        return jsonify({'message': 'Test déplacé vers le haut avec succès'}), 200
+    
+    except Exception as e:
+        return jsonify({'message': f'Erreur serveur: {str(e)}'}), 500
+
+@tests_bp.route('/<test_id>/move-down', methods=['POST'])
+@token_required
+def move_test_down(test_id):
+    """Déplace un test vers le bas dans l'ordre d'exécution."""
+    try:
+        success = Test.move_down(test_id)
+        
+        if not success:
+            return jsonify({'message': 'Impossible de déplacer le test (déjà en dernière position ou test introuvable)'}), 400
+        
+        return jsonify({'message': 'Test déplacé vers le bas avec succès'}), 200
     
     except Exception as e:
         return jsonify({'message': f'Erreur serveur: {str(e)}'}), 500

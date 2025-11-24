@@ -135,3 +135,11 @@ def admin_plugins_errors():
     """Page de diagnostic des erreurs de plugins (admin uniquement)."""
     user = get_current_user()
     return render_template('admin/plugins_errors.html', user=user)
+
+@web_bp.route('/admin/deleted')
+@token_required
+@admin_required
+def admin_deleted():
+    """Page de gestion des éléments supprimés logiquement (admin uniquement)."""
+    user = get_current_user()
+    return render_template('admin/deleted.html', user=user)

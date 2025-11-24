@@ -1,7 +1,7 @@
 """Modèle pour la gestion des campagnes de tests."""
 from bson import ObjectId
 from datetime import datetime
-from utils.db import get_collection
+from utils.db import get_collection, is_soft_delete_enabled
 
 class Campain:
     """Classe représentant une campagne de tests."""
@@ -17,7 +17,8 @@ class Campain:
             'userCreated': ObjectId(user_created),
             'name': name,
             'dateCreated': datetime.utcnow(),
-            'description': description
+            'description': description,
+            'isDeleted': False
         }
         
         result = collection.insert_one(campain_data)
@@ -46,7 +47,7 @@ class Campain:
     def get_all():
         """Récupère toutes les campagnes."""
         collection = get_collection(Campain.collection_name)
-        campains = list(collection.find().sort('dateCreated', -1))
+        campains = list(collection.find({'isDeleted': {'$ne': True}}).sort('dateCreated', -1))
         
         # Récupérer les informations des utilisateurs
         user_collection = get_collection('users')
@@ -66,7 +67,10 @@ class Campain:
     def get_by_user(user_id):
         """Récupère toutes les campagnes créées par un utilisateur."""
         collection = get_collection(Campain.collection_name)
-        campains = list(collection.find({'userCreated': ObjectId(user_id)}).sort('dateCreated', -1))
+        campains = list(collection.find({
+            'userCreated': ObjectId(user_id),
+            'isDeleted': {'$ne': True}
+        }).sort('dateCreated', -1))
         
         # Récupérer les informations de l'utilisateur
         user_collection = get_collection('users')
@@ -102,7 +106,62 @@ class Campain:
     
     @staticmethod
     def delete(campain_id):
-        """Supprime une campagne."""
+        """Supprime une campagne (logiquement ou physiquement selon la configuration)."""
+        collection = get_collection(Campain.collection_name)
+        
+        if is_soft_delete_enabled():
+            # Suppression logique : marquer comme supprimé
+            result = collection.update_one(
+                {'_id': ObjectId(campain_id)},
+                {'$set': {'isDeleted': True, 'dateDeleted': datetime.utcnow()}}
+            )
+            return result.modified_count > 0
+        else:
+            # Suppression physique : supprimer définitivement
+            result = collection.delete_one({'_id': ObjectId(campain_id)})
+            return result.deleted_count > 0
+    
+    @staticmethod
+    def get_deleted():
+        """Récupère toutes les campagnes supprimées logiquement."""
+        collection = get_collection(Campain.collection_name)
+        campains = list(collection.find({'isDeleted': True}).sort('dateDeleted', -1))
+        
+        # Récupérer les informations des utilisateurs
+        user_collection = get_collection('users')
+        
+        for campain in campains:
+            user = user_collection.find_one({'_id': campain['userCreated']})
+            
+            campain['_id'] = str(campain['_id'])
+            campain['userCreated'] = str(campain['userCreated'])
+            campain['userCreatedName'] = user['name'] if user else 'Utilisateur inconnu'
+            if isinstance(campain.get('dateCreated'), datetime):
+                campain['dateCreated'] = campain['dateCreated'].isoformat()
+            if isinstance(campain.get('dateDeleted'), datetime):
+                campain['dateDeleted'] = campain['dateDeleted'].isoformat()
+        
+        return campains
+    
+    @staticmethod
+    def restore(campain_id):
+        """Restaure une campagne supprimée logiquement."""
+        collection = get_collection(Campain.collection_name)
+        result = collection.update_one(
+            {'_id': ObjectId(campain_id)},
+            {'$set': {'isDeleted': False}, '$unset': {'dateDeleted': ''}}
+        )
+        return result.modified_count > 0
+    
+    @staticmethod
+    def permanent_delete(campain_id):
+        """Supprime définitivement une campagne (suppression physique)."""
         collection = get_collection(Campain.collection_name)
         result = collection.delete_one({'_id': ObjectId(campain_id)})
         return result.deleted_count > 0
+    
+    @staticmethod
+    def find_by_name(name):
+        """Trouve une campagne par son nom."""
+        collection = get_collection(Campain.collection_name)
+        return collection.find_one({'name': name, 'isDeleted': {'$ne': True}})

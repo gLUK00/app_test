@@ -13,6 +13,9 @@
     
     <div class="row mb-4">
         <div class="col-md-12 text-end">
+            <button class="btn btn-info me-2" data-bs-toggle="modal" data-bs-target="#importCampainModal">
+                <i class="fas fa-file-import"></i> Importer une campagne
+            </button>
             <a href="{{ url_for('web.add_campain') }}" class="btn btn-primary">
                 <i class="fas fa-plus"></i> Nouvelle campagne
             </a>
@@ -23,7 +26,7 @@
         <div class="col-md-12">
             <div class="card">
                 <div class="card-header">
-                    <i class="fas fa-list"></i> Mes campagnes
+                    <i class="fas fa-list"></i> Campagnes de tests
                 </div>
                 <div class="card-body">
                     <div id="campaignsList">
@@ -35,6 +38,43 @@
                     </div>
                     <div id="paginationContainer"></div>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modale d'import de campagne -->
+<div class="modal fade" id="importCampainModal" tabindex="-1" aria-labelledby="importCampainModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="importCampainModalLabel">
+                    <i class="fas fa-file-import"></i> Importer une campagne
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="importCampainForm">
+                    <div class="mb-3">
+                        <label for="importFile" class="form-label">Fichier JSON <span class="text-danger">*</span></label>
+                        <input type="file" class="form-control" id="importFile" accept=".json" required>
+                        <div class="form-text">Sélectionnez un fichier exporté précédemment (.json)</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="importName" class="form-label">Nom de la campagne</label>
+                        <input type="text" class="form-control" id="importName" placeholder="Laisser vide pour utiliser le nom par défaut">
+                        <div class="form-text">Par défaut : "Import de [Nom original]"</div>
+                    </div>
+                </form>
+                <div id="importError" class="alert alert-danger mt-3" style="display: none;"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times"></i> Annuler
+                </button>
+                <button type="button" class="btn btn-info" id="confirmImportBtn">
+                    <i class="fas fa-file-import"></i> Importer
+                </button>
             </div>
         </div>
     </div>
@@ -124,6 +164,72 @@
     // Charger les campagnes au chargement de la page
     document.addEventListener('DOMContentLoaded', () => {
         loadCampaigns();
+        
+        // Pré-remplir le nom de l'import
+        const now = new Date();
+        const formattedDate = now.toLocaleDateString('fr-FR') + ' ' + now.toLocaleTimeString('fr-FR');
+        document.getElementById('importName').placeholder = `Import du ${formattedDate}`;
+        
+        // Gestion de l'import
+        document.getElementById('confirmImportBtn').addEventListener('click', async () => {
+            const fileInput = document.getElementById('importFile');
+            const nameInput = document.getElementById('importName');
+            const errorDiv = document.getElementById('importError');
+            const modal = bootstrap.Modal.getInstance(document.getElementById('importCampainModal'));
+            
+            if (fileInput.files.length === 0) {
+                errorDiv.textContent = 'Veuillez sélectionner un fichier JSON.';
+                errorDiv.style.display = 'block';
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+            if (nameInput.value.trim()) {
+                formData.append('name', nameInput.value.trim());
+            }
+            
+            try {
+                // Désactiver le bouton et afficher chargement
+                const btn = document.getElementById('confirmImportBtn');
+                const originalText = btn.innerHTML;
+                btn.disabled = true;
+                btn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Import...';
+                errorDiv.style.display = 'none';
+                
+                const token = localStorage.getItem('token');
+                const response = await fetch('/api/campains/import', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(result.message || 'Erreur lors de l\'import');
+                }
+                
+                // Succès
+                Notification.success('Campagne importée avec succès');
+                modal.hide();
+                
+                // Redirection vers la campagne importée
+                window.location.href = `/campains/${result.campain_id}`;
+                
+            } catch (error) {
+                console.error('Erreur import:', error);
+                errorDiv.textContent = error.message;
+                errorDiv.style.display = 'block';
+                
+                // Réactiver le bouton
+                const btn = document.getElementById('confirmImportBtn');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-file-import"></i> Importer';
+            }
+        });
     });
 </script>
 {% endblock %}

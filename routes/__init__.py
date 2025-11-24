@@ -8,6 +8,7 @@ from .rapports_routes import rapports_bp
 from .web_routes import web_bp
 from .actions_routes import actions_bp
 from .plugins_routes import plugins_routes
+from .deleted_routes import deleted_bp
 
 __all__ = [
     'auth_bp',
@@ -18,5 +19,7 @@ __all__ = [
     'rapports_bp',
     'web_bp',
     'actions_bp',
-    'plugins_routes'
+    'plugins_routes',
+    'deleted_bp'
 ]
+

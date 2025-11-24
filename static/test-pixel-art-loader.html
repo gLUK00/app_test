@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Pixel Art Loader</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,.3);
+        }
+
+        h1 {
+            color: #667eea;
+            text-align: center;
+        }
+
+        .pixel-art-display {
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            min-height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .pixel-art-mac {
+            max-width: 100%;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .pixel-art-mac pre {
+            font-family: monospace;
+            font-size: clamp(0.3rem, 0.8vw, 0.6rem);
+            line-height: 1;
+            margin: 0;
+            padding: 0;
+            color: #333;
+            white-space: pre;
+            overflow: hidden;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background: #667eea;
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background: #5568d3;
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        .info {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .config {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .config-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .config-item label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #667eea;
+        }
+
+        .config-item input,
+        .config-item select {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .status {
+            text-align: center;
+            padding: 10px;
+            background: #e7f5ff;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-weight: bold;
+            color: #1971c2;
+        }
+
+        code {
+            background: #f1f3f5;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎨 Test Pixel Art Loader Plugin</h1>
+        
+        <div class="info">
+            <strong>ℹ️ Information</strong><br>
+            Ce plugin charge et anime des fichiers pixel art (.txt) ligne par ligne avec rotation automatique.
+        </div>
+
+        <div class="status" id="status">
+            Initialisation...
+        </div>
+
+        <div class="pixel-art-display">
+            <div id="pixel-art-mac" class="pixel-art-mac">
+                <pre></pre>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button onclick="loader.previous()">⬅️ Précédent</button>
+            <button onclick="loader.stop()">⏸️ Stop</button>
+            <button onclick="loader.start()">▶️ Start</button>
+            <button onclick="loader.next()">Suivant ➡️</button>
+            <button onclick="reloadLoader()">🔄 Recharger</button>
+        </div>
+
+        <div class="config">
+            <div class="config-item">
+                <label for="intervalInput">Intervalle (ms)</label>
+                <input type="number" id="intervalInput" value="5000" min="1000" step="500">
+            </div>
+            <div class="config-item">
+                <label for="lineDelayInput">Délai ligne (ms)</label>
+                <input type="number" id="lineDelayInput" value="50" min="0" step="10">
+            </div>
+            <div class="config-item">
+                <label for="fileSelect">Fichiers</label>
+                <select id="fileSelect" multiple size="3">
+                    <option value="mac_1.txt" selected>MacGyver Logo</option>
+                    <option value="mac_2.txt" selected>Paperclip</option>
+                </select>
+            </div>
+        </div>
+
+        <button onclick="applyConfig()" style="width: 100%; margin-top: 10px;">
+            ✅ Appliquer la configuration
+        </button>
+
+        <div class="info" style="margin-top: 30px;">
+            <strong>📝 Utilisation du plugin</strong>
+            <pre style="background: white; padding: 10px; border-radius: 5px; overflow-x: auto; margin-top: 10px;"><code>const loader = new PixelArtLoader({
+    containerId: 'pixel-art-mac',
+    files: ['mac_1.txt', 'mac_2.txt', 'mac_3.txt'],
+    interval: 5000,     // Rotation toutes les 5 secondes
+    lineDelay: 50       // 50ms entre chaque ligne
+});
+
+loader.start();</code></pre>
+        </div>
+
+        <div class="info">
+            <strong>🎯 Méthodes disponibles</strong>
+            <ul>
+                <li><code>loader.start()</code> - Démarre l'animation</li>
+                <li><code>loader.stop()</code> - Arrête l'animation</li>
+                <li><code>loader.next()</code> - Image suivante</li>
+                <li><code>loader.previous()</code> - Image précédente</li>
+                <li><code>loader.reload()</code> - Recharge les fichiers</li>
+                <li><code>loader.showArtByIndex(index)</code> - Affiche une image spécifique</li>
+                <li><code>loader.destroy()</code> - Détruit le plugin</li>
+            </ul>
+        </div>
+    </div>
+
+    <script src="pixel-art-loader.js"></script>
+    <script>
+        let loader;
+
+        // Fonction pour mettre à jour le statut
+        function updateStatus(message) {
+            document.getElementById('status').textContent = message;
+        }
+
+        // Initialisation du loader
+        function initLoader() {
+            const files = Array.from(document.getElementById('fileSelect').selectedOptions)
+                .map(option => option.value);
+            
+            const interval = parseInt(document.getElementById('intervalInput').value);
+            const lineDelay = parseInt(document.getElementById('lineDelayInput').value);
+
+            if (loader) {
+                loader.destroy();
+            }
+
+            try {
+                loader = new PixelArtLoader({
+                    containerId: 'pixel-art-mac',
+                    files: files.length > 0 ? files : ['mac_1.txt', 'mac_2.txt', 'mac_3.txt'],
+                    interval: interval,
+                    lineDelay: lineDelay
+                });
+
+                loader.start();
+                updateStatus(`✅ Plugin démarré avec ${files.length} fichier(s) - Intervalle: ${interval}ms - Délai ligne: ${lineDelay}ms`);
+            } catch (error) {
+                updateStatus(`❌ Erreur: ${error.message}`);
+                console.error(error);
+            }
+        }
+
+        // Appliquer la configuration
+        function applyConfig() {
+            initLoader();
+        }
+
+        // Recharger le loader
+        async function reloadLoader() {
+            if (loader) {
+                await loader.reload();
+                updateStatus('🔄 Plugin rechargé');
+            }
+        }
+
+        // Initialisation au chargement de la page
+        document.addEventListener('DOMContentLoaded', function() {
+            initLoader();
+        });
+
+        // Détection des erreurs
+        window.addEventListener('error', function(e) {
+            updateStatus(`❌ Erreur: ${e.message}`);
+        });
+    </script>
+</body>
+</html>

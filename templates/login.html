@@ -19,6 +19,20 @@
         <!-- Trombone CSS -->
         <div class="paperclip"></div>
         
+        <!-- Zone gauche pour image et slogan -->
+        <div class="login-branding">
+            <div class="branding-content">
+                <div>
+                    <!--<img src="{{ url_for('static', filename='images/mac_login.png') }}" alt="Logo" class="branding-image">-->
+                    <div id="pixel-art-mac" class="pixel-art-mac">
+                        <pre></pre>
+                    </div>
+                    <p class="branding-slogan">Really! Are you serious?</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Zone droite avec formulaire de login -->
         <div class="login-card">
             <div class="login-header">
                 <i class="fas fa-vial fa-3x text-primary mb-3"></i>
@@ -44,14 +58,14 @@
                     <label for="email" class="form-label">
                         <i class="fas fa-envelope"></i> Email
                     </label>
-                    <input type="email" class="form-control" id="email" required>
+                    <input type="email" class="form-control" id="email" autocomplete="email" required>
                 </div>
                 
                 <div class="mb-3">
                     <label for="password" class="form-label">
                         <i class="fas fa-lock"></i> Mot de passe
                     </label>
-                    <input type="password" class="form-control" id="password" required>
+                    <input type="password" class="form-control" id="password" autocomplete="current-password" required>
                 </div>
                 
                 <div class="d-grid">
@@ -71,7 +85,23 @@
     <!-- Custom JS -->
     <script src="{{ url_for('static', filename='js/app.js') }}"></script>
     
+    <!-- Pixel Art Loader Plugin -->
+    <script src="{{ url_for('static', filename='js/pixel-art-loader.js') }}"></script>
+    
     <script>
+        // Initialiser le loader de pixel art
+        document.addEventListener('DOMContentLoaded', function() {
+            const pixelArtLoader = new PixelArtLoader({
+                containerId: 'pixel-art-mac',
+                files: ['mac_1.txt', 'mac_2.txt', 'mac_3.txt'], // Noms des fichiers pixel art
+                interval: 5000,           // Changer d'image toutes les 5 secondes
+                lineDelay: 50,            // 50ms entre chaque ligne
+                randomTransition: true    // Transition aléatoire activée
+            });
+            
+            pixelArtLoader.start();
+        });
+        
         // Vérifier si un message d'erreur est passé en paramètre URL
         const urlParams = new URLSearchParams(window.location.search);
         const errorParam = urlParams.get('error');

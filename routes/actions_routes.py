@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """Routes API pour la gestion des masques de saisie des actions."""
-from flask import Blueprint, jsonify
+from flask import Blueprint, jsonify, make_response
 from plugins.actions import get_action, get_all_actions, ACTION_REGISTRY
 
 actions_bp = Blueprint('actions_api', __name__, url_prefix='/api/actions')
@@ -85,5 +85,59 @@ def get_all_labels():
                     labels[action_type] = action_type.replace('_', ' ').replace('-', ' ').title()
         
         return jsonify(labels), 200
+    except Exception as e:
+        return jsonify({'message': f'Erreur serveur: {str(e)}'}), 500
+
+@actions_bp.route('/javascript', methods=['GET'])
+def get_all_javascript():
+    """Récupère tous les codes JavaScript pour tous les types d'actions."""
+    try:
+        actions = get_all_actions()
+        javascript_functions = {}
+        
+        for action_type, action_info in actions.items():
+            action_instance = get_action(action_type)
+            if action_instance:
+                js_show_form = action_instance.get_js_show_form()
+                js_validate_form = action_instance.get_js_validate_form()
+                
+                # Ne stocker que si au moins une fonction JavaScript existe
+                if js_show_form or js_validate_form:
+                    javascript_functions[action_type] = {
+                        'jsShowForm': js_show_form,
+                        'jsValidateForm': js_validate_form
+                    }
+        
+        # Créer une réponse avec headers anti-cache
+        response = make_response(jsonify(javascript_functions), 200)
+        response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+        response.headers['Pragma'] = 'no-cache'
+        response.headers['Expires'] = '0'
+        return response
+    except Exception as e:
+        return jsonify({'message': f'Erreur serveur: {str(e)}'}), 500
+
+@actions_bp.route('/javascript/<action_type>', methods=['GET'])
+def get_javascript(action_type):
+    """Récupère le code JavaScript pour un type d'action spécifique."""
+    try:
+        action = get_action(action_type)
+        
+        if not action:
+            return jsonify({'message': f'Type d\'action non supporté: {action_type}'}), 400
+        
+        js_show_form = action.get_js_show_form()
+        js_validate_form = action.get_js_validate_form()
+        
+        # Créer une réponse avec headers anti-cache
+        response = make_response(jsonify({
+            'type': action_type,
+            'jsShowForm': js_show_form,
+            'jsValidateForm': js_validate_form
+        }), 200)
+        response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+        response.headers['Pragma'] = 'no-cache'
+        response.headers['Expires'] = '0'
+        return response
     except Exception as e:
         return jsonify({'message': f'Erreur serveur: {str(e)}'}), 500

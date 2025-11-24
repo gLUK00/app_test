@@ -9,3 +9,4 @@ flask-socketio==5.3.4
 python-socketio==5.10.0
 eventlet==0.40.2
 webdav4==0.10.0
+PyYAML==6.0.1

@@ -4,7 +4,9 @@
         "pass": "mypass",
         "host": "localhost",
         "port": "27017",
-        "bdd": "testGyver"
+        "bdd": "testGyver",
+        "prefix": "mgv_",
+        "soft_delete": true
     },
     "jwt_secret": "4f51s5Gg1r41gh7",
     "app": {

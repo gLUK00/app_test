@@ -86,6 +86,11 @@
                                     <i class="fas fa-clock"></i> En attente
                                 </span>
                             </h4>
+                            <div id="reExecuteSection" style="display: none; margin-top: 20px;">
+                                <button id="btnReExecute" class="btn btn-primary btn-lg">
+                                    <i class="fas fa-redo"></i> Re-exécuter le test
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -210,6 +215,9 @@
         socket.on('test_completed', function(data) {
             console.log('Test terminé:', data);
             updateStatus(data.status, data.status === 'passed' ? 'Réussi' : 'Échoué');
+            
+            // Afficher le bouton de re-exécution
+            document.getElementById('reExecuteSection').style.display = 'block';
         });
         
         socket.on('disconnect', function() {
@@ -276,6 +284,23 @@
         document.getElementById('logsContent').textContent = '';
     }
     
+    // Re-exécuter le test
+    function reExecuteTest() {
+        // Réinitialiser l'interface
+        document.getElementById('reExecuteSection').style.display = 'none';
+        document.getElementById('executionControls').style.display = 'block';
+        document.getElementById('executionStatus').style.display = 'none';
+        document.getElementById('executionLogs').style.display = 'none';
+        document.getElementById('logsContent').textContent = '';
+        
+        // Réinitialiser la sélection de l'environnement
+        document.getElementById('selectFiliere').value = '';
+        document.getElementById('btnExecute').disabled = true;
+        
+        // Notification
+        Notification.info('Sélectionnez un environnement pour relancer le test');
+    }
+    
     // Initialisation au chargement
     document.addEventListener('DOMContentLoaded', async () => {
         await loadTestInfo();
@@ -285,6 +310,7 @@
         // Événements
         document.getElementById('btnExecute').addEventListener('click', executeTest);
         document.getElementById('btnClearLogs').addEventListener('click', clearLogs);
+        document.getElementById('btnReExecute').addEventListener('click', reExecuteTest);
     });
 </script>
 {% endblock %}

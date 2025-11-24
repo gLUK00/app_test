@@ -201,6 +201,7 @@
     // Initialisation
     document.addEventListener('DOMContentLoaded', async () => {
         testActionsManager = new TestActionsManager();
+        window.testActionsManager = testActionsManager; // Exposer globalement
         await testActionsManager.init();
     });
 </script>

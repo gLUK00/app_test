@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 """Application Flask principale pour TestGyver."""
 from flask import Flask, jsonify
+# ...existing code...
 from flask_swagger_ui import get_swaggerui_blueprint
 from flask_socketio import SocketIO, join_room, leave_room
 from utils.db import load_config
@@ -17,7 +18,8 @@ from routes import (
     rapports_bp,
     web_bp,
     actions_bp,
-    plugins_routes
+    plugins_routes,
+    deleted_bp
 )
 
 # Variable globale pour l'instance SocketIO
@@ -34,8 +36,9 @@ def create_app():
     app.config['SECRET_KEY'] = config['jwt_secret']
     app.config['JSON_AS_ASCII'] = False
     
-    # Initialiser SocketIO
-    socketio = SocketIO(app, cors_allowed_origins="*")
+    # Initialiser SocketIO avec le mode threading pour éviter les conflits avec le debugger
+    # et assurer que les tâches de fond ne bloquent pas les heartbeats
+    socketio = SocketIO(app, cors_allowed_origins="*", async_mode='threading')
     
     # Stocker socketio dans les extensions pour un accès facile
     app.extensions['socketio'] = socketio
@@ -93,6 +96,7 @@ def create_app():
     app.register_blueprint(rapports_bp)
     app.register_blueprint(actions_bp)
     app.register_blueprint(plugins_routes)
+    app.register_blueprint(deleted_bp)
     
     # Configuration Swagger UI
     SWAGGER_URL = '/swagger'
@@ -115,6 +119,15 @@ def create_app():
             'status': 'healthy',
             'version': config['version']
         }), 200
+    
+    # Route pour le favicon
+    @app.route('/favicon.ico')
+    def favicon():
+        """Sert le favicon de l'application."""
+        from flask import send_from_directory
+        import os
+        return send_from_directory(os.path.join(app.root_path, 'static', 'images', 'favicon'),
+                                    'favicon.ico', mimetype='image/vnd.microsoft.icon')
     
     # Gestionnaire d'erreurs 404
     @app.errorhandler(404)
@@ -154,9 +167,11 @@ if __name__ == '__main__':
     print("="*60 + "\n")
     
     # Utiliser socketio.run() au lieu de app.run()
+    # Désactiver le rechargement automatique pour éviter les redémarrages lors de l'écriture dans workdir
     socketio.run(
         app,
         host=config['app']['host'],
         port=config['app']['port'],
-        debug=config['app']['debug']
+        debug=config['app']['debug'],
+        use_reloader=False  # IMPORTANT: Désactiver le reloader pour éviter les redémarrages intempestifs
     )

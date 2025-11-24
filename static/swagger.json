@@ -2,20 +2,36 @@
   "swagger": "2.0",
   "info": {
     "title": "TestGyver API",
-    "description": "API pour la plateforme de test multi-environnements TestGyver",
-    "version": "1.0.0"
+    "description": "API pour la plateforme de test multi-environnements TestGyver - Really, are you serious?",
+    "version": "1.0.0",
+    "contact": {
+      "name": "TestGyver Support"
+    }
   },
   "host": "localhost:5000",
   "basePath": "/api",
   "schemes": ["http", "https"],
+  "consumes": ["application/json"],
+  "produces": ["application/json"],
   "securityDefinitions": {
     "Bearer": {
       "type": "apiKey",
       "name": "Authorization",
       "in": "header",
-      "description": "JWT Authorization header using the Bearer scheme. Example: 'Bearer {token}'"
+      "description": "JWT Authorization header using the Bearer scheme. Example: 'Authorization: Bearer {token}'"
     }
   },
+  "tags": [
+    {"name": "Authentification", "description": "Gestion de l'authentification"},
+    {"name": "Utilisateurs", "description": "Gestion des utilisateurs"},
+    {"name": "Campagnes", "description": "Gestion des campagnes de test"},
+    {"name": "Tests", "description": "Gestion des tests"},
+    {"name": "Variables", "description": "Gestion des variables multi-environnements"},
+    {"name": "Rapports", "description": "Gestion des rapports d'exécution"},
+    {"name": "Actions", "description": "Gestion des actions et plugins"},
+    {"name": "Plugins", "description": "Gestion des plugins"},
+    {"name": "Éléments supprimés", "description": "Gestion des éléments supprimés logiquement (restauration et suppression définitive)"}
+  ],
   "paths": {
     "/login": {
       "post": {
@@ -28,16 +44,18 @@
             "name": "credentials",
             "required": true,
             "schema": {
-              "type": "object",
-              "properties": {
-                "email": {"type": "string", "example": "user@example.com"},
-                "password": {"type": "string", "example": "password123"}
-              }
+              "$ref": "#/definitions/LoginRequest"
             }
           }
         ],
         "responses": {
-          "200": {"description": "Authentification réussie"},
+          "200": {
+            "description": "Authentification réussie",
+            "schema": {
+              "$ref": "#/definitions/LoginResponse"
+            }
+          },
+          "400": {"description": "Données manquantes"},
           "401": {"description": "Identifiants invalides"}
         }
       }
@@ -46,8 +64,25 @@
       "post": {
         "tags": ["Authentification"],
         "summary": "Déconnexion utilisateur",
+        "security": [{"Bearer": []}],
         "responses": {
           "200": {"description": "Déconnexion réussie"}
+        }
+      }
+    },
+    "/me": {
+      "get": {
+        "tags": ["Authentification"],
+        "summary": "Informations utilisateur connecté",
+        "security": [{"Bearer": []}],
+        "responses": {
+          "200": {
+            "description": "Informations de l'utilisateur",
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          },
+          "401": {"description": "Non authentifié"}
         }
       }
     },
@@ -55,16 +90,24 @@
       "get": {
         "tags": ["Utilisateurs"],
         "summary": "Liste des utilisateurs",
+        "description": "Récupère la liste de tous les utilisateurs (admin uniquement)",
         "security": [{"Bearer": []}],
         "responses": {
-          "200": {"description": "Liste des utilisateurs"},
+          "200": {
+            "description": "Liste des utilisateurs",
+            "schema": {
+              "type": "array",
+              "items": {"$ref": "#/definitions/User"}
+            }
+          },
           "401": {"description": "Non authentifié"},
-          "403": {"description": "Accès refusé"}
+          "403": {"description": "Accès refusé - admin requis"}
         }
       },
       "post": {
         "tags": ["Utilisateurs"],
         "summary": "Créer un utilisateur",
+        "description": "Crée un nouvel utilisateur (admin uniquement)",
         "security": [{"Bearer": []}],
         "parameters": [
           {
@@ -72,19 +115,86 @@
             "name": "user",
             "required": true,
             "schema": {
-              "type": "object",
-              "properties": {
-                "name": {"type": "string"},
-                "email": {"type": "string"},
-                "password": {"type": "string"},
-                "role": {"type": "string", "enum": ["admin", "user"]}
-              }
+              "$ref": "#/definitions/UserCreate"
             }
           }
         ],
         "responses": {
-          "201": {"description": "Utilisateur créé"},
-          "400": {"description": "Données invalides"}
+          "201": {
+            "description": "Utilisateur créé",
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          },
+          "400": {"description": "Données invalides"},
+          "403": {"description": "Accès refusé"}
+        }
+      }
+    },
+    "/users/{user_id}": {
+      "get": {
+        "tags": ["Utilisateurs"],
+        "summary": "Détails d'un utilisateur",
+        "security": [{"Bearer": []}],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "user_id",
+            "type": "string",
+            "required": true,
+            "description": "ID de l'utilisateur"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Détails de l'utilisateur",
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          },
+          "404": {"description": "Utilisateur non trouvé"}
+        }
+      },
+      "put": {
+        "tags": ["Utilisateurs"],
+        "summary": "Mettre à jour un utilisateur",
+        "security": [{"Bearer": []}],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "user_id",
+            "type": "string",
+            "required": true
+          },
+          {
+            "in": "body",
+            "name": "user",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/UserUpdate"
+            }
+          }
+        ],
+        "responses": {
+          "200": {"description": "Utilisateur mis à jour"},
+          "404": {"description": "Utilisateur non trouvé"}
+        }
+      },
+      "delete": {
+        "tags": ["Utilisateurs"],
+        "summary": "Supprimer un utilisateur",
+        "security": [{"Bearer": []}],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "user_id",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {"description": "Utilisateur supprimé"},
+          "404": {"description": "Utilisateur non trouvé"}
         }
       }
     },
@@ -94,7 +204,13 @@
         "summary": "Liste des campagnes",
         "security": [{"Bearer": []}],
         "responses": {
-          "200": {"description": "Liste des campagnes"}
+          "200": {
+            "description": "Liste des campagnes",
+            "schema": {
+              "type": "array",
+              "items": {"$ref": "#/definitions/Campain"}
+            }
+          }
         }
       },
       "post": {
@@ -107,16 +223,490 @@
             "name": "campain",
             "required": true,
             "schema": {
-              "type": "object",
-              "properties": {
-                "name": {"type": "string"},
-                "description": {"type": "string"}
-              }
+              "$ref": "#/definitions/CampainCreate"
             }
           }
         ],
         "responses": {
-          "201": {"description": "Campagne créée"}
+          "201": {
+            "description": "Campagne créée",
+            "schema": {
+              "$ref": "#/definitions/Campain"
+            }
+          },
+          "400": {"description": "Données invalides"}
+        }
+      }
+    },
+    "/campains/import": {
+      "post": {
+        "tags": ["Campagnes"],
+        "summary": "Importer une campagne",
+        "description": "Importe une campagne depuis un fichier JSON exporté",
+        "security": [{"Bearer": []}],
+        "consumes": ["multipart/form-data"],
+        "parameters": [
+          {
+            "in": "formData",
+            "name": "file",
+            "type": "file",
+            "required": true,
+            "description": "Fichier JSON de la campagne"
+          },
+          {
+            "in": "formData",
+            "name": "name",
+            "type": "string",
+            "required": false,
+            "description": "Nom de la campagne importée (optionnel)"
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Campagne importée",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {"type": "string"},
+                "campain_id": {"type": "string"}
+              }
+            }
+          },
+          "400": {"description": "Fichier invalide ou manquant"}
+        }
+      }
+    },
+    "/campains/{campain_id}": {
+      "get": {
+        "tags": ["Campagnes"],
+        "summary": "Détails d'une campagne",
+        "security": [{"Bearer": []}],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "campain_id",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Détails de la campagne",
+            "schema": {
+              "$ref": "#/definitions/Campain"
+            }
+          },
+          "404": {"description": "Campagne non trouvée"}
+        }
+      },
+      "put": {
+        "tags": ["Campagnes"],
+        "summary": "Mettre à jour une campagne",
+        "security": [{"Bearer": []}],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "campain_id",
+            "type": "string",
+            "required": true
+          },
+          {
+            "in": "body",
+            "name": "campain",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/CampainUpdate"
+            }
+          }
+        ],
+        "responses": {
+          "200": {"description": "Campagne mise à jour"},
+          "404": {"description": "Campagne non trouvée"}
+        }
+      },
+      "delete": {
+        "tags": ["Campagnes"],
+        "summary": "Supprimer une campagne",
+        "security": [{"Bearer": []}],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "campain_id",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {"description": "Campagne supprimée"},
+          "404": {"description": "Campagne non trouvée"}
+        }
+      }
+    },
+    "/campains/{campain_id}/files": {
+      "get": {
+        "tags": ["Campagnes"],
+        "summary": "Liste des fichiers d'une campagne",
+        "security": [{"Bearer": []}],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "campain_id",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Liste des fichiers",
+            "schema": {
+              "type": "array",
+              "items": {"$ref": "#/definitions/CampainFile"}
+            }
+          },
+          "404": {"description": "Campagne non trouvée"}
+        }
+      },
+      "post": {
+        "tags": ["Campagnes"],
+        "summary": "Upload un fichier dans une campagne",
+        "security": [{"Bearer": []}],
+        "consumes": ["multipart/form-data"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "campain_id",
+            "type": "string",
+            "required": true
+          },
+          {
+            "in": "formData",
+            "name": "file",
+            "type": "file",
+            "required": true,
+            "description": "Fichier à uploader"
+          },
+          {
+            "in": "formData",
+            "name": "rename",
+            "type": "string",
+            "required": false,
+            "description": "Nouveau nom du fichier (optionnel)"
+          }
+        ],
+        "responses": {
+          "201": {"description": "Fichier uploadé"},
+          "400": {"description": "Fichier manquant"},
+          "404": {"description": "Campagne non trouvée"}
+        }
+      }
+    },
+    "/campains/{campain_id}/files/{filename}": {
+      "get": {
+        "tags": ["Campagnes"],
+        "summary": "Télécharger un fichier de campagne",
+        "security": [{"Bearer": []}],
+        "produces": ["application/octet-stream"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "campain_id",
+            "type": "string",
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "filename",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {"description": "Fichier téléchargé"},
+          "404": {"description": "Fichier non trouvé"}
+        }
+      },
+      "delete": {
+        "tags": ["Campagnes"],
+        "summary": "Supprimer un fichier de campagne",
+        "security": [{"Bearer": []}],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "campain_id",
+            "type": "string",
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "filename",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {"description": "Fichier supprimé"},
+          "404": {"description": "Fichier non trouvé"}
+        }
+      }
+    },
+    "/campains/{campain_id}/export": {
+      "get": {
+        "tags": ["Campagnes"],
+        "summary": "Exporter une campagne",
+        "description": "Exporte la campagne au format JSON avec option d'inclure les fichiers",
+        "security": [{"Bearer": []}],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "campain_id",
+            "type": "string",
+            "required": true,
+            "description": "ID de la campagne"
+          },
+          {
+            "in": "query",
+            "name": "include_files",
+            "type": "boolean",
+            "description": "Inclure les fichiers du répertoire de travail (encodés en base64)",
+            "default": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Fichier JSON de la campagne",
+            "schema": {
+              "type": "file"
+            }
+          },
+          "404": {"description": "Campagne non trouvée"}
+        }
+      }
+    },
+    "/tests": {
+      "get": {
+        "tags": ["Tests"],
+        "summary": "Liste des tests",
+        "security": [{"Bearer": []}],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "campain_id",
+            "type": "string",
+            "description": "Filtrer par campagne"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Liste des tests",
+            "schema": {
+              "type": "array",
+              "items": {"$ref": "#/definitions/Test"}
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Tests"],
+        "summary": "Créer un test",
+        "security": [{"Bearer": []}],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "test",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/TestCreate"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Test créé",
+            "schema": {
+              "$ref": "#/definitions/Test"
+            }
+          },
+          "400": {"description": "Données invalides"}
+        }
+      }
+    },
+    "/tests/{test_id}": {
+      "get": {
+        "tags": ["Tests"],
+        "summary": "Détails d'un test",
+        "security": [{"Bearer": []}],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "test_id",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Détails du test",
+            "schema": {
+              "$ref": "#/definitions/Test"
+            }
+          },
+          "404": {"description": "Test non trouvé"}
+        }
+      },
+      "put": {
+        "tags": ["Tests"],
+        "summary": "Mettre à jour un test",
+        "security": [{"Bearer": []}],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "test_id",
+            "type": "string",
+            "required": true
+          },
+          {
+            "in": "body",
+            "name": "test",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/TestUpdate"
+            }
+          }
+        ],
+        "responses": {
+          "200": {"description": "Test mis à jour"},
+          "404": {"description": "Test non trouvé"}
+        }
+      },
+      "delete": {
+        "tags": ["Tests"],
+        "summary": "Supprimer un test",
+        "security": [{"Bearer": []}],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "test_id",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {"description": "Test supprimé"},
+          "404": {"description": "Test non trouvé"}
+        }
+      }
+    },
+    "/tests/{test_id}/actions": {
+      "post": {
+        "tags": ["Tests"],
+        "summary": "Ajouter une action à un test",
+        "security": [{"Bearer": []}],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "test_id",
+            "type": "string",
+            "required": true
+          },
+          {
+            "in": "body",
+            "name": "action",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Action"
+            }
+          }
+        ],
+        "responses": {
+          "201": {"description": "Action ajoutée"},
+          "404": {"description": "Test non trouvé"}
+        }
+      }
+    },
+    "/tests/filieres": {
+      "get": {
+        "tags": ["Tests"],
+        "summary": "Liste des filières disponibles",
+        "security": [{"Bearer": []}],
+        "responses": {
+          "200": {
+            "description": "Liste des filières",
+            "schema": {
+              "type": "array",
+              "items": {"type": "string"}
+            }
+          }
+        }
+      }
+    },
+    "/tests/{test_id}/execute": {
+      "post": {
+        "tags": ["Tests"],
+        "summary": "Exécuter un test",
+        "security": [{"Bearer": []}],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "test_id",
+            "type": "string",
+            "required": true
+          },
+          {
+            "in": "body",
+            "name": "execution",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "filiere": {"type": "string", "description": "Environnement d'exécution"}
+              },
+              "required": ["filiere"]
+            }
+          }
+        ],
+        "responses": {
+          "200": {"description": "Exécution lancée"},
+          "400": {"description": "Filière manquante"},
+          "404": {"description": "Test non trouvé"}
+        }
+      }
+    },
+    "/tests/{test_id}/move-up": {
+      "post": {
+        "tags": ["Tests"],
+        "summary": "Monter un test dans l'ordre d'exécution",
+        "security": [{"Bearer": []}],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "test_id",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {"description": "Test déplacé"},
+          "404": {"description": "Test non trouvé"}
+        }
+      }
+    },
+    "/tests/{test_id}/move-down": {
+      "post": {
+        "tags": ["Tests"],
+        "summary": "Descendre un test dans l'ordre d'exécution",
+        "security": [{"Bearer": []}],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "test_id",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {"description": "Test déplacé"},
+          "404": {"description": "Test non trouvé"}
         }
       }
     },
@@ -140,25 +730,103 @@
           }
         ],
         "responses": {
-          "200": {"description": "Liste des variables"}
+          "200": {
+            "description": "Liste des variables",
+            "schema": {
+              "type": "array",
+              "items": {"$ref": "#/definitions/Variable"}
+            }
+          }
         }
-      }
-    },
-    "/tests": {
-      "get": {
-        "tags": ["Tests"],
-        "summary": "Liste des tests",
+      },
+      "post": {
+        "tags": ["Variables"],
+        "summary": "Créer une variable",
         "security": [{"Bearer": []}],
         "parameters": [
           {
-            "in": "query",
-            "name": "campain_id",
-            "type": "string",
-            "description": "Filtrer par campagne"
+            "in": "body",
+            "name": "variable",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/VariableCreate"
+            }
           }
         ],
         "responses": {
-          "200": {"description": "Liste des tests"}
+          "201": {
+            "description": "Variable créée",
+            "schema": {
+              "$ref": "#/definitions/Variable"
+            }
+          },
+          "400": {"description": "Données invalides"}
+        }
+      }
+    },
+    "/variables/{variable_id}": {
+      "get": {
+        "tags": ["Variables"],
+        "summary": "Détails d'une variable",
+        "security": [{"Bearer": []}],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "variable_id",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Détails de la variable",
+            "schema": {
+              "$ref": "#/definitions/Variable"
+            }
+          },
+          "404": {"description": "Variable non trouvée"}
+        }
+      },
+      "put": {
+        "tags": ["Variables"],
+        "summary": "Mettre à jour une variable",
+        "security": [{"Bearer": []}],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "variable_id",
+            "type": "string",
+            "required": true
+          },
+          {
+            "in": "body",
+            "name": "variable",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/VariableUpdate"
+            }
+          }
+        ],
+        "responses": {
+          "200": {"description": "Variable mise à jour"},
+          "404": {"description": "Variable non trouvée"}
+        }
+      },
+      "delete": {
+        "tags": ["Variables"],
+        "summary": "Supprimer une variable",
+        "security": [{"Bearer": []}],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "variable_id",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {"description": "Variable supprimée"},
+          "404": {"description": "Variable non trouvée"}
         }
       }
     },
@@ -176,8 +844,990 @@
           }
         ],
         "responses": {
-          "200": {"description": "Liste des rapports"}
+          "200": {
+            "description": "Liste des rapports",
+            "schema": {
+              "type": "array",
+              "items": {"$ref": "#/definitions/Rapport"}
+            }
+          }
         }
+      },
+      "post": {
+        "tags": ["Rapports"],
+        "summary": "Créer un rapport",
+        "security": [{"Bearer": []}],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "rapport",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/RapportCreate"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Rapport créé",
+            "schema": {
+              "$ref": "#/definitions/Rapport"
+            }
+          },
+          "400": {"description": "Données invalides"}
+        }
+      }
+    },
+    "/rapports/execute": {
+      "post": {
+        "tags": ["Rapports"],
+        "summary": "Exécuter une campagne",
+        "security": [{"Bearer": []}],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "execution",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "campain_id": {"type": "string"},
+                "name": {"type": "string"},
+                "filiere": {"type": "string"},
+                "stopOnFailure": {"type": "boolean", "default": false}
+              },
+              "required": ["campain_id", "name", "filiere"]
+            }
+          }
+        ],
+        "responses": {
+          "200": {"description": "Exécution lancée"},
+          "400": {"description": "Données manquantes"},
+          "404": {"description": "Campagne non trouvée"}
+        }
+      }
+    },
+    "/rapports/generate-name": {
+      "get": {
+        "tags": ["Rapports"],
+        "summary": "Générer un nom de rapport unique",
+        "security": [{"Bearer": []}],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "campain_id",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Nom généré",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {"type": "string"}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/rapports/filieres": {
+      "get": {
+        "tags": ["Rapports"],
+        "summary": "Liste des filières pour exécution",
+        "security": [{"Bearer": []}],
+        "responses": {
+          "200": {
+            "description": "Liste des filières",
+            "schema": {
+              "type": "array",
+              "items": {"type": "string"}
+            }
+          }
+        }
+      }
+    },
+    "/rapports/{rapport_id}": {
+      "get": {
+        "tags": ["Rapports"],
+        "summary": "Détails d'un rapport",
+        "security": [{"Bearer": []}],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "rapport_id",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Détails du rapport",
+            "schema": {
+              "$ref": "#/definitions/Rapport"
+            }
+          },
+          "404": {"description": "Rapport non trouvé"}
+        }
+      },
+      "put": {
+        "tags": ["Rapports"],
+        "summary": "Mettre à jour un rapport",
+        "security": [{"Bearer": []}],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "rapport_id",
+            "type": "string",
+            "required": true
+          },
+          {
+            "in": "body",
+            "name": "rapport",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/RapportUpdate"
+            }
+          }
+        ],
+        "responses": {
+          "200": {"description": "Rapport mis à jour"},
+          "404": {"description": "Rapport non trouvé"}
+        }
+      },
+      "delete": {
+        "tags": ["Rapports"],
+        "summary": "Supprimer un rapport",
+        "security": [{"Bearer": []}],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "rapport_id",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {"description": "Rapport supprimé"},
+          "404": {"description": "Rapport non trouvé"}
+        }
+      }
+    },
+    "/actions/masks": {
+      "get": {
+        "tags": ["Actions"],
+        "summary": "Liste des masques de saisie des actions",
+        "responses": {
+          "200": {
+            "description": "Masques de tous les types d'actions",
+            "schema": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "array",
+                "items": {"$ref": "#/definitions/ActionField"}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/actions/masks/{action_type}": {
+      "get": {
+        "tags": ["Actions"],
+        "summary": "Masque de saisie d'un type d'action",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "action_type",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Masque du type d'action",
+            "schema": {
+              "type": "array",
+              "items": {"$ref": "#/definitions/ActionField"}
+            }
+          },
+          "404": {"description": "Type d'action non trouvé"}
+        }
+      }
+    },
+    "/actions/output-variables": {
+      "get": {
+        "tags": ["Actions"],
+        "summary": "Variables de sortie de toutes les actions",
+        "responses": {
+          "200": {
+            "description": "Variables de sortie par type d'action",
+            "schema": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "array",
+                "items": {"type": "string"}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/actions/output-variables/{action_type}": {
+      "get": {
+        "tags": ["Actions"],
+        "summary": "Variables de sortie d'un type d'action",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "action_type",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Variables de sortie",
+            "schema": {
+              "type": "array",
+              "items": {"type": "string"}
+            }
+          },
+          "404": {"description": "Type d'action non trouvé"}
+        }
+      }
+    },
+    "/actions/labels": {
+      "get": {
+        "tags": ["Actions"],
+        "summary": "Labels de tous les types d'actions",
+        "responses": {
+          "200": {
+            "description": "Labels par type d'action",
+            "schema": {
+              "type": "object",
+              "additionalProperties": {"type": "string"}
+            }
+          }
+        }
+      }
+    },
+    "/actions/javascript": {
+      "get": {
+        "tags": ["Actions"],
+        "summary": "Code JavaScript de tous les types d'actions",
+        "responses": {
+          "200": {
+            "description": "Code JavaScript par type d'action",
+            "schema": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "object",
+                "properties": {
+                  "jsShowForm": {"type": "string"},
+                  "jsValidateForm": {"type": "string"}
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/actions/javascript/{action_type}": {
+      "get": {
+        "tags": ["Actions"],
+        "summary": "Code JavaScript d'un type d'action",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "action_type",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Code JavaScript du type d'action",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "jsShowForm": {"type": "string"},
+                "jsValidateForm": {"type": "string"}
+              }
+            }
+          },
+          "404": {"description": "Type d'action non trouvé"}
+        }
+      }
+    },
+    "/plugins": {
+      "get": {
+        "tags": ["Plugins"],
+        "summary": "Liste de tous les plugins",
+        "responses": {
+          "200": {
+            "description": "Liste des plugins par type",
+            "schema": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "array",
+                "items": {"$ref": "#/definitions/PluginInfo"}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/plugins/{plugin_type}": {
+      "get": {
+        "tags": ["Plugins"],
+        "summary": "Liste des plugins d'un type",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "plugin_type",
+            "type": "string",
+            "required": true,
+            "enum": ["actions", "reports", "auth"]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Liste des plugins du type",
+            "schema": {
+              "type": "array",
+              "items": {"$ref": "#/definitions/PluginInfo"}
+            }
+          },
+          "404": {"description": "Type de plugin non trouvé"}
+        }
+      }
+    },
+    "/plugins/{plugin_type}/{plugin_name}": {
+      "get": {
+        "tags": ["Plugins"],
+        "summary": "Détails d'un plugin",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "plugin_type",
+            "type": "string",
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "plugin_name",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Détails du plugin",
+            "schema": {
+              "$ref": "#/definitions/PluginInfo"
+            }
+          },
+          "404": {"description": "Plugin non trouvé"}
+        }
+      }
+    },
+    "/plugins/reload": {
+      "post": {
+        "tags": ["Plugins"],
+        "summary": "Recharger tous les plugins",
+        "responses": {
+          "200": {"description": "Plugins rechargés"}
+        }
+      }
+    },
+    "/plugins/{plugin_type}/reload": {
+      "post": {
+        "tags": ["Plugins"],
+        "summary": "Recharger les plugins d'un type",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "plugin_type",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {"description": "Plugins rechargés"},
+          "404": {"description": "Type de plugin non trouvé"}
+        }
+      }
+    },
+    "/plugins/errors": {
+      "get": {
+        "tags": ["Plugins"],
+        "summary": "Liste des erreurs de chargement des plugins",
+        "responses": {
+          "200": {
+            "description": "Erreurs par type de plugin",
+            "schema": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "array",
+                "items": {"$ref": "#/definitions/PluginError"}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/plugins/stats": {
+      "get": {
+        "tags": ["Plugins"],
+        "summary": "Statistiques des plugins",
+        "responses": {
+          "200": {
+            "description": "Statistiques",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "total": {"type": "integer"},
+                "by_type": {
+                  "type": "object",
+                  "additionalProperties": {"type": "integer"}
+                },
+                "errors": {"type": "integer"}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/deleted/tests": {
+      "get": {
+        "tags": ["Éléments supprimés"],
+        "summary": "Liste des tests supprimés logiquement",
+        "description": "Récupère tous les tests supprimés logiquement (admin uniquement)",
+        "security": [{"Bearer": []}],
+        "responses": {
+          "200": {
+            "description": "Liste des tests supprimés",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "tests": {
+                  "type": "array",
+                  "items": {"$ref": "#/definitions/Test"}
+                }
+              }
+            }
+          },
+          "401": {"description": "Non authentifié"},
+          "403": {"description": "Accès interdit (admin requis)"}
+        }
+      }
+    },
+    "/deleted/campains": {
+      "get": {
+        "tags": ["Éléments supprimés"],
+        "summary": "Liste des campagnes supprimées logiquement",
+        "description": "Récupère toutes les campagnes supprimées logiquement (admin uniquement)",
+        "security": [{"Bearer": []}],
+        "responses": {
+          "200": {
+            "description": "Liste des campagnes supprimées",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "campains": {
+                  "type": "array",
+                  "items": {"$ref": "#/definitions/Campain"}
+                }
+              }
+            }
+          },
+          "401": {"description": "Non authentifié"},
+          "403": {"description": "Accès interdit (admin requis)"}
+        }
+      }
+    },
+    "/deleted/rapports": {
+      "get": {
+        "tags": ["Éléments supprimés"],
+        "summary": "Liste des rapports supprimés logiquement",
+        "description": "Récupère tous les rapports supprimés logiquement (admin uniquement)",
+        "security": [{"Bearer": []}],
+        "responses": {
+          "200": {
+            "description": "Liste des rapports supprimés",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "rapports": {
+                  "type": "array",
+                  "items": {"$ref": "#/definitions/Rapport"}
+                }
+              }
+            }
+          },
+          "401": {"description": "Non authentifié"},
+          "403": {"description": "Accès interdit (admin requis)"}
+        }
+      }
+    },
+    "/deleted/all": {
+      "get": {
+        "tags": ["Éléments supprimés"],
+        "summary": "Liste de tous les éléments supprimés",
+        "description": "Récupère tous les éléments supprimés logiquement (tests, campagnes, rapports) (admin uniquement)",
+        "security": [{"Bearer": []}],
+        "responses": {
+          "200": {
+            "description": "Tous les éléments supprimés",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "tests": {
+                  "type": "array",
+                  "items": {"$ref": "#/definitions/Test"}
+                },
+                "campains": {
+                  "type": "array",
+                  "items": {"$ref": "#/definitions/Campain"}
+                },
+                "rapports": {
+                  "type": "array",
+                  "items": {"$ref": "#/definitions/Rapport"}
+                }
+              }
+            }
+          },
+          "401": {"description": "Non authentifié"},
+          "403": {"description": "Accès interdit (admin requis)"}
+        }
+      }
+    },
+    "/deleted/restore": {
+      "post": {
+        "tags": ["Éléments supprimés"],
+        "summary": "Restaurer des éléments supprimés",
+        "description": "Restaure un ou plusieurs éléments supprimés logiquement (admin uniquement)",
+        "security": [{"Bearer": []}],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "items",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": ["items"],
+              "properties": {
+                "items": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "required": ["type", "id"],
+                    "properties": {
+                      "type": {
+                        "type": "string",
+                        "enum": ["test", "campain", "rapport"],
+                        "description": "Type d'élément à restaurer"
+                      },
+                      "id": {
+                        "type": "string",
+                        "description": "ID de l'élément à restaurer"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Résultat de la restauration",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "restored": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "type": {"type": "string"},
+                      "id": {"type": "string"}
+                    }
+                  }
+                },
+                "errors": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "item": {"type": "object"},
+                      "error": {"type": "string"}
+                    }
+                  }
+                },
+                "success": {"type": "boolean"}
+              }
+            }
+          },
+          "400": {"description": "Données invalides"},
+          "401": {"description": "Non authentifié"},
+          "403": {"description": "Accès interdit (admin requis)"}
+        }
+      }
+    },
+    "/deleted/permanent": {
+      "delete": {
+        "tags": ["Éléments supprimés"],
+        "summary": "Supprimer définitivement des éléments",
+        "description": "Supprime définitivement (physiquement) un ou plusieurs éléments de la base de données (admin uniquement) - IRRÉVERSIBLE",
+        "security": [{"Bearer": []}],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "items",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": ["items"],
+              "properties": {
+                "items": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "required": ["type", "id"],
+                    "properties": {
+                      "type": {
+                        "type": "string",
+                        "enum": ["test", "campain", "rapport"],
+                        "description": "Type d'élément à supprimer définitivement"
+                      },
+                      "id": {
+                        "type": "string",
+                        "description": "ID de l'élément à supprimer définitivement"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Résultat de la suppression",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "deleted": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "type": {"type": "string"},
+                      "id": {"type": "string"}
+                    }
+                  }
+                },
+                "errors": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "item": {"type": "object"},
+                      "error": {"type": "string"}
+                    }
+                  }
+                },
+                "success": {"type": "boolean"}
+              }
+            }
+          },
+          "400": {"description": "Données invalides"},
+          "401": {"description": "Non authentifié"},
+          "403": {"description": "Accès interdit (admin requis)"}
+        }
+      }
+    }
+  },
+  "definitions": {
+    "LoginRequest": {
+      "type": "object",
+      "required": ["email", "password"],
+      "properties": {
+        "email": {"type": "string", "example": "admin@testgyver.com"},
+        "password": {"type": "string", "example": "admin123"}
+      }
+    },
+    "LoginResponse": {
+      "type": "object",
+      "properties": {
+        "token": {"type": "string"},
+        "user": {"$ref": "#/definitions/User"}
+      }
+    },
+    "User": {
+      "type": "object",
+      "properties": {
+        "_id": {"type": "string"},
+        "name": {"type": "string"},
+        "email": {"type": "string"},
+        "role": {"type": "string", "enum": ["admin", "user"]}
+      }
+    },
+    "UserCreate": {
+      "type": "object",
+      "required": ["name", "email", "password", "role"],
+      "properties": {
+        "name": {"type": "string"},
+        "email": {"type": "string"},
+        "password": {"type": "string"},
+        "role": {"type": "string", "enum": ["admin", "user"]}
+      }
+    },
+    "UserUpdate": {
+      "type": "object",
+      "properties": {
+        "name": {"type": "string"},
+        "email": {"type": "string"},
+        "password": {"type": "string"},
+        "role": {"type": "string", "enum": ["admin", "user"]}
+      }
+    },
+    "Campain": {
+      "type": "object",
+      "properties": {
+        "_id": {"type": "string"},
+        "userCreated": {"type": "string"},
+        "name": {"type": "string"},
+        "dateCreated": {"type": "string", "format": "date-time"},
+        "description": {"type": "string"}
+      }
+    },
+    "CampainCreate": {
+      "type": "object",
+      "required": ["name"],
+      "properties": {
+        "name": {"type": "string"},
+        "description": {"type": "string"}
+      }
+    },
+    "CampainUpdate": {
+      "type": "object",
+      "properties": {
+        "name": {"type": "string"},
+        "description": {"type": "string"}
+      }
+    },
+    "CampainFile": {
+      "type": "object",
+      "properties": {
+        "name": {"type": "string"},
+        "size": {"type": "integer", "description": "Taille en octets"},
+        "modified": {"type": "string", "format": "date-time"}
+      }
+    },
+    "Test": {
+      "type": "object",
+      "properties": {
+        "_id": {"type": "string"},
+        "campainId": {"type": "string"},
+        "userId": {"type": "string"},
+        "dateCreated": {"type": "string", "format": "date-time"},
+        "name": {"type": "string"},
+        "description": {"type": "string"},
+        "order": {"type": "integer"},
+        "variables": {
+          "type": "array",
+          "items": {"type": "string"}
+        },
+        "actions": {
+          "type": "array",
+          "items": {"$ref": "#/definitions/Action"}
+        }
+      }
+    },
+    "TestCreate": {
+      "type": "object",
+      "required": ["campainId", "name"],
+      "properties": {
+        "campainId": {"type": "string"},
+        "name": {"type": "string"},
+        "description": {"type": "string"},
+        "variables": {
+          "type": "array",
+          "items": {"type": "string"}
+        },
+        "actions": {
+          "type": "array",
+          "items": {"$ref": "#/definitions/Action"}
+        }
+      }
+    },
+    "TestUpdate": {
+      "type": "object",
+      "properties": {
+        "name": {"type": "string"},
+        "description": {"type": "string"},
+        "variables": {
+          "type": "array",
+          "items": {"type": "string"}
+        },
+        "actions": {
+          "type": "array",
+          "items": {"$ref": "#/definitions/Action"}
+        }
+      }
+    },
+    "Action": {
+      "type": "object",
+      "required": ["type", "value"],
+      "properties": {
+        "type": {"type": "string", "description": "Type d'action (http, ftp, sftp, ssh, webdav, io, var)"},
+        "value": {"type": "object", "description": "Configuration spécifique à l'action"},
+        "outputVariables": {
+          "type": "object",
+          "description": "Variables de sortie associées",
+          "additionalProperties": {"type": "string"}
+        }
+      }
+    },
+    "ActionField": {
+      "type": "object",
+      "properties": {
+        "name": {"type": "string"},
+        "type": {"type": "string", "enum": ["string", "number", "boolean", "textarea", "select", "checkbox", "select-var-test"]},
+        "label": {"type": "string"},
+        "placeholder": {"type": "string"},
+        "required": {"type": "boolean"},
+        "options": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "value": {"type": "string"},
+              "label": {"type": "string"}
+            }
+          }
+        }
+      }
+    },
+    "Variable": {
+      "type": "object",
+      "properties": {
+        "_id": {"type": "string"},
+        "key": {"type": "string"},
+        "value": {},
+        "filiere": {"type": "string"},
+        "description": {"type": "string"},
+        "isRoot": {"type": "boolean", "default": false}
+      }
+    },
+    "VariableCreate": {
+      "type": "object",
+      "required": ["key", "value"],
+      "properties": {
+        "key": {"type": "string"},
+        "value": {},
+        "filiere": {"type": "string"},
+        "description": {"type": "string"},
+        "isRoot": {"type": "boolean"}
+      }
+    },
+    "VariableUpdate": {
+      "type": "object",
+      "properties": {
+        "key": {"type": "string"},
+        "value": {},
+        "filiere": {"type": "string"},
+        "description": {"type": "string"},
+        "isRoot": {"type": "boolean"}
+      }
+    },
+    "Rapport": {
+      "type": "object",
+      "properties": {
+        "_id": {"type": "string"},
+        "campainId": {"type": "string"},
+        "name": {"type": "string"},
+        "dateCreated": {"type": "string", "format": "date-time"},
+        "result": {"type": "string", "enum": ["pending", "running", "success", "failure"]},
+        "details": {"type": "string"},
+        "filiere": {"type": "string"},
+        "status": {"type": "string", "enum": ["pending", "running", "completed", "error"]},
+        "progress": {"type": "integer", "minimum": 0, "maximum": 100},
+        "stopOnFailure": {"type": "boolean"},
+        "executionTimeMs": {"type": "integer"},
+        "startTime": {"type": "string", "format": "date-time"},
+        "endTime": {"type": "string", "format": "date-time"},
+        "tests": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "testId": {"type": "string"},
+              "testName": {"type": "string"},
+              "status": {"type": "string", "enum": ["pending", "running", "passed", "failed"]},
+              "logs": {"type": "string"},
+              "executionTimeMs": {"type": "integer"},
+              "actions": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "type": {"type": "string"},
+                    "status": {"type": "string"},
+                    "message": {"type": "string"},
+                    "executionTimeMs": {"type": "integer"}
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "RapportCreate": {
+      "type": "object",
+      "required": ["campainId", "name", "filiere"],
+      "properties": {
+        "campainId": {"type": "string"},
+        "name": {"type": "string"},
+        "filiere": {"type": "string"},
+        "stopOnFailure": {"type": "boolean", "default": false}
+      }
+    },
+    "RapportUpdate": {
+      "type": "object",
+      "properties": {
+        "result": {"type": "string"},
+        "details": {"type": "string"},
+        "status": {"type": "string"},
+        "progress": {"type": "integer"},
+        "executionTimeMs": {"type": "integer"},
+        "tests": {"type": "array"}
+      }
+    },
+    "PluginInfo": {
+      "type": "object",
+      "properties": {
+        "name": {"type": "string"},
+        "type": {"type": "string"},
+        "label": {"type": "string"},
+        "description": {"type": "string"},
+        "version": {"type": "string"},
+        "author": {"type": "string"}
+      }
+    },
+    "PluginError": {
+      "type": "object",
+      "properties": {
+        "plugin_name": {"type": "string"},
+        "file_path": {"type": "string"},
+        "error": {"type": "string"},
+        "traceback": {"type": "string"}
       }
     }
   }

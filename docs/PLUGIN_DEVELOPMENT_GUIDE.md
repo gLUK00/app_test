@@ -295,6 +295,212 @@ class DatabaseQueryAction(ActionBase):
 
 Pour plus d'informations sur l'utilisation des variables de sortie côté utilisateur, consultez [OUTPUT_VARIABLES.md](OUTPUT_VARIABLES.md).
 
+## Fonctions JavaScript dans les plugins d'actions
+
+Les plugins d'actions peuvent définir des fonctions JavaScript personnalisées qui s'exécutent côté client pour améliorer l'expérience utilisateur lors de la configuration des actions. Ces fonctions permettent d'ajouter une validation côté client, des interactions dynamiques, ou des modifications de l'interface en temps réel.
+
+### Fonctions JavaScript disponibles
+
+#### 1. `jsShowForm` - Personnalisation de l'affichage du formulaire
+
+Cette fonction est appelée après la génération des champs dynamiques du formulaire de configuration de l'action. Elle permet de :
+- Modifier l'apparence des champs
+- Ajouter des écouteurs d'événements
+- Afficher des informations contextuelles
+- Valider en temps réel les valeurs saisies
+
+**Signature :**
+```python
+def get_js_show_form(self):
+    """
+    Retourne le code JavaScript à exécuter lors de l'affichage du formulaire.
+    
+    IMPORTANT: Retourner uniquement le CORPS de la fonction, pas la déclaration.
+    Le framework crée automatiquement new Function('actionConfig', code).
+    
+    Returns:
+        str: Code JavaScript (corps uniquement) ou None
+    """
+    return """
+// actionConfig: objet contenant les valeurs actuelles des champs
+// Votre code JavaScript ici
+
+// Exemple : ajouter un écouteur sur un champ
+const myField = document.getElementById('my_field');
+if (myField) {
+    myField.addEventListener('change', function() {
+        console.log('Valeur changée:', this.value);
+    });
+}
+"""
+```
+
+**Paramètres :**
+- `actionConfig` : Objet JavaScript contenant les valeurs actuelles des champs de configuration (utilisé lors de l'édition d'une action existante)
+
+**Valeur de retour :** Aucune
+
+#### 2. `jsValidateForm` - Validation personnalisée du formulaire
+
+Cette fonction est appelée lors de la validation du formulaire, avant la soumission. Elle permet de :
+- Valider des règles métier complexes
+- Vérifier la cohérence entre plusieurs champs
+- Valider l'existence de ressources (variables, fichiers, etc.)
+- Afficher des messages d'erreur personnalisés
+
+**Signature :**
+```python
+def get_js_validate_form(self):
+    """
+    Retourne le code JavaScript à exécuter lors de la validation du formulaire.
+    
+    Returns:
+        str: Code JavaScript de la fonction jsValidateForm ou None
+    """
+    return """
+function jsValidateForm(actionConfig, variables) {
+    // actionConfig: objet contenant les valeurs actuelles des champs
+    // variables: tableau des variables du test en cours
+    
+    // Votre validation ici
+    if (!actionConfig.my_field) {
+        return {
+            isValid: false,
+            errorMessage: 'Le champ my_field est obligatoire'
+        };
+    }
+    
+    // Validation réussie
+    return {
+        isValid: true,
+        errorMessage: ''
+    };
+}
+"""
+```
+
+**Paramètres :**
+- `actionConfig` : Objet JavaScript contenant les valeurs actuelles de tous les champs du formulaire
+- `variables` : Tableau des noms des variables définies dans le test en cours
+
+**Valeur de retour :** Objet avec deux propriétés :
+- `isValid` (boolean) : `true` si la validation est réussie, `false` sinon
+- `errorMessage` (string) : Message d'erreur à afficher si `isValid` est `false` (vide si réussite)
+
+### Exemple complet : Plugin VarAction
+
+Voici un exemple réel du plugin VarAction qui utilise les deux fonctions JavaScript :
+
+```python
+class VarAction(ActionBase):
+    plugin_name = "var"
+    label = "Variables (Conversion)"
+    
+    def get_js_show_form(self):
+        """
+        Met en évidence la variable sélectionnée si elle n'existe pas.
+        IMPORTANT: Retourner uniquement le corps, pas 'function jsShowForm(...)'
+        """
+        return """
+const variableSelect = document.getElementById('variable_name');
+if (!variableSelect) return;
+
+// Ajouter un écouteur pour mettre à jour le style
+variableSelect.addEventListener('change', function() {
+    const selectedValue = this.value;
+    if (!selectedValue) {
+        this.classList.remove('is-valid', 'is-invalid');
+        return;
+    }
+    
+    const variables = window.testActionsManager ? 
+        window.testActionsManager.variables : [];
+    
+    if (variables.includes(selectedValue)) {
+        this.classList.remove('is-invalid');
+        this.classList.add('is-valid');
+    } else {
+        this.classList.remove('is-valid');
+        this.classList.add('is-invalid');
+    }
+});
+
+// Déclencher la validation initiale
+if (actionConfig && actionConfig.variable_name) {
+    variableSelect.value = actionConfig.variable_name;
+    variableSelect.dispatchEvent(new Event('change'));
+}
+"""
+    
+    def get_js_validate_form(self):
+        """
+        Valide que la variable sélectionnée existe dans les variables du test.
+        IMPORTANT: Retourner uniquement le corps, pas 'function jsValidateForm(...)'
+        """
+        return """
+const variableName = actionConfig.variable_name;
+
+if (!variableName || variableName.trim() === '') {
+    return {
+        isValid: false,
+        errorMessage: 'Veuillez sélectionner une variable à convertir'
+    };
+}
+
+if (!variables || !Array.isArray(variables)) {
+    return {isValid: true, errorMessage: ''};
+}
+
+if (!variables.includes(variableName)) {
+    return {
+        isValid: false,
+        errorMessage: `La variable "${variableName}" n'existe pas dans les variables du test. Veuillez créer cette variable avant de l'utiliser.`
+    };
+}
+
+return {isValid: true, errorMessage: ''};
+"""
+```
+
+### Bonnes pratiques
+
+1. **Retourner `None` si non utilisé** : Si vous n'avez pas besoin de fonctions JavaScript, retournez simplement `None` (comportement par défaut de `ActionBase`)
+
+2. **Gestion des erreurs** : Ajoutez toujours des vérifications pour éviter les erreurs JavaScript
+   ```javascript
+   const myField = document.getElementById('my_field');
+   if (!myField) {
+       console.warn('Champ my_field non trouvé');
+       return;
+   }
+   ```
+
+3. **Utiliser les classes Bootstrap** : Pour la cohérence visuelle, utilisez les classes Bootstrap existantes (`is-valid`, `is-invalid`, etc.)
+
+4. **Console.log pour le débogage** : Utilisez `console.log()` pour faciliter le débogage
+   ```javascript
+   console.log('MonAction: jsValidateForm appelée', actionConfig);
+   ```
+
+5. **Accéder au gestionnaire d'actions** : Vous pouvez accéder à `window.testActionsManager` pour récupérer les variables du test et d'autres informations
+
+6. **Ne pas bloquer l'interface** : Évitez les traitements longs dans `jsShowForm`. Pour `jsValidateForm`, les validations doivent être rapides
+
+7. **Messages d'erreur clairs** : Fournissez des messages d'erreur explicites pour aider l'utilisateur
+
+### Considérations de sécurité
+
+- Le code JavaScript est exécuté côté client avec les privilèges de l'utilisateur
+- Évitez de manipuler des données sensibles dans le code JavaScript
+- Les validations JavaScript ne remplacent pas les validations côté serveur (méthode `validate_config()`)
+
+### Extension future
+
+Le mécanisme des fonctions JavaScript est extensible. D'autres fonctions pourront être ajoutées à l'avenir selon les besoins, par exemple :
+- `jsOnFieldChange` : Appelée lors du changement d'un champ spécifique
+- `jsBeforeSubmit` : Appelée juste avant la soumission du formulaire
+- `jsAfterSave` : Appelée après la sauvegarde réussie de l'action
+
 ## Créer un plugin de rapport
 ```
 

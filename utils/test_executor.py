@@ -30,9 +30,14 @@ class TestExecutor:
             test_id: ID du test à exécuter
             filiere: Filière/environnement sélectionné
         """
-        # Lancer l'exécution dans une tâche d'arrière-plan SocketIO
-        # Cela garantit que les événements sont émis dans le bon contexte
-        self.socketio.start_background_task(self._run_test, test_id, filiere)
+        # Lancer l'exécution dans un thread séparé
+        import threading
+        thread = threading.Thread(
+            target=self._run_test,
+            args=(test_id, filiere)
+        )
+        thread.daemon = True
+        thread.start()
     
     def _run_test(self, test_id, filiere):
         """Exécute le test."""
@@ -145,7 +150,7 @@ class TestExecutor:
                 
                 # Exécuter l'action
                 try:
-                    result = action_plugin.execute(resolved_value)
+                    result = action_plugin.execute(resolved_value,test_variables)
                     
                     if result.get('result'):
                         self.socketio.emit('test_log', {

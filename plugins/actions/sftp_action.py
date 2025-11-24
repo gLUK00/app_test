@@ -161,25 +161,40 @@ class SFTPAction(ActionBase):
                 self.set_code(0)
                 self.add_trace(f"Fichier téléchargé avec succès ({file_stats.st_size} octets)")
                 
-                return self.get_result({
-                    "content": file_content[:1000],  # Limiter la taille
-                    "size": file_stats.st_size
-                })
+                # Préparer les variables de sortie
+                output_vars = {
+                    "ftp_file_content": file_content,
+                    "ftp_file_size": file_stats.st_size,
+                    "ftp_file_list": "",
+                    "ftp_operation_success": "true"
+                }
+                
+                self.set_code(0)
+                self.add_trace(f"Fichier téléchargé avec succès ({file_stats.st_size} octets)")
+                
+                return self.get_result(True, output_vars)
             
             elif method == 'PUT':
                 self.add_trace(f"Upload du fichier vers: {remote_path}")
-                
+
                 # Uploader le fichier
                 with sftp.file(remote_path, 'w') as remote_file:
-                    remote_file.write(content.encode('utf-8'))
+                    remote_file.write(content.encode('utf-8') if isinstance(content, str) else content)
+                
+                file_size = len(content.encode('utf-8') if isinstance(content, str) else    content)
+                
+                # Préparer les variables de sortie
+                output_vars = {
+                    "ftp_file_content": "",
+                    "ftp_file_size": file_size,
+                    "ftp_file_list": "",
+                    "ftp_operation_success": "true"
+                }
                 
                 self.set_code(0)
-                self.add_trace(f"Fichier uploadé avec succès ({len(content)} octets)")
+                self.add_trace(f"Fichier uploadé avec succès ({file_size} octets)")
                 
-                return self.get_result({
-                    "uploaded": True,
-                    "size": len(content)
-                })
+                return self.get_result(True, output_vars)
             
             elif method == 'DELETE':
                 self.add_trace(f"Suppression du fichier: {remote_path}")
@@ -187,10 +202,18 @@ class SFTPAction(ActionBase):
                 # Supprimer le fichier
                 sftp.remove(remote_path)
                 
+                # Préparer les variables de sortie
+                output_vars = {
+                    "ftp_file_content": "",
+                    "ftp_file_size": 0,
+                    "ftp_file_list": "",
+                    "ftp_operation_success": "true"
+                }
+                
                 self.set_code(0)
                 self.add_trace("Fichier supprimé avec succès")
                 
-                return self.get_result({"deleted": True})
+                return self.get_result(True, output_vars)
             
             elif method == 'LIST':
                 self.add_trace(f"Liste des fichiers dans: {remote_path}")
@@ -212,38 +235,42 @@ class SFTPAction(ActionBase):
                     except:
                         file_details.append({"name": filename})
                 
+                # Préparer les variables de sortie
+                output_vars = {
+                    "ftp_file_content": "",
+                    "ftp_file_size": 0,
+                    "ftp_file_list": file_details,
+                    "ftp_operation_success": "true"
+                }
+                
                 self.set_code(0)
                 self.add_trace(f"Liste récupérée ({len(files)} entrées)")
-                
-                return self.get_result({
-                    "files": file_details,
-                    "count": len(files)
-                })
+
+                return self.get_result(True, output_vars)
             
-            else:
-                self.set_code(1)
-                self.add_trace(f"Méthode SFTP non supportée: {method}")
-                return self.get_result()
+            self.set_code(1)
+            self.add_trace(f"Méthode SFTP non supportée: {method}")
+            return self.get_result( False, None )
         
         except paramiko.AuthenticationException:
             self.set_code(1)
             self.add_trace("Erreur d'authentification SFTP")
-            return self.get_result()
+            return self.get_result( False, None )
         
         except paramiko.SSHException as e:
             self.set_code(1)
             self.add_trace(f"Erreur SSH: {str(e)}")
-            return self.get_result()
+            return self.get_result( False, None )
         
         except IOError as e:
             self.set_code(1)
             self.add_trace(f"Erreur d'entrée/sortie: {str(e)}")
-            return self.get_result()
+            return self.get_result( False, None )
         
         except Exception as e:
             self.set_code(1)
             self.add_trace(f"Erreur inattendue: {str(e)}")
-            return self.get_result()
+            return self.get_result( False, None )
         
         finally:
             if sftp:

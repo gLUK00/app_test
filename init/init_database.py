@@ -88,45 +88,51 @@ def create_database(client, db_name):
         print_success(f"Base de données '{db_name}' créée")
         return db, True
 
-def create_collections(db):
-    """Crée les collections nécessaires."""
+def create_collections(db, config):
+    """Crée les collections nécessaires avec le préfixe configuré."""
     print_info("Création des collections...")
+    
+    # Récupérer le préfixe depuis la configuration
+    prefix = config['mongo'].get('prefix', '')
+    if prefix:
+        print_info(f"Utilisation du préfixe: '{prefix}'")
     
     collections = ['users', 'variables', 'campains', 'tests', 'rapports']
     existing_collections = db.list_collection_names()
     
     for collection_name in collections:
-        if collection_name not in existing_collections:
+        prefixed_name = f"{prefix}{collection_name}"
+        if prefixed_name not in existing_collections:
             try:
-                db.create_collection(collection_name)
-                print_success(f"Collection '{collection_name}' créée")
+                db.create_collection(prefixed_name)
+                print_success(f"Collection '{prefixed_name}' créée")
             except CollectionInvalid:
-                print_warning(f"Collection '{collection_name}' existe déjà")
+                print_warning(f"Collection '{prefixed_name}' existe déjà")
         else:
-            print_info(f"Collection '{collection_name}' existe déjà")
+            print_info(f"Collection '{prefixed_name}' existe déjà")
     
     # Créer des index pour optimiser les performances
     print_info("Création des index...")
     
     # Index pour les utilisateurs (email unique)
-    db.users.create_index('email', unique=True)
-    print_success("Index sur 'users.email' créé")
+    db[f"{prefix}users"].create_index('email', unique=True)
+    print_success(f"Index sur '{prefix}users.email' créé")
     
     # Index pour les variables (key + filiere unique)
-    db.variables.create_index([('key', 1), ('filiere', 1)], unique=True)
-    print_success("Index sur 'variables.key + filiere' créé")
+    db[f"{prefix}variables"].create_index([('key', 1), ('filiere', 1)], unique=True)
+    print_success(f"Index sur '{prefix}variables.key + filiere' créé")
     
     # Index pour les campagnes
-    db.campains.create_index('dateCreated')
-    print_success("Index sur 'campains.dateCreated' créé")
+    db[f"{prefix}campains"].create_index('dateCreated')
+    print_success(f"Index sur '{prefix}campains.dateCreated' créé")
     
     # Index pour les tests
-    db.tests.create_index('campainId')
-    print_success("Index sur 'tests.campainId' créé")
+    db[f"{prefix}tests"].create_index('campainId')
+    print_success(f"Index sur '{prefix}tests.campainId' créé")
     
     # Index pour les rapports
-    db.rapports.create_index('campainId')
-    print_success("Index sur 'rapports.campainId' créé")
+    db[f"{prefix}rapports"].create_index('campainId')
+    print_success(f"Index sur '{prefix}rapports.campainId' créé")
 
 def create_admin_user():
     """Crée un utilisateur administrateur."""
@@ -209,7 +215,7 @@ def main():
         db, is_new = create_database(client, config['mongo']['bdd'])
         
         # Créer les collections et index
-        create_collections(db)
+        create_collections(db, config)
         
         # Créer un utilisateur administrateur
         print()

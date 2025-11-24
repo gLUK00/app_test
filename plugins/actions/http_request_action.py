@@ -61,6 +61,19 @@ class HTTPRequestAction(ActionBase):
                 "label": "Corps de la requête (pour POST/PUT)",
                 "placeholder": '{"key": "value"}',
                 "required": False
+            },
+            {
+                "name": "return_status_code",
+                "type": "select",
+                "label": "Code de statut HTTP attendu",
+                "options": [200, 201, 400, 404, 500],
+                "required": False
+            },{
+                "name": "timeout",
+                "type": "number",
+                "label": "Timeout (secondes)",
+                "placeholder": 30,
+                "required": False
             }
         ]
     
@@ -101,6 +114,8 @@ class HTTPRequestAction(ActionBase):
             url = action_context.get('url')
             headers = action_context.get('headers', {})
             body = action_context.get('body')
+            return_status_code = action_context.get('return_status_code', None)
+            timeout = action_context.get('timeout', 30)
             
             self.add_trace(f"Préparation de la requête {method} vers {url}")
             
@@ -114,15 +129,21 @@ class HTTPRequestAction(ActionBase):
                 import json
                 body = json.loads(body)
             
+            """
+            oDataConvert2pdf = { 'in': sTmpFileIn, 'out': sTmpFileOut, 'type': sType, 'session': coreRequest.getSessionId() }
+            res = requests.post( coreConfig.services[ "endpoint" ][ "convert2pdf-convert-v0" ], data=oDataConvert2pdf, verify=False )
+            if res.status_code != 200:
+            """
+            
             # Effectuer la requête
             if method == 'GET':
-                response = requests.get(url, headers=headers, timeout=30)
+                response = requests.get(url, headers=headers, timeout=timeout, verify=False)
             elif method == 'POST':
-                response = requests.post(url, headers=headers, json=body, timeout=30)
+                response = requests.post(url, headers=headers, data=body, timeout=timeout, verify=False)
             elif method == 'PUT':
-                response = requests.put(url, headers=headers, json=body, timeout=30)
+                response = requests.put(url, headers=headers, data=body, timeout=timeout, verify=False)
             elif method == 'DELETE':
-                response = requests.delete(url, headers=headers, timeout=30)
+                response = requests.delete(url, headers=headers, timeout=timeout, verify=False)
             else:
                 self.set_code(1)
                 self.add_trace(f"Méthode HTTP non supportée: {method}")
@@ -139,33 +160,33 @@ class HTTPRequestAction(ActionBase):
                 "http_response_headers": dict(response.headers)
             }
             
-            if response.status_code >= 200 and response.status_code < 300:
+            # si il y a un code de statut attendu, vérifier
+            if return_status_code and str( response.status_code ) != return_status_code:
+                self.set_code(1)
+                self.add_trace(f"Code de statut inattendu: attendu {return_status_code}, reçu {response.status_code}")
+                return self.get_result( False, output_vars )
+
+            if return_status_code or ( response.status_code >= 200 and response.status_code < 300 ):
                 self.set_code(0)
                 self.add_trace("Requête réussie")
                 
-                result_data = {
-                    "status_code": response.status_code,
-                    "headers": dict(response.headers),
-                    "body": response.text[:1000]  # Limiter la taille
-                }
-                
-                return self.get_result(result_data, output_vars)
-            else:
-                self.set_code(1)
-                self.add_trace(f"Erreur HTTP: {response.status_code}")
-                return self.get_result({"status_code": response.status_code, "error": response.text[:500]}, output_vars)
+                return self.get_result(True, output_vars)
+
+            self.set_code(1)
+            self.add_trace(f"Erreur HTTP: {response.status_code}")
+            return self.get_result( False, None )
         
         except requests.exceptions.Timeout:
             self.set_code(1)
             self.add_trace("Timeout: la requête a pris trop de temps")
-            return self.get_result()
-        
+            return self.get_result( False, None )
+
         except requests.exceptions.ConnectionError:
             self.set_code(1)
             self.add_trace("Erreur de connexion: impossible de joindre le serveur")
-            return self.get_result()
+            return self.get_result( False, None )
         
         except Exception as e:
             self.set_code(1)
             self.add_trace(f"Erreur lors de l'exécution: {str(e)}")
-            return self.get_result()
+            return self.get_result( False, None )

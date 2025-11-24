@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test FTP JavaScript</title>
+    <link href="/static/vendor/bootstrap-5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/static/vendor/fontawesome-6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1>Test des fonctions JavaScript du plugin FTP</h1>
+        
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5>Test de jsShowForm</h5>
+            </div>
+            <div class="card-body">
+                <button id="testShowForm" class="btn btn-primary">
+                    <i class="fas fa-play"></i> Exécuter jsShowForm
+                </button>
+                
+                <div id="dynamicFields" class="mt-3 border p-3">
+                    <p class="text-muted">Zone des champs dynamiques</p>
+                    <input type="text" class="form-control mt-2" placeholder="Exemple de champ">
+                </div>
+            </div>
+        </div>
+
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5>Test de jsValidateForm</h5>
+            </div>
+            <div class="card-body">
+                <button id="testValidateForm" class="btn btn-success">
+                    <i class="fas fa-check"></i> Exécuter jsValidateForm
+                </button>
+                
+                <div id="validationResult" class="mt-3"></div>
+            </div>
+        </div>
+
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5>Console de sortie</h5>
+            </div>
+            <div class="card-body">
+                <div id="consoleOutput" class="bg-dark text-light p-3 font-monospace" style="min-height: 200px; max-height: 400px; overflow-y: auto;">
+                    <div class="text-success">Console prête...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Intercepter console.log pour afficher dans la page
+        const originalLog = console.log;
+        const consoleOutput = document.getElementById('consoleOutput');
+        
+        console.log = function(...args) {
+            originalLog.apply(console, args);
+            const message = args.map(arg => 
+                typeof arg === 'object' ? JSON.stringify(arg, null, 2) : arg
+            ).join(' ');
+            
+            const logEntry = document.createElement('div');
+            logEntry.className = 'text-info mb-1';
+            logEntry.innerHTML = `<i class="fas fa-chevron-right"></i> ${message}`;
+            consoleOutput.appendChild(logEntry);
+            consoleOutput.scrollTop = consoleOutput.scrollHeight;
+        };
+
+        // Code JavaScript du plugin FTP
+        const ftpJsShowForm = `
+// Fonction appelée lors de l'affichage du formulaire
+function jsShowForm(actionConfig) {
+    console.log('FtpAction: jsShowForm appelée', actionConfig);
+    
+    // Ajouter un message visible dans l'interface
+    const dynamicFields = document.getElementById('dynamicFields');
+    if (dynamicFields) {
+        const info = document.createElement('div');
+        info.className = 'alert alert-info mt-2';
+        info.innerHTML = '<i class="fas fa-info-circle"></i> Fonction JavaScript FTP activée !';
+        dynamicFields.insertBefore(info, dynamicFields.firstChild);
+        
+        // Supprimer le message après 3 secondes
+        setTimeout(() => info.remove(), 3000);
+    }
+}
+`;
+
+        const ftpJsValidateForm = `
+// Fonction appelée lors de la validation du formulaire
+function jsValidateForm(actionConfig, variables) {
+    console.log('FtpAction: jsValidateForm appelée', actionConfig, variables);
+    
+    // Tout est OK
+    return {
+        isValid: true,
+        errorMessage: ''
+    };
+}
+`;
+
+        // Test jsShowForm
+        document.getElementById('testShowForm').addEventListener('click', function() {
+            console.log('=== Test de jsShowForm ===');
+            try {
+                const actionConfig = {
+                    method: 'GET',
+                    host: 'ftp.example.com',
+                    port: 21
+                };
+                
+                const jsFunction = new Function('actionConfig', ftpJsShowForm);
+                jsFunction(actionConfig);
+                console.log('✅ jsShowForm exécutée avec succès');
+            } catch (error) {
+                console.error('❌ Erreur lors de l\'exécution de jsShowForm:', error);
+            }
+        });
+
+        // Test jsValidateForm
+        document.getElementById('testValidateForm').addEventListener('click', function() {
+            console.log('=== Test de jsValidateForm ===');
+            try {
+                const actionConfig = {
+                    method: 'GET',
+                    host: 'ftp.example.com',
+                    port: 21
+                };
+                const variables = ['var1', 'var2', 'var3'];
+                
+                const jsFunction = new Function('actionConfig', 'variables', `
+                    ${ftpJsValidateForm}
+                    return jsValidateForm(actionConfig, variables);
+                `);
+                
+                const result = jsFunction(actionConfig, variables);
+                
+                const resultDiv = document.getElementById('validationResult');
+                if (result.isValid) {
+                    resultDiv.innerHTML = `
+                        <div class="alert alert-success">
+                            <i class="fas fa-check-circle"></i> Validation réussie !
+                            <pre class="mt-2 mb-0">${JSON.stringify(result, null, 2)}</pre>
+                        </div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `
+                        <div class="alert alert-danger">
+                            <i class="fas fa-exclamation-circle"></i> ${result.errorMessage}
+                        </div>
+                    `;
+                }
+                
+                console.log('✅ jsValidateForm exécutée avec succès:', result);
+            } catch (error) {
+                console.error('❌ Erreur lors de l\'exécution de jsValidateForm:', error);
+            }
+        });
+
+        console.log('Page de test chargée. Cliquez sur les boutons pour tester les fonctions.');
+    </script>
+</body>
+</html>

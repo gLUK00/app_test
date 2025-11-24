@@ -27,8 +27,6 @@ services:
     ports:
       - "2222:22"
     command: testuser:testpass:::upload
-    volumes:
-      - sftp-data:/home/testuser/upload
     restart: unless-stopped
     networks:
       - test-network
@@ -82,8 +80,6 @@ volumes:
   ftp-data:
     driver: local
   ftp-passwd:
-    driver: local
-  sftp-data:
     driver: local
   webdav-data:
     driver: local

@@ -395,7 +395,7 @@ Implémentation réalisée :
 
 ----------------------------------------------
 
-créer moi une image de macgyver en mode pixel art en png avec un fond transparent
+✅ TERMINÉ - créer une image de macgyver en mode pixel art en png avec un fond transparent
 créer un logo sur la page d'acceuil avec le slogant "Really, are you serious ?"
 illustrant l'esprit ingénieux et débrouillard de MacGyver, tout en ajoutant une touche d'humour avec le slogan.
 en mettant en avant le pixel art et le trombone
@@ -432,7 +432,7 @@ Implémentation réalisée :
 ----------------------------------------------
 
 
-creer un plugin d'action "IoAction" pour effectuer :
+✅ TERMINÉ - creer un plugin d'action "IoAction" pour effectuer :
 - création de répertoire,
 - suppression de répertoire,
 - suppression de fichier,
@@ -587,7 +587,7 @@ mettre en place un mecanisme multi-langue pour l'interface utilisateur :
 
 ----------------------------------------------
 
-complete le swagger avec toutes les routes et modèles de l'API
+✅ TERMINÉ - complete le swagger avec toutes les routes et modèles de l'API
 
 ----------------------------------------------
 
@@ -640,15 +640,389 @@ disponible sur :
 - mettre un lien "Enregistrer et lancer le test" dans les pages d'ajout et de modification d'un test, intégrer un bouton à droite du titre avant le bouton "Retour"
 - sur la liste des tests, ajouter un bouton "Lancer le test" pour chaque test et lors du click, lancer le test et rediriger vers la page d'execution du test
 ----------------------------------------------
+✅ TERMINÉ - créer le bonhomme macgyver en pixel art avec un trombone dans la main et un fond blanc uniforme,
+le trombone doit etre bien visible et mis en avant, tenue par la main en avant, comme "I want You for U.S.ARMY",
+le bonhomme il doit avoir une posture debout,
+le trombone doit être incliné et un peu ouvert,
+le style pixel art doit etre bien marqué avec des pixels visibles,
+le style ne doit pas etre trop cartoon plutot réaliste,
+
+----------------------------------------------
+✅ TERMINÉ - creer un plugin javascript permettant de charger une zone "div" avec le contenu d'un ou de plusieurs fichiers pixel art,
+- le ou les fichiers seront au format "txt",
+- disponible dans le répertoire "static/images/art/",
+- le plugin prendra en paramètre :
+    - le ou les noms de fichiers
+    - l'id de la div à charger
+- les parametres du plugin s'appuyront sur l'existant
+- le chargement sera fait dans la zone "pixel-art-mac"
+- la taille de la zone "div" s'adaptera automatiquement au contenu chargé
+- le roulement des images se fera toutes les 5 secondes et ligne par ligne
+
+Implémentation réalisée :
+- Création du plugin PixelArtLoader (static/js/pixel-art-loader.js)
+  - Chargement asynchrone de fichiers .txt depuis static/images/art/
+  - Animation ligne par ligne avec délai configurable (lineDelay)
+  - Rotation automatique entre plusieurs images (interval)
+  - API complète : start(), stop(), next(), previous(), reload(), destroy()
+- Configuration flexible via options :
+  - containerId : ID du conteneur div (requis)
+  - files : Tableau des noms de fichiers (requis)
+  - interval : Intervalle de rotation en ms (défaut: 5000)
+  - lineDelay : Délai entre lignes en ms (défaut: 50)
+  - basePath : Chemin des fichiers (défaut: '/static/images/art/')
+- Intégration dans templates/login.html :
+  - Chargement du plugin avec macgyver1.txt et paperclip.txt
+  - Animation automatique au chargement de la page
+- Fichiers d'exemple créés :
+  - static/images/art/macgyver1.txt : Logo MacGyver ASCII
+  - static/images/art/paperclip.txt : Trombone ASCII
+- CSS responsive déjà en place dans custom.css :
+  - Taille adaptative avec clamp()
+  - Support multi-écrans avec media queries
+- Documentation complète : docs/PIXEL_ART_LOADER.md
+  - Guide d'utilisation
+  - Exemples de code
+  - API complète
+  - Gestion des erreurs
+- Page de test interactive : static/test-pixel-art-loader.html
+  - Contrôles de navigation
+  - Configuration en temps réel
+  - Démonstration des fonctionnalités
+----------------------------------------------
+
+prefix des collections mongo : mgv_ dans le fichier de configuration.json
+
+✅ TERMINÉ - mettre en place un systeme de prefix pour les collections mongo dans le fichier de configuration.json
+- ce champ sera "mongo.prefix": "mgv_"
+- si il n'existe pas le prefix par défaut sera vide ""
+- étudier les impacts sur l'existant pour s'assurer que tout fonctionne correctement avec cette nouvelle fonctionnalité
+
+Implémentation réalisée :
+- Ajout du champ "prefix": "mgv_" dans configuration.json (section mongo)
+- Modification de get_collection() dans utils/db.py pour appliquer automatiquement le préfixe
+- Comportement par défaut : préfixe vide "" si le champ n'existe pas
+- Collections créées avec préfixe :
+  * users → mgv_users
+  * variables → mgv_variables
+  * campains → mgv_campains
+  * tests → mgv_tests
+  * rapports → mgv_rapports
+- Modification du script init_database.py pour supporter le préfixe lors de l'initialisation
+- Aucune modification nécessaire dans les modèles (compatibilité totale)
+- Les références croisées entre collections fonctionnent automatiquement
+- Script de test : _build/test_mongo_prefix.py (tous les tests passent ✅)
+- Script de migration : _build/migrate_add_prefix.py (pour installations existantes)
+- Documentation complète : docs/MONGO_PREFIX.md
+- Cas d'usage : multiples instances, migration de données, isolation par environnement
+
+----------------------------------------------
+----------------------------------------------
+✅ TERMINÉ - ajouter la notion d'ordre des tests dans une campagne,
+- lors de la création d'une campagne, les tests sont ordonnés par défaut selon l'ordre défini dans la liste des tests
+- dans la page de gestion d'une campagne, ajouter des boutons pour monter ou descendre un test dans l'ordre d'execution
+- lors de l'execution de la campagne, les tests sont executés dans l'ordre défini
+- mettre à jour les routes API et les templates nécessaires pour gérer cet ordre
+- étudier les impacts sur l'existant pour s'assurer que tout fonctionne correctement avec cette nouvelle fonctionnalité
+
+Implémentation réalisée :
+- Ajout du champ 'order' dans la collection tests
+- Modification du modèle Test :
+  - Méthode create() attribue automatiquement un ordre séquentiel (max + 1)
+  - Méthode get_by_campain() trie par ordre croissant
+  - Nouvelles méthodes move_up() et move_down() pour réorganiser
+- Routes API ajoutées :
+  - POST /api/tests/:id/move-up : Déplace un test vers le haut
+  - POST /api/tests/:id/move-down : Déplace un test vers le bas
+- Template campain_details.html mis à jour :
+  - Boutons flèches haut/bas pour chaque test
+  - Désactivation automatique selon la position (premier/dernier)
+  - Fonctions JavaScript moveTestUp() et moveTestDown()
+- Exécution dans l'ordre : CampainExecutor respecte l'ordre défini
+- Script de migration : _build/migrate_tests_order.py
+  - Ajoute le champ order aux tests existants
+  - Basé sur la date de création
+- Script de test : _build/test_campain_order.py
+  - Valide création, tri, déplacements, limites
+  - Tous les tests passent ✅
+- Documentation complète : docs/CAMPAIN_TESTS_ORDER.md
+- Compatibilité totale avec l'existant garantie
 
 ----------------------------------------------
 
 ----------------------------------------------
+✅ TERMINÉ - fait évoluer les rapports d'execution:
+- ajouter le temps de traitement de chaque action, en ms
+- ajouter le temps total d'execution du test, en ms
+- ajouter le temps total d'execution de la campagne, en ms
+- fait apparaître ces informations dans l'interface de détails du rapport
+
+Implémentation réalisée :
+- Modification du modèle Rapport :
+  - Ajout des champs executionTimeMs, startTime, endTime
+  - Méthode create() initialise ces champs à 0/None
+  - Méthode update() gère la mise à jour de ces champs
+- Modification de utils/campain_executor.py :
+  - Import du module time pour mesurer les temps
+  - Mesure du temps d'exécution de chaque action (avec time.time())
+  - Mesure du temps d'exécution de chaque test
+  - Mesure du temps total d'exécution de la campagne
+  - Stockage des temps dans les structures de données :
+    * actionTimes : liste des temps de chaque action (ms)
+    * executionTimeMs du test : temps total du test (ms)
+    * executionTimeMs du rapport : temps total de la campagne (ms)
+  - Affichage des temps dans les logs (format: "⏱️ Temps d'exécution: X ms")
+- Template rapport_details.html mis à jour :
+  - Affichage du temps total de la campagne dans l'en-tête
+  - Affichage du temps de chaque test dans l'accordion
+  - Fonction formatExecutionTime() pour formater les temps :
+    * < 1 seconde : affichage en ms
+    * < 1 minute : affichage en secondes (2 décimales)
+    * >= 1 minute : affichage en min et secondes
+  - Design responsive avec icône chronomètre
+- Script de test : _build/test_execution_times.py
+  - Valide la présence des champs de temps
+  - Simule une exécution avec temps mesurés
+  - Vérifie la cohérence des temps
+  - Tous les tests passent ✅
+- Compatibilité totale avec l'existant
 
 ----------------------------------------------
 
-----------------------------------------------
+✅ TERMINÉ - dans la page d'execution d'un test, lors du lancement du test, aprés avoir choisi l'environnement,
+- une fois le test terminé,
+- afficher un bouton "Re-exécuter le test" qui permet de relancer le test
+- reaffiche la zone de sélection de l'environnement avant de relancer le test
 
 ----------------------------------------------
+✅ TERMINÉ - Fix mise à jour temps réel des rapports via WebSocket:
+
+Problème résolu : L'IHM restait bloquée en "running" à 50% alors que la campagne 
+était terminée. Il fallait rafraîchir manuellement pour voir le statut final.
+
+Cause : La page campain_details.html ne s'abonnait pas aux événements WebSocket 
+émis par CampainExecutor pendant l'exécution (campain_started, campain_progress, 
+test_started, test_completed, campain_completed, campain_error).
+
+Solution implémentée :
+- Template campain_details.html modifié :
+  - Ajout des listeners pour tous les événements WebSocket
+  - Fonction joinActiveRapportRooms() pour rejoindre automatiquement 
+    les rooms rapport_{id} des rapports en cours
+  - Tracker activeRapports (Set) pour éviter les rejointures multiples
+  - Appel automatique de loadRapports() à chaque événement reçu
+  - Logs console pour le débogage
+  - ⚡ CRITIQUE: Rejoint immédiat de la room après création du rapport
+    (avant il y avait un délai de 1s, ce qui causait la perte d'événements)
+
+- Architecture WebSocket :
+  Room campain_{id} : pour files_updated
+  Room rapport_{id} : pour tous les événements de progression
+
+- Événements WebSocket écoutés :
+  * campain_started → loadRapports()
+  * campain_progress → loadRapports()
+  * test_started → loadRapports()
+  * test_completed → loadRapports()
+  * campain_completed → loadRapports()
+  * campain_error → loadRapports() + notification
+
+- utils/campain_executor.py modifié :
+  - Ajout d'un délai de 100ms au début pour synchronisation WebSocket
+  - Logs serveur pour tous les événements émis (📡)
+  - Format: "📡 Événement 'campain_started' émis pour rapport_{id}"
+
+- Script de test : _build/test_websocket_realtime.py
+  - Valide le bon fonctionnement des mises à jour de statut
+  - Teste les transitions : pending → running → completed
+  - Vérifie les mises à jour de progression (0% → 50% → 100%)
+  - Tous les tests passent ✅
+
+- Documentation : docs/WEBSOCKET_REALTIME_FIX.md
+  - Détails du problème et de la solution
+  - Flux de fonctionnement avant/après
+  - Guide de vérification manuelle
+  - Recommandations et problèmes potentiels
+  - Section critique sur le timing de rejoint de room
+
+Résultat : L'IHM se met maintenant à jour automatiquement en temps réel 
+pendant l'exécution de la campagne, sans nécessiter de rafraîchissement manuel.
+
+----------------------------------------------
+
+
+----------------------------------------------
+✅ TERMINÉ - faire évoluer la mécanique de gestion des plugins d'actions pour permettre l'utilisation de code javascript dans les actions
+
+Implémentation réalisée :
+- Extension de la classe ActionBase avec les méthodes get_js_show_form() et get_js_validate_form()
+- Création de deux nouvelles routes API :
+  - GET /api/actions/javascript : Récupère tous les codes JavaScript des plugins
+  - GET /api/actions/javascript/<action_type> : Récupère le code JavaScript d'un plugin spécifique
+- Mise à jour de l'interface utilisateur (static/test_actions.js) :
+  - Chargement automatique des fonctions JavaScript au démarrage (avec cache-busting timestamp)
+  - Exécution de jsShowForm lors de l'affichage du formulaire de configuration
+  - Exécution de jsValidateForm lors de la validation avant soumission
+- Implémentation dans les plugins :
+  - VarAction : jsShowForm met en évidence visuellement si la variable existe, jsValidateForm valide son existence
+  - FTPAction : jsShowForm affiche un bandeau d'information temporaire (3 secondes)
+- Documentation complète :
+  - docs/PLUGIN_JAVASCRIPT_README.md : Documentation détaillée de la fonctionnalité
+  - docs/PLUGIN_DEVELOPMENT_GUIDE.md : Section "Fonctions JavaScript dans les plugins d'actions"
+  - docs/CHANGELOG_PLUGIN_JAVASCRIPT.md : Historique de l'implémentation
+- Tests unitaires : 
+  - _build/test_plugin_javascript.py (5 tests ✅)
+  - _build/test_api_javascript.py (4 tests API ✅)
+- Compatibilité totale avec l'existant :
+  - Tous les plugins existants continuent de fonctionner (retournent None par défaut)
+  - Tests existants : test_plugins.py (17 tests ✅), test_var_action.py (tous ✅)
+- Architecture extensible : possibilité d'ajouter d'autres fonctions JavaScript à l'avenir
+- **IMPORTANT** : Les méthodes get_js_show_form() et get_js_validate_form() doivent retourner uniquement le CORPS de la fonction JavaScript, pas la déclaration `function ...()`. Le framework utilise `new Function('actionConfig', code)` pour créer la fonction.
+
+✅ Fonctionnalité complète et fonctionnelle (testée avec succès sur VarAction et FTPAction)
+
+----------------------------------------------
+
+✅ TERMINÉ - système d'affichage/masquage dynamique des champs dans les formulaires d'actions
+
+Implémentation réalisée :
+- Ajout des méthodes hideFields() et showFields() dans TestActionsManager
+- Chaque champ possède un attribut data-field-name pour ciblage précis
+- Accessibilité globale via window.testActionsManager
+- Exemple d'utilisation dans FTPAction :
+  - Masque/affiche les champs selon la méthode FTP (GET/PUT/DELETE/LIST)
+  - GET : remote_path + file_content visibles
+  - PUT : remote_path + content + file_content visibles
+  - DELETE/LIST : remote_path visible uniquement
+- Documentation complète : docs/HIDE_SHOW_FIELDS.md
+- Compatible avec l'autocomplétion des variables et la validation
+- Utilisable dans jsShowForm() de n'importe quel plugin
+
+----------------------------------------------
+
+✅ TERMINÉ - je souhaite mettre en place un systéme d'affichage ou de masquage de certains champs dans les formulaires d'actions en fonction du type d'action sélectionné.
+du type : hide( [ 'remote_path', 'content', 'local_path' ] );
+ou : show( [ 'remote_path', 'content', 'local_path' ] );
+
+est il possible de faire cela dans la classe TestActionsManager ?
+et comment l'appeler depuis les plugins d'actions ?
+
+----------------------------------------------
+
+
+
+----------------------------------------------
+
+
+✅ TERMINÉ - creer un script dans "init" pour créer une campagne de test permettant de tester l'ensemble des actions disponibles dans l'application.
+- le script doit s'appeler "create_full_action_campain.py"
+- lors du démarrage le script demande :
+  - le nom de la campagne (par défaut "Campagne de test complète")
+  - l'environnement de la campagne (par défaut "test_env")
+- si une campagne avec ce nom existe déjà, ajouter un suffixe numérique pour le rendre unique (ex : "Campagne de test complète (1)")
+- creer un test pour chaque action disponible dans l'application
+- creer autant de tests qu'il existe de variantes d'une action (ex : FTPAction avec méthode GET, PUT, DELETE, LIST)
+- chaque test doit contenir une action avec des paramètres de test valides
+- s'appuyer sur "test-docker-compose.yml" pour les paramètres de test (ex : serveur FTP de test)
+  - faire évoluer ce fichier si nécessaire pour ajouter des services de test supplémentaires (ex : serveur SMTP, serveur HTTP, mailHog, etc.)
+- tester également la création et la valorisation des variables utilisées dans les actions
+- tester la création de fichiers dans le répertoire de travail de la campagne
+  - s'appuyer sur le fichier static/images/mac_logo.png pour créer un fichier binaire de test
+- l'execution et le pilotage de la campagne, des tests et des fichiers doit être fait via les API REST disponibles
+- le script doit afficher un résumé des tests créés avec leurs actions et paramètres
+- a la fin, le script demande si l'utilisateur souhaite lancer la campagne immédiatement (oui par défaut/non)
+- lors de l'execution de la campagne, afficher la progression dans la console en temps réel via websocket et afficher le résultat final (succès/échec)
+- en dernier, le script demande si la campagne doit etre supprimée après exécution (oui par défaut/non)
+- prévoir la rédaction d'un fichier d'instruction que pourra être utilisé pour demander à l'IA de mettre à jour le script si de nouvelles actions sont ajoutées dans l'application et le positionner dans docs/INIT_SCRIPTS_README.md
+
+----------------------------------------------
+
+Actuellement il y a ça: #691c48a22abf1a184464bb0e Test 1
+je veux ça: FTP PUT - upload fichier de test
+ou ça: FTP GET
+
+----------------------------------------------
+
+
+
+
+----------------------------------------------
+
+✅ TERMINÉ - permettre l'exportation d'une campagne au format JSON via une route API REST :
+- route : GET /api/campains/:id/export
+- cette route exporte la campagne avec toutes ses informations (nom, environnement, tests, ordre des tests, etc.), sans les rapports d'execution,
+- le format d'export est un fichier JSON téléchargeable
+- proposer une case a cocher "inclure les fichiers" pour inclure dans l'export les fichiers présents dans le répertoire de travail de la campagne
+  - si export avec fichiers, les fichiers seront dans un premier temps zipés puis encodés en base64 dans le JSON
+  - prévoir de faire le lien lors de l'importation pour recréer les fichiers dans le répertoire de travail de la campagne
+- lors de l'export avec fichiers, le JSON contiendra une section "files" avec pour chaque fichier :
+    - le nom du fichier
+    - le contenu du fichier encodé en base64
+- lors de l'export sans fichiers, le JSON ne contiendra pas cette section "files"
+- le nom du fichier exporté sera "campain_<campain_name>_<campain_id>.b64.zip.json"
+- ajouter le bouton "Exporter la campagne" dans la page de gestion d'une campagne à gauche du bouton "Retour"
+  - un formulaire modale s'ouvre avec la case à cocher "inclure les fichiers" et un bouton "Exporter"
+- mettre à jour le swagger avec cette nouvelle route API REST
+
+----------------------------------------------
+
+
+✅ TERMINÉ - permettre l'importation d'une campagne au format JSON via une route API REST :
+- route : POST /api/campains/import
+- cette route importe une campagne au format JSON précédemment exportée via /api/campains/:id/export
+- le format d'import est un fichier JSON téléversé
+- lors de l'importation, si la campagne contient des fichiers encodés en base64,
+  - les fichiers seront décodés et recréés dans le répertoire de travail de la campagne
+- ajouter un bouton "Importer une campagne" à gauche du bouton "Ajouter une campagne" dans la liste des campagnes
+  - ce bouton ouvre une modale avec un champ de sélection de fichier JSON et un bouton "Importer"
+  - un champ titre permet de saisir le nom de la campagne importée, par défaut ce champ est pré-rempli avec "Import du jj/mm/aaaa hh:mm:ss"
+- lors de l'importation, vérifier que le fichier JSON est valide et conforme au format attendu
+- l'importation des fichiers se fera à partir du champ "files" du JSON si présent:
+    {
+        "name": "test_file_{{test.campain_id}}.bin",
+        "content": "YmluYXJ5LWRhdGE="
+    }
+    le nom du fichier cible sera traiter avec le moteur de template pour remplacer les variables
+- gérer les erreurs d'importation (fichier invalide, erreur de décodage, erreur de création des fichiers, etc.)
+- en cas d'erreur, afficher un message d'erreur dans la modale
+- en cas de succès, fermer la modale et rediriger vers la page de gestion de la campagne importée
+- le nom de la campagne importée sera "Import de <campain_name>"
+- tu peux t'appuyer sur le fichier existant: /home/hidalgo/Téléchargements/campain_Campagnetest_5_691c48a12abf1a184464bb0c.b64.zip.json
+
+----------------------------------------------
+
+permettre de renommer une campagne via une route API REST :
+- route : PUT /api/campains/:id/rename
+- cette route permet de renommer une campagne existante
+- ajouter un icone "crayon" à droite du nom de la campagne dans la page de gestion d'une campagne
+  - lors du click sur cet icone, le nom de la campagne devient un champ de saisie avec le nom actuel pré-rempli
+  - l'utilisateur peut modifier le nom et valider avec la touche "Entrée" ou annuler avec la touche "Echap"
+- gérer les erreurs de renommage (nom vide, nom déjà existant, etc.)
+
+----------------------------------------------
+
+mettre en place un systeme de suppression logique pour les tests, les campagnes et les rapports
+- ajouter un parametre dans le fichier de configuration.json "mongo.soft_delete": true/false
+- si ce parametre est à true, lors de la suppression d'un test, d'une campagne ou d'un rapport,
+  - ne pas supprimer l'entrée en base de données,
+  - mais ajouter un champ "isDeleted": true dans la collection mongo correspondante
+- lors de la récupération des tests, campagnes ou rapports, ne pas retourner ceux qui ont "isDeleted": true
+- si le parametre est à false, le comportement de suppression reste inchangé (suppression physique de l'entrée en base de données)
+- étudier les impacts sur l'existant pour s'assurer que tout fonctionne correctement avec cette nouvelle fonctionnalité
+- ajouter un champ "isDeleted": false dans les collections mongo des tests, campagnes et rapports
+- ajouter un page d'administration pour gérer les éléments supprimés logiquement (afficher la liste des tests, campagnes et rapports avec isDeleted: true)
+  - avec la possibilité de restaurer un élément (mettre isDeleted à false) ou une liste d'éléments en selectionnant plusieurs entrées
+  - avec la possibilité de supprimer définitivement un élément (suppression physique de l'entrée en base de données) avec selection multiple possible
+  - ajouter l'entree vers cette page dans le menu d'administration
+  - ajouter des confirmations pour les actions de restauration et de suppression définitive
+- étudier les impacts sur l'existant pour s'assurer que tout fonctionne correctement avec cette nouvelle fonctionnalité
+- si creation de nouvelle api REST, documenter dans le swagger
+
+
+
+----------------------------------------------
+
+
+
 
 ----------------------------------------------

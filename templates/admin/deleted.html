@@ -1,0 +1,435 @@
+{% extends "base.html" %}
+
+{% block title %}Éléments supprimés - {{ app_name }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-trash-restore"></i> Gestion des éléments supprimés</h2>
+        <a href="{{ url_for('web.dashboard') }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Retour
+        </a>
+    </div>
+
+    <!-- Tabs pour séparer tests, campagnes et rapports -->
+    <ul class="nav nav-tabs" id="deletedTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="tests-tab" data-bs-toggle="tab" data-bs-target="#tests" type="button" role="tab">
+                <i class="fas fa-vial"></i> Tests (<span id="testsCount">0</span>)
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="campains-tab" data-bs-toggle="tab" data-bs-target="#campains" type="button" role="tab">
+                <i class="fas fa-flask"></i> Campagnes (<span id="campainsCount">0</span>)
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="rapports-tab" data-bs-toggle="tab" data-bs-target="#rapports" type="button" role="tab">
+                <i class="fas fa-file-alt"></i> Rapports (<span id="rapportsCount">0</span>)
+            </button>
+        </li>
+    </ul>
+
+    <div class="tab-content mt-3" id="deletedTabsContent">
+        <!-- Tests Tab -->
+        <div class="tab-pane fade show active" id="tests" role="tabpanel">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Tests supprimés</h5>
+                    <div>
+                        <button class="btn btn-sm btn-success me-2" onclick="restoreSelected('test')" id="restoreTestsBtn" disabled>
+                            <i class="fas fa-undo"></i> Restaurer sélection
+                        </button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteSelected('test')" id="deleteTestsBtn" disabled>
+                            <i class="fas fa-trash"></i> Supprimer définitivement
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div id="testsContainer">
+                        <p class="text-muted text-center">Chargement...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Campains Tab -->
+        <div class="tab-pane fade" id="campains" role="tabpanel">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Campagnes supprimées</h5>
+                    <div>
+                        <button class="btn btn-sm btn-success me-2" onclick="restoreSelected('campain')" id="restoreCampainsBtn" disabled>
+                            <i class="fas fa-undo"></i> Restaurer sélection
+                        </button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteSelected('campain')" id="deleteCampainsBtn" disabled>
+                            <i class="fas fa-trash"></i> Supprimer définitivement
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div id="campainsContainer">
+                        <p class="text-muted text-center">Chargement...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Rapports Tab -->
+        <div class="tab-pane fade" id="rapports" role="tabpanel">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Rapports supprimés</h5>
+                    <div>
+                        <button class="btn btn-sm btn-success me-2" onclick="restoreSelected('rapport')" id="restoreRapportsBtn" disabled>
+                            <i class="fas fa-undo"></i> Restaurer sélection
+                        </button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteSelected('rapport')" id="deleteRapportsBtn" disabled>
+                            <i class="fas fa-trash"></i> Supprimer définitivement
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div id="rapportsContainer">
+                        <p class="text-muted text-center">Chargement...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de confirmation de restauration -->
+<div class="modal fade" id="confirmRestoreModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirmer la restauration</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Êtes-vous sûr de vouloir restaurer <strong id="restoreCount">0</strong> élément(s) ?</p>
+                <p class="text-muted">Les éléments seront à nouveau visibles dans l'application.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                <button type="button" class="btn btn-success" onclick="confirmRestore()">
+                    <i class="fas fa-undo"></i> Restaurer
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de confirmation de suppression -->
+<div class="modal fade" id="confirmDeleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">Confirmer la suppression définitive</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p><strong>⚠️ ATTENTION : Cette action est irréversible !</strong></p>
+                <p>Êtes-vous sûr de vouloir supprimer définitivement <strong id="deleteCount">0</strong> élément(s) ?</p>
+                <p class="text-danger">Ces éléments seront supprimés de la base de données et ne pourront pas être récupérés.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                <button type="button" class="btn btn-danger" onclick="confirmDelete()">
+                    <i class="fas fa-trash"></i> Supprimer définitivement
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let selectedItems = {
+    type: null,
+    items: []
+};
+
+// Charger tous les éléments supprimés au chargement de la page
+document.addEventListener('DOMContentLoaded', function() {
+    loadDeletedItems();
+});
+
+async function loadDeletedItems() {
+    try {
+        const response = await fetch('/api/deleted/all', {
+            credentials: 'same-origin'
+        });
+
+        if (!response.ok) {
+            if (response.status === 401) {
+                window.location.href = '/';
+                return;
+            }
+            if (response.status === 403) {
+                alert('Accès refusé : vous devez être administrateur.');
+                window.location.href = '/dashboard';
+                return;
+            }
+            throw new Error('Erreur lors du chargement');
+        }
+
+    const data = await response.json();
+        
+        // Afficher les tests
+        displayTests(data.tests || []);
+        document.getElementById('testsCount').textContent = (data.tests || []).length;
+        
+        // Afficher les campagnes
+        displayCampains(data.campains || []);
+        document.getElementById('campainsCount').textContent = (data.campains || []).length;
+        
+        // Afficher les rapports
+        displayRapports(data.rapports || []);
+        document.getElementById('rapportsCount').textContent = (data.rapports || []).length;
+    } catch (error) {
+        console.error('Erreur:', error);
+        alert('Erreur lors du chargement des éléments supprimés');
+    }
+}
+
+function displayTests(tests) {
+    const container = document.getElementById('testsContainer');
+    
+    if (tests.length === 0) {
+        container.innerHTML = '<p class="text-muted text-center">Aucun test supprimé</p>';
+        return;
+    }
+
+    let html = '<div class="table-responsive"><table class="table table-hover"><thead><tr>';
+    html += '<th><input type="checkbox" id="selectAllTests" onchange="toggleSelectAll(\'test\')"></th>';
+    html += '<th>Nom</th><th>Description</th><th>Date de suppression</th><th>Actions</th></tr></thead><tbody>';
+
+    tests.forEach(test => {
+        html += `<tr>
+            <td><input type="checkbox" class="item-checkbox" data-type="test" data-id="${test._id}" onchange="updateButtons()"></td>
+            <td>${test.name || 'Sans nom'}</td>
+            <td>${test.description || '-'}</td>
+            <td>${test.dateDeleted ? new Date(test.dateDeleted).toLocaleString('fr-FR') : '-'}</td>
+            <td>
+                <button class="btn btn-sm btn-success me-1" onclick="restoreSingle('test', '${test._id}')">
+                    <i class="fas fa-undo"></i>
+                </button>
+                <button class="btn btn-sm btn-danger" onclick="deleteSingle('test', '${test._id}')">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </td>
+        </tr>`;
+    });
+
+    html += '</tbody></table></div>';
+    container.innerHTML = html;
+}
+
+function displayCampains(campains) {
+    const container = document.getElementById('campainsContainer');
+    
+    if (campains.length === 0) {
+        container.innerHTML = '<p class="text-muted text-center">Aucune campagne supprimée</p>';
+        return;
+    }
+
+    let html = '<div class="table-responsive"><table class="table table-hover"><thead><tr>';
+    html += '<th><input type="checkbox" id="selectAllCampains" onchange="toggleSelectAll(\'campain\')"></th>';
+    html += '<th>Nom</th><th>Description</th><th>Date de suppression</th><th>Actions</th></tr></thead><tbody>';
+
+    campains.forEach(campain => {
+        html += `<tr>
+            <td><input type="checkbox" class="item-checkbox" data-type="campain" data-id="${campain._id}" onchange="updateButtons()"></td>
+            <td>${campain.name}</td>
+            <td>${campain.description || '-'}</td>
+            <td>${campain.dateDeleted ? new Date(campain.dateDeleted).toLocaleString('fr-FR') : '-'}</td>
+            <td>
+                <button class="btn btn-sm btn-success me-1" onclick="restoreSingle('campain', '${campain._id}')">
+                    <i class="fas fa-undo"></i>
+                </button>
+                <button class="btn btn-sm btn-danger" onclick="deleteSingle('campain', '${campain._id}')">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </td>
+        </tr>`;
+    });
+
+    html += '</tbody></table></div>';
+    container.innerHTML = html;
+}
+
+function displayRapports(rapports) {
+    const container = document.getElementById('rapportsContainer');
+    
+    if (rapports.length === 0) {
+        container.innerHTML = '<p class="text-muted text-center">Aucun rapport supprimé</p>';
+        return;
+    }
+
+    let html = '<div class="table-responsive"><table class="table table-hover"><thead><tr>';
+    html += '<th><input type="checkbox" id="selectAllRapports" onchange="toggleSelectAll(\'rapport\')"></th>';
+    html += '<th>Nom</th><th>Filière</th><th>Date de suppression</th><th>Actions</th></tr></thead><tbody>';
+
+    rapports.forEach(rapport => {
+        html += `<tr>
+            <td><input type="checkbox" class="item-checkbox" data-type="rapport" data-id="${rapport._id}" onchange="updateButtons()"></td>
+            <td>${rapport.details || 'Sans nom'}</td>
+            <td>${rapport.filiere || '-'}</td>
+            <td>${rapport.dateDeleted ? new Date(rapport.dateDeleted).toLocaleString('fr-FR') : '-'}</td>
+            <td>
+                <button class="btn btn-sm btn-success me-1" onclick="restoreSingle('rapport', '${rapport._id}')">
+                    <i class="fas fa-undo"></i>
+                </button>
+                <button class="btn btn-sm btn-danger" onclick="deleteSingle('rapport', '${rapport._id}')">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </td>
+        </tr>`;
+    });
+
+    html += '</tbody></table></div>';
+    container.innerHTML = html;
+}
+
+function toggleSelectAll(type) {
+    const checkbox = document.getElementById(`selectAll${type.charAt(0).toUpperCase() + type.slice(1)}s`);
+    const checkboxes = document.querySelectorAll(`input[data-type="${type}"]`);
+    
+    checkboxes.forEach(cb => {
+        cb.checked = checkbox.checked;
+    });
+    
+    updateButtons();
+}
+
+function updateButtons() {
+    const testChecked = document.querySelectorAll('input[data-type="test"]:checked').length;
+    const campainChecked = document.querySelectorAll('input[data-type="campain"]:checked').length;
+    const rapportChecked = document.querySelectorAll('input[data-type="rapport"]:checked').length;
+    
+    document.getElementById('restoreTestsBtn').disabled = testChecked === 0;
+    document.getElementById('deleteTestsBtn').disabled = testChecked === 0;
+    document.getElementById('restoreCampainsBtn').disabled = campainChecked === 0;
+    document.getElementById('deleteCampainsBtn').disabled = campainChecked === 0;
+    document.getElementById('restoreRapportsBtn').disabled = rapportChecked === 0;
+    document.getElementById('deleteRapportsBtn').disabled = rapportChecked === 0;
+}
+
+function restoreSelected(type) {
+    const checkboxes = document.querySelectorAll(`input[data-type="${type}"]:checked`);
+    selectedItems.type = type;
+    selectedItems.items = Array.from(checkboxes).map(cb => ({
+        type: type,
+        id: cb.dataset.id
+    }));
+    
+    document.getElementById('restoreCount').textContent = selectedItems.items.length;
+    new bootstrap.Modal(document.getElementById('confirmRestoreModal')).show();
+}
+
+function deleteSelected(type) {
+    const checkboxes = document.querySelectorAll(`input[data-type="${type}"]:checked`);
+    selectedItems.type = type;
+    selectedItems.items = Array.from(checkboxes).map(cb => ({
+        type: type,
+        id: cb.dataset.id
+    }));
+    
+    document.getElementById('deleteCount').textContent = selectedItems.items.length;
+    new bootstrap.Modal(document.getElementById('confirmDeleteModal')).show();
+}
+
+function restoreSingle(type, id) {
+    selectedItems.type = type;
+    selectedItems.items = [{ type, id }];
+    
+    document.getElementById('restoreCount').textContent = 1;
+    new bootstrap.Modal(document.getElementById('confirmRestoreModal')).show();
+}
+
+function deleteSingle(type, id) {
+    selectedItems.type = type;
+    selectedItems.items = [{ type, id }];
+    
+    document.getElementById('deleteCount').textContent = 1;
+    new bootstrap.Modal(document.getElementById('confirmDeleteModal')).show();
+}
+
+async function confirmRestore() {
+    try {
+        const response = await fetch('/api/deleted/restore', {
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ items: selectedItems.items })
+        });
+
+        if (response.status === 401) {
+            window.location.href = '/';
+            return;
+        }
+        if (response.status === 403) {
+            alert('Accès refusé : vous devez être administrateur.');
+            window.location.href = '/dashboard';
+            return;
+        }
+
+        const data = await response.json();
+        
+        bootstrap.Modal.getInstance(document.getElementById('confirmRestoreModal')).hide();
+        
+        if (data.success) {
+            alert(`${data.restored.length} élément(s) restauré(s) avec succès`);
+            loadDeletedItems();
+        } else {
+            alert(`Restauration partielle. ${data.errors.length} erreur(s)`);
+            loadDeletedItems();
+        }
+    } catch (error) {
+        console.error('Erreur:', error);
+        alert('Erreur lors de la restauration');
+    }
+}
+
+async function confirmDelete() {
+    try {
+        const response = await fetch('/api/deleted/permanent', {
+            method: 'DELETE',
+            credentials: 'same-origin',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ items: selectedItems.items })
+        });
+
+        if (response.status === 401) {
+            window.location.href = '/';
+            return;
+        }
+        if (response.status === 403) {
+            alert('Accès refusé : vous devez être administrateur.');
+            window.location.href = '/dashboard';
+            return;
+        }
+
+        const data = await response.json();
+        
+        bootstrap.Modal.getInstance(document.getElementById('confirmDeleteModal')).hide();
+        
+        if (data.success) {
+            alert(`${data.deleted.length} élément(s) supprimé(s) définitivement`);
+            loadDeletedItems();
+        } else {
+            alert(`Suppression partielle. ${data.errors.length} erreur(s)`);
+            loadDeletedItems();
+        }
+    } catch (error) {
+        console.error('Erreur:', error);
+        alert('Erreur lors de la suppression');
+    }
+}
+</script>
+{% endblock %}

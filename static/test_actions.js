@@ -8,6 +8,7 @@ class TestActionsManager {
         this.actionMasks = {};
         this.actionOutputVariables = {};
         this.actionLabels = {};
+        this.actionJavaScriptFunctions = {}; // Nouveau: stocker les fonctions JavaScript des plugins
         this.actions = [];
         this.variables = [];
         this.editingActionIndex = -1;
@@ -26,11 +27,30 @@ class TestActionsManager {
             // Charger les labels depuis l'API
             await this.loadActionLabels();
             
+            // Charger les fonctions JavaScript des plugins
+            await this.loadActionJavaScriptFunctions();
+            
             // Alimenter dynamiquement le select actionType
             this.populateActionTypeSelect();
         } catch (error) {
             console.error('Erreur lors du chargement des masques:', error);
             Notification.error('Erreur lors du chargement des types d\'actions');
+        }
+    }
+
+    /**
+     * Charge les fonctions JavaScript des plugins depuis l'API
+     */
+    async loadActionJavaScriptFunctions() {
+        try {
+            // Ajouter un timestamp pour forcer le rechargement et éviter le cache
+            const timestamp = new Date().getTime();
+            const result = await API.get(`/api/actions/javascript?_=${timestamp}`);
+            this.actionJavaScriptFunctions = result;
+            console.log('Fonctions JavaScript des plugins chargées:', this.actionJavaScriptFunctions);
+        } catch (error) {
+            console.error('Erreur lors du chargement des fonctions JavaScript:', error);
+            // Non bloquant, continuer même en cas d'erreur
         }
     }
 
@@ -106,6 +126,7 @@ class TestActionsManager {
     createFormField(field) {
         const divWrapper = document.createElement('div');
         divWrapper.className = 'mb-3';
+        divWrapper.setAttribute('data-field-name', field.name); // Ajouter attribut pour hide/show
         
         const label = document.createElement('label');
         label.className = 'form-label';
@@ -228,6 +249,75 @@ class TestActionsManager {
         
         // Afficher les variables de sortie disponibles
         this.displayOutputVariables(actionType, currentParameters.output_mapping || {});
+        
+        // Exécuter la fonction JavaScript jsShowForm du plugin si elle existe
+        // Utiliser setTimeout pour s'assurer que le DOM est complètement mis à jour
+        setTimeout(() => {
+            this.executeJsShowForm(actionType, currentParameters);
+        }, 10);
+    }
+
+    /**
+     * Exécute la fonction jsShowForm du plugin si elle existe
+     */
+    executeJsShowForm(actionType, actionConfig) {
+        if (!this.actionJavaScriptFunctions[actionType]) {
+            return;
+        }
+        
+        const jsShowForm = this.actionJavaScriptFunctions[actionType].jsShowForm;
+        
+        if (!jsShowForm) {
+            return;
+        }
+        
+        try {
+            // Créer une fonction JavaScript à partir du code fourni et l'exécuter
+            const jsFunction = new Function('actionConfig', jsShowForm);
+            jsFunction(actionConfig);
+        } catch (error) {
+            console.error(`Erreur lors de l'exécution de jsShowForm pour ${actionType}:`, error);
+        }
+    }
+
+    /**
+     * Cache des champs du formulaire d'action
+     * @param {Array<string>} fieldNames - Tableau des noms de champs à cacher
+     */
+    hideFields(fieldNames) {
+        if (!Array.isArray(fieldNames)) {
+            console.error('hideFields: fieldNames doit être un tableau');
+            return;
+        }
+        
+        fieldNames.forEach(fieldName => {
+            const fieldGroup = document.querySelector(`[data-field-name="${fieldName}"]`);
+            if (fieldGroup) {
+                fieldGroup.style.display = 'none';
+            } else {
+                console.warn(`hideFields: Champ "${fieldName}" non trouvé`);
+            }
+        });
+    }
+
+    /**
+     * Affiche des champs du formulaire d'action
+     * @param {Array<string>} fieldNames - Tableau des noms de champs à afficher
+     */
+    showFields(fieldNames) {
+        if (!Array.isArray(fieldNames)) {
+            console.error('showFields: fieldNames doit être un tableau');
+            return;
+        }
+        
+        fieldNames.forEach(fieldName => {
+            const fieldGroup = document.querySelector(`[data-field-name="${fieldName}"]`);
+            if (fieldGroup) {
+                fieldGroup.style.display = 'block';
+            } else {
+                console.warn(`showFields: Champ "${fieldName}" non trouvé`);
+            }
+        });
     }
 
     /**
@@ -506,6 +596,13 @@ class TestActionsManager {
             actionData.output_mapping = outputMapping;
         }
         
+        // Exécuter la fonction JavaScript jsValidateForm du plugin si elle existe
+        const validationResult = this.executeJsValidateForm(actionType, actionData);
+        if (!validationResult.isValid) {
+            Notification.error(validationResult.errorMessage);
+            return;
+        }
+        
         const action = {
             type: actionType,
             value: actionData
@@ -521,6 +618,42 @@ class TestActionsManager {
         
         this.renderActionsList();
         this.actionModal.hide();
+    }
+
+    /**
+     * Exécute la fonction jsValidateForm du plugin si elle existe
+     */
+    executeJsValidateForm(actionType, actionConfig) {
+        if (!this.actionJavaScriptFunctions[actionType]) {
+            return {isValid: true, errorMessage: ''};
+        }
+        
+        const jsValidateForm = this.actionJavaScriptFunctions[actionType].jsValidateForm;
+        if (!jsValidateForm) {
+            return {isValid: true, errorMessage: ''};
+        }
+        
+        try {
+            // Créer une fonction JavaScript à partir du code fourni et l'exécuter
+            // Ajouter le contexte nécessaire (variables du test)
+            const context = {
+                variables: this.variables,
+                actionConfig: actionConfig
+            };
+            
+            const jsFunction = new Function('actionConfig', 'variables', `
+                ${jsValidateForm}
+                return jsValidateForm(actionConfig, variables);
+            `);
+            
+            const result = jsFunction(actionConfig, this.variables);
+            console.log(`Fonction jsValidateForm exécutée pour ${actionType}:`, result);
+            
+            return result || {isValid: true, errorMessage: ''};
+        } catch (error) {
+            console.error(`Erreur lors de l'exécution de jsValidateForm pour ${actionType}:`, error);
+            return {isValid: true, errorMessage: ''}; // En cas d'erreur, continuer
+        }
     }
 
     /**
