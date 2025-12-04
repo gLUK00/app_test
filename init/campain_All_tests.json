@@ -1,0 +1,479 @@
+{
+    "campain": {
+        "_id": "693168815382d2bd0193601a",
+        "userCreated": "69159390f0502fbeb33cd817",
+        "name": "All tests",
+        "dateCreated": "2025-12-04T10:54:57.289000",
+        "description": "Campagne g\u00e9n\u00e9r\u00e9e automatiquement le 18/11/2025 11:21",
+        "isDeleted": false,
+        "userCreatedName": "gLULK"
+    },
+    "tests": [
+        {
+            "_id": "693168815382d2bd0193601c",
+            "campainId": "693168815382d2bd0193601a",
+            "userId": "69159390f0502fbeb33cd817",
+            "dateCreated": "2025-12-04T10:54:57.320000",
+            "actions": [
+                {
+                    "type": "ftp",
+                    "value": {
+                        "host": "{{FTP_HOST}}",
+                        "port": 21,
+                        "username": "{{FTP_USERNAME}}",
+                        "password": "{{FTP_PASSWORD}}",
+                        "method": "PUT",
+                        "remote_path": "upload_fullcamp_{{test.campain_id}}.txt",
+                        "content": "contenu du fichier"
+                    }
+                },
+                {
+                    "type": "ftp",
+                    "value": {
+                        "host": "{{FTP_HOST}}",
+                        "port": 21,
+                        "username": "{{FTP_USERNAME}}",
+                        "password": "{{FTP_PASSWORD}}",
+                        "method": "PUT",
+                        "remote_path": "upload_fullcamp_{{test.campain_id}}.txt",
+                        "local_path": "{{test.files_dir}}/test_file_{{test.campain_id}}.bin"
+                    }
+                },
+                {
+                    "type": "ftp",
+                    "value": {
+                        "host": "{{FTP_HOST}}",
+                        "port": 21,
+                        "username": "{{FTP_USERNAME}}",
+                        "password": "{{FTP_PASSWORD}}",
+                        "method": "GET",
+                        "remote_path": "upload_fullcamp_{{test.campain_id}}.txt",
+                        "output_mapping": {
+                            "ftp_file_size": "ftp_get_size"
+                        }
+                    }
+                },
+                {
+                    "type": "ftp",
+                    "value": {
+                        "host": "{{FTP_HOST}}",
+                        "port": 21,
+                        "username": "{{FTP_USERNAME}}",
+                        "password": "{{FTP_PASSWORD}}",
+                        "method": "LIST",
+                        "remote_path": "listing"
+                    }
+                },
+                {
+                    "type": "ftp",
+                    "value": {
+                        "method": "DELETE",
+                        "host": "{{FTP_HOST}}",
+                        "port": 21,
+                        "username": "{{FTP_USERNAME}}",
+                        "password": "{{FTP_PASSWORD}}",
+                        "remote_path": "upload_fullcamp_{{test.campain_id}}.txt"
+                    }
+                }
+            ],
+            "name": "FTP - et variantes",
+            "description": "D\u00e9pose un fichier texte sur le serveur FTP",
+            "variables": [],
+            "order": 1,
+            "isDeleted": false
+        },
+        {
+            "_id": "693168815382d2bd0193601e",
+            "campainId": "693168815382d2bd0193601a",
+            "userId": "69159390f0502fbeb33cd817",
+            "dateCreated": "2025-12-04T10:54:57.338000",
+            "actions": [
+                {
+                    "type": "http",
+                    "value": {
+                        "method": "GET",
+                        "url": "http://127.0.0.1:8082/get?campaign=fullcamp_{{test.campain_id}}",
+                        "headers": {
+                            "Accept": "application/json"
+                        },
+                        "return_status_code": "200",
+                        "output_mapping": {
+                            "http_status_code": "http_get_status"
+                        }
+                    }
+                },
+                {
+                    "type": "http",
+                    "value": {
+                        "method": "POST",
+                        "url": "http://127.0.0.1:8082/post",
+                        "headers": {
+                            "Content-Type": "application/json"
+                        },
+                        "body": "{\"message\": \"ping fullcamp_{{test.campain_id}}\"}",
+                        "return_status_code": "200",
+                        "output_mapping": {
+                            "http_response_time": "http_post_time"
+                        }
+                    }
+                },
+                {
+                    "type": "http",
+                    "value": {
+                        "method": "PUT",
+                        "url": "http://127.0.0.1:8082/put",
+                        "headers": {
+                            "Content-Type": "application/json"
+                        },
+                        "body": "{\"slug\": \"fullcamp_{{test.campain_id}}\", \"action\": \"put\"}",
+                        "return_status_code": "200"
+                    }
+                },
+                {
+                    "type": "http",
+                    "value": {
+                        "method": "DELETE",
+                        "url": "http://127.0.0.1:8082/delete",
+                        "headers": {
+                            "Accept": "application/json"
+                        },
+                        "return_status_code": "200"
+                    }
+                }
+            ],
+            "name": "HTTP - et variantes",
+            "description": "V\u00e9rifie la r\u00e9ponse GET du service HTTP de test",
+            "variables": [
+                "http_get_status"
+            ],
+            "order": 2,
+            "isDeleted": false
+        },
+        {
+            "_id": "693168815382d2bd01936020",
+            "campainId": "693168815382d2bd0193601a",
+            "userId": "69159390f0502fbeb33cd817",
+            "dateCreated": "2025-12-04T10:54:57.356000",
+            "actions": [
+                {
+                    "type": "io",
+                    "value": {
+                        "operation": "create_dir",
+                        "path": "{{test.work_dir}}/io_fullcamp_{{test.campain_id}}/created_dir"
+                    }
+                },
+                {
+                    "type": "io",
+                    "value": {
+                        "operation": "write_variable",
+                        "path": "{{test.work_dir}}/io_fullcamp_{{test.campain_id}}/sample.txt",
+                        "variable_value": "Contenu des fichiers locaux"
+                    }
+                },
+                {
+                    "type": "io",
+                    "value": {
+                        "operation": "list_files",
+                        "path": "{{test.work_dir}}/io_fullcamp_{{test.campain_id}}",
+                        "file_extension": ".txt"
+                    }
+                },
+                {
+                    "type": "io",
+                    "value": {
+                        "operation": "read_variable",
+                        "path": "{{test.work_dir}}/io_fullcamp_{{test.campain_id}}/sample.txt"
+                    }
+                },
+                {
+                    "type": "io",
+                    "value": {
+                        "operation": "delete_file",
+                        "path": "{{test.work_dir}}/io_fullcamp_{{test.campain_id}}/sample.txt"
+                    }
+                },
+                {
+                    "type": "io",
+                    "value": {
+                        "operation": "delete_dir",
+                        "path": "{{test.work_dir}}/io_fullcamp_{{test.campain_id}}/created_dir"
+                    }
+                }
+            ],
+            "name": "IO - et variantes",
+            "description": "Cr\u00e9e un dossier d\u00e9di\u00e9 dans le workdir",
+            "variables": [],
+            "order": 3,
+            "isDeleted": false
+        },
+        {
+            "_id": "693168815382d2bd01936022",
+            "campainId": "693168815382d2bd0193601a",
+            "userId": "69159390f0502fbeb33cd817",
+            "dateCreated": "2025-12-04T10:54:57.372000",
+            "actions": [
+                {
+                    "type": "sftp",
+                    "value": {
+                        "host": "{{SFTP_HOST}}",
+                        "port": "{{SFTP_PORT}}",
+                        "username": "{{SFTP_USERNAME}}",
+                        "password": "{{SFTP_PASSWORD}}",
+                        "method": "PUT",
+                        "remote_path": "upload/upload_fullcamp_{{test.campain_id}}.txt",
+                        "content": "contenu du fichier"
+                    }
+                },
+                {
+                    "type": "sftp",
+                    "value": {
+                        "host": "{{SFTP_HOST}}",
+                        "port": "{{SFTP_PORT}}",
+                        "username": "{{SFTP_USERNAME}}",
+                        "password": "{{SFTP_PASSWORD}}",
+                        "method": "GET",
+                        "remote_path": "upload/upload_fullcamp_{{test.campain_id}}.txt"
+                    }
+                },
+                {
+                    "type": "sftp",
+                    "value": {
+                        "host": "{{SFTP_HOST}}",
+                        "port": "{{SFTP_PORT}}",
+                        "username": "{{SFTP_USERNAME}}",
+                        "password": "{{SFTP_PASSWORD}}",
+                        "method": "LIST",
+                        "remote_path": "upload/"
+                    }
+                },
+                {
+                    "type": "sftp",
+                    "value": {
+                        "method": "DELETE",
+                        "host": "{{SFTP_HOST}}",
+                        "port": "{{SFTP_PORT}}",
+                        "username": "{{SFTP_USERNAME}}",
+                        "password": "{{SFTP_PASSWORD}}",
+                        "remote_path": "upload/upload_fullcamp_{{test.campain_id}}.txt"
+                    }
+                }
+            ],
+            "name": "SFTP - et variantes",
+            "description": "D\u00e9pose un fichier texte via SFTP",
+            "variables": [],
+            "order": 4,
+            "isDeleted": false
+        },
+        {
+            "_id": "693168815382d2bd01936024",
+            "campainId": "693168815382d2bd0193601a",
+            "userId": "69159390f0502fbeb33cd817",
+            "dateCreated": "2025-12-04T10:54:57.390000",
+            "actions": [
+                {
+                    "type": "ssh",
+                    "value": {
+                        "host": "{{SSH_HOST}}",
+                        "port": 2223,
+                        "username": "{{SSH_USERNAME}}",
+                        "password": "{{SSH_PASSWORD}}",
+                        "command": "{{SSH_COMMAND}}",
+                        "output_mapping": {
+                            "ssh_output": "ssh_last_output"
+                        }
+                    }
+                }
+            ],
+            "name": "SSH - ex\u00e9cution distante",
+            "description": "Ex\u00e9cute une commande simple via SSH",
+            "variables": [
+                "ssh_last_output"
+            ],
+            "order": 5,
+            "isDeleted": false
+        },
+        {
+            "_id": "693168815382d2bd01936026",
+            "campainId": "693168815382d2bd0193601a",
+            "userId": "69159390f0502fbeb33cd817",
+            "dateCreated": "2025-12-04T10:54:57.408000",
+            "actions": [
+                {
+                    "type": "var",
+                    "value": {
+                        "default_value": "18",
+                        "output_mapping": {
+                            "converted_value": "test_var"
+                        },
+                        "target_type": "int",
+                        "variable_name": "test_var"
+                    }
+                },
+                {
+                    "type": "var",
+                    "value": {
+                        "output_mapping": {
+                            "converted_value": "test_var"
+                        },
+                        "target_type": "float",
+                        "variable_name": "test_var"
+                    }
+                },
+                {
+                    "type": "var",
+                    "value": {
+                        "output_mapping": {
+                            "converted_value": "test_var"
+                        },
+                        "target_type": "bool",
+                        "variable_name": "test_var"
+                    }
+                },
+                {
+                    "type": "var",
+                    "value": {
+                        "output_mapping": {
+                            "converted_value": "test_var"
+                        },
+                        "target_type": "list",
+                        "variable_name": "test_var"
+                    }
+                },
+                {
+                    "type": "var",
+                    "value": {
+                        "variable_name": "test_var",
+                        "default_value": "{\"val\":18}",
+                        "force_valuation": true,
+                        "target_type": "dict",
+                        "output_mapping": {
+                            "converted_value": "test_var"
+                        }
+                    }
+                },
+                {
+                    "type": "var",
+                    "value": {
+                        "variable_name": "test_var",
+                        "force_valuation": false,
+                        "target_type": "json",
+                        "output_mapping": {
+                            "converted_value": "test_var"
+                        }
+                    }
+                }
+            ],
+            "name": "VarAction - et variantes",
+            "description": "Convertit un code HTTP en entier",
+            "variables": [
+                "test_var"
+            ],
+            "order": 6,
+            "isDeleted": false
+        },
+        {
+            "_id": "693168815382d2bd01936028",
+            "campainId": "693168815382d2bd0193601a",
+            "userId": "69159390f0502fbeb33cd817",
+            "dateCreated": "2025-12-04T10:54:57.428000",
+            "actions": [
+                {
+                    "type": "webdav",
+                    "value": {
+                        "action": "MKDIR",
+                        "password": "{{WEBDAV_PASSWORD}}",
+                        "targFile": "{{test.campain_id}}",
+                        "url": "{{WEBDAV_URL}}",
+                        "username": "{{WEBDAV_USERNAME}}"
+                    }
+                },
+                {
+                    "type": "webdav",
+                    "value": {
+                        "url": "{{WEBDAV_URL}}",
+                        "username": "{{WEBDAV_USERNAME}}",
+                        "password": "{{WEBDAV_PASSWORD}}",
+                        "action": "UPLOAD",
+                        "srcFile": "{{test.files_dir}}/test_file.bin",
+                        "targFile": "{{test.campain_id}}/test_file_{{test.campain_id}}.bin"
+                    }
+                },
+                {
+                    "type": "webdav",
+                    "value": {
+                        "action": "CHECK",
+                        "password": "{{WEBDAV_PASSWORD}}",
+                        "srcFile": "{{test.campain_id}}/test_file_{{test.campain_id}}.bin",
+                        "url": "{{WEBDAV_URL}}",
+                        "username": "{{WEBDAV_USERNAME}}"
+                    }
+                },
+                {
+                    "type": "webdav",
+                    "value": {
+                        "action": "INFO",
+                        "password": "{{WEBDAV_PASSWORD}}",
+                        "srcFile": "{{test.campain_id}}/test_file_{{test.campain_id}}.bin",
+                        "url": "{{WEBDAV_URL}}",
+                        "username": "{{WEBDAV_USERNAME}}"
+                    }
+                },
+                {
+                    "type": "webdav",
+                    "value": {
+                        "action": "LIST",
+                        "password": "{{WEBDAV_PASSWORD}}",
+                        "srcFile": "{{test.campain_id}}",
+                        "url": "{{WEBDAV_URL}}",
+                        "username": "{{WEBDAV_USERNAME}}"
+                    }
+                },
+                {
+                    "type": "webdav",
+                    "value": {
+                        "action": "MOVE",
+                        "password": "{{WEBDAV_PASSWORD}}",
+                        "srcFile": "{{test.campain_id}}/test_file_{{test.campain_id}}.bin",
+                        "targFile": "{{test.campain_id}}/test_file_{{test.campain_id}}.new",
+                        "url": "{{WEBDAV_URL}}",
+                        "username": "{{WEBDAV_USERNAME}}"
+                    }
+                },
+                {
+                    "type": "webdav",
+                    "value": {
+                        "action": "DOWNLOAD",
+                        "password": "{{WEBDAV_PASSWORD}}",
+                        "srcFile": "{{test.campain_id}}/test_file_{{test.campain_id}}.new",
+                        "targFile": "webdav_download_fullcamp_{{test.campain_id}}.new",
+                        "url": "{{WEBDAV_URL}}",
+                        "username": "{{WEBDAV_USERNAME}}"
+                    }
+                },
+                {
+                    "type": "webdav",
+                    "value": {
+                        "action": "REMOVE",
+                        "password": "{{WEBDAV_PASSWORD}}",
+                        "srcFile": "{{test.campain_id}}/test_file_{{test.campain_id}}.new",
+                        "url": "{{WEBDAV_URL}}",
+                        "username": "{{WEBDAV_USERNAME}}"
+                    }
+                }
+            ],
+            "name": "WebDAV - et variantes",
+            "description": "V\u00e9rifie la pr\u00e9sence du fichier de contr\u00f4le",
+            "variables": [],
+            "order": 7,
+            "isDeleted": false
+        }
+    ],
+    "exportDate": "2025-12-04T10:59:44.282997",
+    "version": "1.0",
+    "files": [
+        {
+            "name": "test_file.bin",
+            "content": "YmluYXJ5LWRhdGE="
+        }
+    ]
+}

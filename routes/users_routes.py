@@ -1,6 +1,7 @@
 """Routes API pour la gestion des utilisateurs."""
 
 from flask import Blueprint, request, jsonify
+from flask_babel import gettext as _
 from models.user import User
 from utils.auth import token_required, admin_required
 from utils.pagination import get_pagination_params, paginate_results
@@ -22,7 +23,7 @@ def get_users():
         return jsonify(result), 200
 
     except Exception as e:
-        return jsonify({"message": f"Erreur serveur: {str(e)}"}), 500
+        return jsonify({"message": _("Erreur serveur: {}").format(str(e))}), 500
 
 
 @users_bp.route("", methods=["POST"])
@@ -47,7 +48,7 @@ def create_user():
         )
 
         return (
-            jsonify({"message": "Utilisateur créé avec succès", "user_id": user_id}),
+            jsonify({"message": _("Utilisateur créé avec succès"), "user_id": user_id}),
             201,
         )
 

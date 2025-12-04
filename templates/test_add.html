@@ -1,19 +1,19 @@
 {% extends "base.html" %}
 
-{% block title %}Ajouter un test - {{ app_name }}{% endblock %}
+{% block title %}{{ _('Ajouter un test') }} - {{ app_name }}{% endblock %}
 
 {% block content %}
 <div class="container mt-4">
     <div class="row mb-4">
         <div class="col-md-6">
-            <h1><i class="fas fa-plus-circle"></i> Ajouter un test</h1>
+            <h1><i class="fas fa-plus-circle"></i> {{ _('Ajouter un test') }}</h1>
         </div>
         <div class="col-md-6 text-end">
             <button id="btnSaveAndExecute" class="btn btn-success me-2">
-                <i class="fas fa-play-circle"></i> Enregistrer et lancer le test
+                <i class="fas fa-play-circle"></i> {{ _('Enregistrer et lancer le test') }}
             </button>
             <a href="{{ url_for('web.campain_details', campain_id=campain_id) }}" class="btn btn-secondary">
-                <i class="fas fa-arrow-left"></i> Retour
+                <i class="fas fa-arrow-left"></i> {{ _('Retour') }}
             </a>
         </div>
     </div>
@@ -22,16 +22,16 @@
         <div class="col-md-10 mx-auto">
             <div class="card mb-4">
                 <div class="card-header">
-                    <i class="fas fa-vial"></i> Informations du test
+                    <i class="fas fa-vial"></i> {{ _('Informations du test') }}
                 </div>
                 <div class="card-body">
                     <div class="mb-3">
-                        <label for="testName" class="form-label">Nom du test *</label>
+                        <label for="testName" class="form-label">{{ _('Nom du test *') }}</label>
                         <input type="text" class="form-control" id="testName" required>
                     </div>
                     
                     <div class="mb-3">
-                        <label for="testDescription" class="form-label">Description</label>
+                        <label for="testDescription" class="form-label">{{ _('Description') }}</label>
                         <textarea class="form-control" id="testDescription" rows="3"></textarea>
                     </div>
                 </div>
@@ -40,13 +40,13 @@
             <!-- Liste des actions -->
             <div class="card mb-4">
                 <div class="card-header d-flex justify-content-between align-items-center">
-                    <span><i class="fas fa-tasks"></i> Actions du test</span>
+                    <span><i class="fas fa-tasks"></i> {{ _('Actions du test') }}</span>
                     <div>
                         <button type="button" class="btn btn-sm btn-info" id="addVariableBtn">
-                            <i class="fas fa-plus"></i> Ajouter une variable
+                            <i class="fas fa-plus"></i> {{ _('Ajouter une variable') }}
                         </button>
                         <button type="button" class="btn btn-sm btn-success" id="addActionBtn">
-                            <i class="fas fa-plus"></i> Ajouter une action
+                            <i class="fas fa-plus"></i> {{ _('Ajouter une action') }}
                         </button>
                     </div>
                 </div>
@@ -56,7 +56,7 @@
                     
                     <!-- Liste des actions -->
                     <div id="actionsList">
-                        <p class="text-muted text-center">Aucune action ajoutée. Cliquez sur "Ajouter une action" pour commencer.</p>
+                        <p class="text-muted text-center">{{ _('Aucune action ajoutée. Cliquez sur "Ajouter une action" pour commencer.') }}</p>
                     </div>
                 </div>
             </div>
@@ -64,7 +64,7 @@
             <!-- Bouton de soumission -->
             <div class="d-grid gap-2">
                 <button type="button" class="btn btn-primary btn-lg" id="submitTestBtn">
-                    <i class="fas fa-save"></i> Créer le test
+                    <i class="fas fa-save"></i> {{ _('Créer le test') }}
                 </button>
             </div>
         </div>
@@ -76,15 +76,15 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="actionModalTitle">Ajouter une action</h5>
+                <h5 class="modal-title" id="actionModalTitle">{{ _('Ajouter une action') }}</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
                 <form id="actionForm">
                     <div class="mb-3">
-                        <label for="actionType" class="form-label">Type d'action *</label>
+                        <label for="actionType" class="form-label">{{ _("Type d'action *") }}</label>
                         <select class="form-select" id="actionType" required>
-                            <option value="">-- Sélectionner un type --</option>
+                            <option value="">{{ _('-- Sélectionner un type --') }}</option>
                             <!-- Les options seront chargées dynamiquement -->
                         </select>
                     </div>
@@ -95,15 +95,15 @@
                     <!-- Zone pour les variables de sortie -->
                     <div id="outputVariablesSection" style="display: none;" class="mt-4">
                         <hr>
-                        <h6 class="text-primary"><i class="fas fa-output"></i> Variables de sortie</h6>
-                        <p class="text-muted small">Sélectionnez les variables de sortie que vous souhaitez rendre disponibles pour les actions suivantes.</p>
+                        <h6 class="text-primary"><i class="fas fa-output"></i> {{ _('Variables de sortie') }}</h6>
+                        <p class="text-muted small">{{ _('Sélectionnez les variables de sortie que vous souhaitez rendre disponibles pour les actions suivantes.') }}</p>
                         <div id="outputVariablesList"></div>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                <button type="button" class="btn btn-primary" id="saveActionBtn">Enregistrer</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ _('Annuler') }}</button>
+                <button type="button" class="btn btn-primary" id="saveActionBtn">{{ _('Enregistrer') }}</button>
             </div>
         </div>
     </div>
@@ -114,24 +114,24 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Ajouter une variable</h5>
+                <h5 class="modal-title">{{ _('Ajouter une variable') }}</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
                 <form id="variableForm">
                     <div class="mb-3">
-                        <label for="variableName" class="form-label">Nom de la variable *</label>
+                        <label for="variableName" class="form-label">{{ _('Nom de la variable *') }}</label>
                         <input type="text" class="form-control" id="variableName" required 
                                pattern="[a-zA-Z0-9_]+" 
-                               placeholder="Ex: ma_variable"
+                               placeholder="{{ _('Ex: ma_variable') }}"
                                data-var-autocomplete="disabled">
-                        <small class="form-text text-muted">Caractères alphanumériques et underscore uniquement</small>
+                        <small class="form-text text-muted">{{ _('Caractères alphanumériques et underscore uniquement') }}</small>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                <button type="button" class="btn btn-primary" id="saveVariableBtn">Ajouter</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ _('Annuler') }}</button>
+                <button type="button" class="btn btn-primary" id="saveVariableBtn">{{ _('Ajouter') }}</button>
             </div>
         </div>
     </div>
@@ -150,12 +150,12 @@
         const testDescription = document.getElementById('testDescription').value;
         
         if (!testName) {
-            Notification.error('Veuillez saisir un nom pour le test');
+            Notification.error("{{ _('Veuillez saisir un nom pour le test') }}");
             return null;
         }
         
         if (testActionsManager.actions.length === 0) {
-            Notification.error('Veuillez ajouter au moins une action au test');
+            Notification.error("{{ _('Veuillez ajouter au moins une action au test') }}");
             return null;
         }
         
@@ -171,7 +171,7 @@
             const result = await API.post(`/api/tests`, data);
             return result.test_id;
         } catch (error) {
-            Notification.error('Erreur lors de la création du test: ' + error.message);
+            Notification.error("{{ _('Erreur lors de la création du test: ') }}" + error.message);
             return null;
         }
     }
@@ -180,7 +180,7 @@
     document.getElementById('submitTestBtn').addEventListener('click', async () => {
         const testId = await createTest();
         if (testId) {
-            Notification.success('Test créé avec succès');
+            Notification.success("{{ _('Test créé avec succès') }}");
             setTimeout(() => {
                 window.location.href = `/campains/${campainId}`;
             }, 1000);
@@ -191,7 +191,7 @@
     document.getElementById('btnSaveAndExecute').addEventListener('click', async () => {
         const testId = await createTest();
         if (testId) {
-            Notification.success('Test créé avec succès');
+            Notification.success("{{ _('Test créé avec succès') }}");
             setTimeout(() => {
                 window.location.href = `/test/${testId}/execute`;
             }, 1000);

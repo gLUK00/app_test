@@ -73,7 +73,6 @@ Fonctionnalités :
 - `GET /api/plugins/{type}/{name}` - Détails d'un plugin
 - `POST /api/plugins/reload` - Recharge tous les plugins (admin)
 - `POST /api/plugins/{type}/reload` - Recharge un type de plugins (admin)
-- `GET /api/plugins/stats` - Statistiques des plugins
 
 ### 5. Documentation complète
 

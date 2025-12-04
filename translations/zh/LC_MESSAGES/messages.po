@@ -1,0 +1,1144 @@
+# Chinese translations for PROJECT.
+# Copyright (C) 2025 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2025-12-04 22:20+0100\n"
+"PO-Revision-Date: 2025-12-04 17:49+0100\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: zh\n"
+"Language-Team: zh <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: models/user.py:18 models/user.py:104
+msgid "Format d'email invalide"
+msgstr "无效的电子邮件格式"
+
+#: models/user.py:25
+msgid "Rôle invalide. Doit être 'admin' ou 'user'"
+msgstr "无效的角色。必须是 'admin' 或 'user'"
+
+#: models/user.py:30
+msgid "Cet email est déjà utilisé"
+msgstr "此电子邮件已被使用"
+
+#: models/user.py:115
+msgid "Rôle invalide"
+msgstr "无效的角色"
+
+#: routes/auth_routes.py:30
+msgid "Email ou mot de passe incorrect"
+msgstr "电子邮件或密码不正确"
+
+#: routes/auth_routes.py:39
+msgid "Authentification réussie"
+msgstr "验证成功"
+
+#: routes/campains_routes.py:43 routes/campains_routes.py:75
+#: routes/campains_routes.py:90 routes/users_routes.py:26
+#, python-brace-format
+msgid "Erreur serveur: {}"
+msgstr "服务器错误：{}"
+
+#: routes/campains_routes.py:70 templates/campain_add.html:61
+msgid "Campagne créée avec succès"
+msgstr "活动创建成功"
+
+#: routes/campains_routes.py:85
+msgid "Campagne non trouvée"
+msgstr "未找到活动"
+
+#: routes/campains_routes.py:101
+msgid "Campagne mise à jour avec succès"
+msgstr "活动更新成功"
+
+#: routes/tests_routes.py:38 routes/tests_routes.py:67
+#: routes/tests_routes.py:82 routes/tests_routes.py:104
+#: routes/tests_routes.py:119 routes/tests_routes.py:138
+#: routes/tests_routes.py:149 routes/tests_routes.py:184
+#: routes/tests_routes.py:199 routes/tests_routes.py:214
+#, python-format
+msgid "Erreur serveur: %(error)s"
+msgstr "服务器错误：%(error)s"
+
+#: routes/tests_routes.py:62 templates/test_add.html:183
+#: templates/test_add.html:194
+msgid "Test créé avec succès"
+msgstr "测试创建成功"
+
+#: routes/tests_routes.py:77 routes/tests_routes.py:114
+#: routes/tests_routes.py:168
+msgid "Test non trouvé"
+msgstr "未找到测试"
+
+#: routes/tests_routes.py:100 templates/test_edit.html:226
+#: templates/test_edit.html:237
+msgid "Test mis à jour avec succès"
+msgstr "测试更新成功"
+
+#: routes/tests_routes.py:116
+msgid "Test supprimé avec succès"
+msgstr "测试删除成功"
+
+#: routes/tests_routes.py:135
+msgid "Action ajoutée avec succès"
+msgstr "操作添加成功"
+
+#: routes/tests_routes.py:173
+msgid "Exécuteur de test non disponible"
+msgstr "测试执行器不可用"
+
+#: routes/tests_routes.py:179
+msgid "Exécution du test lancée"
+msgstr "测试执行已开始"
+
+#: routes/tests_routes.py:194
+msgid ""
+"Impossible de déplacer le test (déjà en première position ou test "
+"introuvable)"
+msgstr "无法移动测试（已在第一个位置或未找到测试）"
+
+#: routes/tests_routes.py:196
+msgid "Test déplacé vers le haut avec succès"
+msgstr "测试成功上移"
+
+#: routes/tests_routes.py:209
+msgid ""
+"Impossible de déplacer le test (déjà en dernière position ou test "
+"introuvable)"
+msgstr "无法移动测试（已在最后一个位置或未找到测试）"
+
+#: routes/tests_routes.py:211
+msgid "Test déplacé vers le bas avec succès"
+msgstr "测试成功下移"
+
+#: routes/users_routes.py:51 templates/admin/user_add.html:111
+msgid "Utilisateur créé avec succès"
+msgstr "用户创建成功"
+
+#: templates/base.html:40 templates/dashboard.html:3 templates/dashboard.html:9
+msgid "Tableau de bord"
+msgstr "仪表板"
+
+#: templates/base.html:46
+msgid "Administration"
+msgstr "管理"
+
+#: templates/base.html:50
+msgid "Utilisateurs"
+msgstr "用户"
+
+#: templates/base.html:53
+msgid "Variables"
+msgstr "变量"
+
+#: templates/admin/deleted.html:3 templates/base.html:57
+msgid "Éléments supprimés"
+msgstr "已删除的项目"
+
+#: templates/base.html:79
+msgid "Déconnexion"
+msgstr "注销"
+
+#: templates/campain_add.html:3
+msgid "Gestion des campagnes"
+msgstr "活动管理"
+
+#: templates/campain_add.html:9 templates/dashboard.html:20
+msgid "Nouvelle campagne"
+msgstr "新活动"
+
+#: templates/admin/deleted.html:10 templates/admin/user_add.html:13
+#: templates/admin/user_edit.html:13 templates/admin/variable_add.html:13
+#: templates/admin/variable_edit.html:13 templates/campain_add.html:13
+#: templates/campain_details.html:21 templates/rapport_details.html:109
+#: templates/rapport_details.html:113 templates/test_add.html:16
+#: templates/test_edit.html:16 templates/test_execute.html:13
+msgid "Retour"
+msgstr "返回"
+
+#: templates/campain_add.html:22
+msgid "Informations de la campagne"
+msgstr "活动信息"
+
+#: templates/campain_add.html:27 templates/dashboard.html:64
+msgid "Nom de la campagne"
+msgstr "活动名称"
+
+#: templates/admin/deleted.html:206 templates/admin/deleted.html:239
+#: templates/admin/variable_add.html:48 templates/admin/variable_edit.html:54
+#: templates/admin/variables.html:78 templates/admin/variables.html:161
+#: templates/campain_add.html:32 templates/dashboard.html:102
+#: templates/test_add.html:34 templates/test_edit.html:34
+msgid "Description"
+msgstr "描述"
+
+#: templates/campain_add.html:38
+msgid "Créer la campagne"
+msgstr "创建活动"
+
+#: templates/campain_add.html:66
+#, fuzzy
+msgid "Erreur lors de la création de la campagne"
+msgstr "活动信息"
+
+#: templates/campain_details.html:3
+msgid "Détails de la campagne"
+msgstr "活动详情"
+
+#: templates/admin/deleted.html:50 templates/admin/deleted.html:72
+#: templates/admin/deleted.html:94 templates/admin/user_edit.html:27
+#: templates/admin/users.html:28 templates/admin/variable_edit.html:27
+#: templates/admin/variables.html:41 templates/campain_details.html:11
+#: templates/campain_details.html:62 templates/dashboard.html:35
+#: templates/rapport_details.html:173 templates/test_edit.html:61
+#: templates/test_execute.html:28 templates/test_execute.html:60
+msgid "Chargement..."
+msgstr "正在加载..."
+
+#: templates/campain_details.html:12
+msgid "Renommer la campagne"
+msgstr "重命名活动"
+
+#: templates/campain_details.html:18
+msgid "Exporter la campagne"
+msgstr "导出活动"
+
+#: templates/campain_details.html:31
+msgid "Informations"
+msgstr "信息"
+
+#: templates/campain_details.html:36 templates/rapport_details.html:129
+#: templates/test_execute.html:34
+msgid "Nom :"
+msgstr "名称："
+
+#: templates/campain_details.html:37 templates/test_execute.html:35
+msgid "Description :"
+msgstr "描述："
+
+#: templates/campain_details.html:40
+msgid "Créée le :"
+msgstr "创建于："
+
+#: templates/campain_details.html:41
+msgid "Créée par :"
+msgstr "创建者："
+
+#: templates/campain_details.html:54
+msgid "Fichiers"
+msgstr "文件"
+
+#: templates/campain_details.html:56
+msgid "Ajouter un fichier"
+msgstr "添加文件"
+
+#: templates/campain_details.html:70
+msgid "Nom du fichier"
+msgstr "文件名"
+
+#: templates/campain_details.html:71
+msgid "Taille (Ko)"
+msgstr "大小 (KB)"
+
+#: templates/campain_details.html:72
+msgid "Date de modification"
+msgstr "修改日期"
+
+#: templates/admin/deleted.html:206 templates/admin/deleted.html:239
+#: templates/admin/deleted.html:272 templates/admin/users.html:69
+#: templates/admin/variables.html:80 templates/admin/variables.html:162
+#: templates/campain_details.html:73 templates/dashboard.html:104
+msgid "Actions"
+msgstr "操作"
+
+#: templates/campain_details.html:84
+msgid "Aucun fichier dans cette campagne"
+msgstr "此活动中没有文件"
+
+#: templates/campain_details.html:96
+msgid "Tests de la campagne"
+msgstr "活动测试"
+
+#: templates/campain_details.html:98 templates/test_add.html:3
+#: templates/test_add.html:9
+msgid "Ajouter un test"
+msgstr "添加测试"
+
+#: templates/campain_details.html:1018 templates/rapport_details.html:257
+msgid "Erreur lors de l'exécution de la campagne"
+msgstr ""
+
+#: templates/campain_details.html:1041
+#, fuzzy
+msgid "Export en cours..."
+msgstr "进行中"
+
+#: templates/campain_details.html:1077
+#, fuzzy
+msgid "Export réussi"
+msgstr "通过"
+
+#: templates/campain_details.html:1125
+msgid "Le nom de la campagne ne peut pas être vide"
+msgstr ""
+
+#: templates/campain_details.html:1140
+#, fuzzy
+msgid "Campagne renommée avec succès"
+msgstr "活动创建成功"
+
+#: templates/campain_details.html:1144
+#, fuzzy
+msgid "Erreur lors du renommage de la campagne"
+msgstr "重命名活动"
+
+#: templates/dashboard.html:10
+msgid "Bienvenue sur votre espace de gestion des campagnes de tests"
+msgstr "欢迎来到您的测试活动管理区"
+
+#: templates/dashboard.html:17 templates/dashboard.html:52
+msgid "Importer une campagne"
+msgstr "导入活动"
+
+#: templates/dashboard.html:29
+msgid "Campagnes de tests"
+msgstr "测试活动"
+
+#: templates/dashboard.html:59
+msgid "Fichier JSON"
+msgstr "JSON 文件"
+
+#: templates/dashboard.html:61
+msgid "Sélectionnez un fichier exporté précédemment (.json)"
+msgstr "选择以前导出的文件 (.json)"
+
+#: templates/dashboard.html:65
+msgid "Laisser vide pour utiliser le nom par défaut"
+msgstr "留空以使用默认名称"
+
+#: templates/dashboard.html:66
+msgid "Par défaut : \"Import de [Nom original]\""
+msgstr "默认：“[原始名称] 的导入”"
+
+#: templates/dashboard.html:73 templates/test_add.html:105
+#: templates/test_add.html:133 templates/test_edit.html:112
+#: templates/test_edit.html:140
+msgid "Annuler"
+msgstr "取消"
+
+#: templates/dashboard.html:76 templates/dashboard.html:230
+msgid "Importer"
+msgstr "导入"
+
+#: templates/admin/deleted.html:206 templates/admin/deleted.html:239
+#: templates/admin/deleted.html:272 templates/admin/users.html:66
+#: templates/dashboard.html:101
+msgid "Nom"
+msgstr "名称"
+
+#: templates/dashboard.html:103
+#, fuzzy
+msgid "Date de création"
+msgstr "修改日期"
+
+#: templates/dashboard.html:136
+#, fuzzy
+msgid "Aucune campagne trouvée."
+msgstr "未找到活动"
+
+#: templates/dashboard.html:137
+#, fuzzy
+msgid "Créez votre première campagne"
+msgstr "创建活动"
+
+#: templates/dashboard.html:144
+msgid "Erreur lors du chargement des campagnes"
+msgstr ""
+
+#: templates/dashboard.html:151
+msgid "Êtes-vous sûr de vouloir supprimer cette campagne ?"
+msgstr ""
+
+#: templates/dashboard.html:157
+#, fuzzy
+msgid "Campagne supprimée avec succès"
+msgstr "活动创建成功"
+
+#: templates/dashboard.html:160
+msgid "Erreur lors de la suppression de la campagne"
+msgstr ""
+
+#: templates/dashboard.html:181
+#, fuzzy
+msgid "Veuillez sélectionner un fichier JSON."
+msgstr "选择以前导出的文件 (.json)"
+
+#: templates/dashboard.html:197
+#, fuzzy
+msgid "Import..."
+msgstr "导入"
+
+#: templates/dashboard.html:216
+#, fuzzy
+msgid "Campagne importée avec succès"
+msgstr "活动创建成功"
+
+#: templates/login.html:6
+msgid "Connexion"
+msgstr ""
+
+#: templates/login.html:30
+msgid "Really! Are you serious?"
+msgstr ""
+
+#: templates/login.html:40
+msgid "Plateforme de test multi-environnements"
+msgstr ""
+
+#: templates/admin/users.html:67 templates/login.html:59
+msgid "Email"
+msgstr "电子邮件"
+
+#: templates/login.html:66
+msgid "Mot de passe"
+msgstr ""
+
+#: templates/login.html:73
+msgid "Se connecter"
+msgstr ""
+
+#: templates/login.html:111
+msgid "Votre session a expiré. Veuillez vous reconnecter."
+msgstr ""
+
+#: templates/login.html:140
+#, fuzzy
+msgid "Erreur de connexion"
+msgstr "注销"
+
+#: templates/login.html:144
+msgid "Erreur de connexion au serveur"
+msgstr ""
+
+#: templates/rapport_details.html:3 templates/rapport_details.html:104
+msgid "Détails du rapport"
+msgstr ""
+
+#: templates/rapport_details.html:124
+msgid "Informations générales"
+msgstr ""
+
+#: templates/rapport_details.html:130 templates/test_execute.html:58
+msgid "Environnement :"
+msgstr ""
+
+#: templates/rapport_details.html:133
+msgid "Date de création :"
+msgstr ""
+
+#: templates/rapport_details.html:134
+msgid "Statut :"
+msgstr ""
+
+#: templates/rapport_details.html:137
+msgid "Temps d'exécution :"
+msgstr ""
+
+#: templates/rapport_details.html:143
+msgid "Progression :"
+msgstr ""
+
+#: templates/rapport_details.html:163
+msgid "Tests exécutés"
+msgstr ""
+
+#: templates/rapport_details.html:167
+msgid "En cours..."
+msgstr ""
+
+#: templates/rapport_details.html:183
+msgid "Aucun test dans ce rapport"
+msgstr ""
+
+#: templates/rapport_details.html:245
+msgid "Exécution de la campagne terminée"
+msgstr ""
+
+#: templates/rapport_details.html:296
+msgid "Erreur lors du chargement du rapport"
+msgstr ""
+
+#: templates/rapport_details.html:314
+msgid "Aucun log disponible"
+msgstr ""
+
+#: templates/rapport_details.html:325 templates/rapport_details.html:399
+#: templates/rapport_details.html:470 templates/test_execute.html:86
+msgid "En attente"
+msgstr "待定"
+
+#: templates/rapport_details.html:330 templates/rapport_details.html:404
+#: templates/rapport_details.html:474 templates/test_execute.html:201
+msgid "En cours"
+msgstr "进行中"
+
+#: templates/rapport_details.html:335 templates/rapport_details.html:409
+#: templates/test_execute.html:217
+msgid "Réussi"
+msgstr "通过"
+
+#: templates/rapport_details.html:340 templates/rapport_details.html:414
+#: templates/rapport_details.html:482 templates/test_execute.html:217
+msgid "Échoué"
+msgstr "失败"
+
+#: templates/rapport_details.html:345 templates/rapport_details.html:419
+msgid "Ignoré"
+msgstr "跳过"
+
+#: templates/rapport_details.html:374
+msgid "Temps d'exécution:"
+msgstr ""
+
+#: templates/rapport_details.html:376
+msgid "Logs d'exécution:"
+msgstr ""
+
+#: templates/rapport_details.html:478
+msgid "Terminé"
+msgstr "已完成"
+
+#: templates/test_add.html:13 templates/test_edit.html:13
+msgid "Enregistrer et lancer le test"
+msgstr ""
+
+#: templates/test_add.html:25 templates/test_edit.html:25
+#: templates/test_execute.html:23
+msgid "Informations du test"
+msgstr ""
+
+#: templates/test_add.html:29 templates/test_edit.html:29
+msgid "Nom du test *"
+msgstr ""
+
+#: templates/test_add.html:43 templates/test_edit.html:43
+msgid "Actions du test"
+msgstr ""
+
+#: templates/test_add.html:46 templates/test_add.html:117
+#: templates/test_edit.html:46 templates/test_edit.html:124
+msgid "Ajouter une variable"
+msgstr ""
+
+#: templates/test_add.html:49 templates/test_add.html:79
+#: templates/test_edit.html:49 templates/test_edit.html:86
+msgid "Ajouter une action"
+msgstr ""
+
+#: templates/test_add.html:59
+msgid "Aucune action ajoutée. Cliquez sur \"Ajouter une action\" pour commencer."
+msgstr ""
+
+#: templates/test_add.html:67
+msgid "Créer le test"
+msgstr ""
+
+#: templates/test_add.html:85 templates/test_edit.html:92
+msgid "Type d'action *"
+msgstr ""
+
+#: templates/test_add.html:87 templates/test_edit.html:94
+msgid "-- Sélectionner un type --"
+msgstr ""
+
+#: templates/test_add.html:98 templates/test_edit.html:105
+msgid "Variables de sortie"
+msgstr ""
+
+#: templates/test_add.html:99 templates/test_edit.html:106
+msgid ""
+"Sélectionnez les variables de sortie que vous souhaitez rendre "
+"disponibles pour les actions suivantes."
+msgstr ""
+
+#: templates/test_add.html:106 templates/test_edit.html:113
+msgid "Enregistrer"
+msgstr ""
+
+#: templates/test_add.html:123 templates/test_edit.html:130
+msgid "Nom de la variable *"
+msgstr ""
+
+#: templates/test_add.html:126 templates/test_edit.html:133
+#, fuzzy
+msgid "Ex: ma_variable"
+msgstr "变量"
+
+#: templates/test_add.html:128 templates/test_edit.html:135
+msgid "Caractères alphanumériques et underscore uniquement"
+msgstr ""
+
+#: templates/test_add.html:134 templates/test_edit.html:141
+msgid "Ajouter"
+msgstr "添加"
+
+#: templates/test_add.html:153 templates/test_edit.html:187
+msgid "Veuillez saisir un nom pour le test"
+msgstr ""
+
+#: templates/test_add.html:158 templates/test_edit.html:192
+msgid "Veuillez ajouter au moins une action au test"
+msgstr ""
+
+#: templates/test_add.html:174
+msgid "Erreur lors de la création du test: "
+msgstr ""
+
+#: templates/test_edit.html:3 templates/test_edit.html:9
+msgid "Modifier un test"
+msgstr ""
+
+#: templates/admin/user_edit.html:92 templates/test_edit.html:71
+msgid "Enregistrer les modifications"
+msgstr "保存更改"
+
+#: templates/test_edit.html:74
+msgid "Supprimer le test"
+msgstr ""
+
+#: templates/test_edit.html:172 templates/test_execute.html:153
+msgid "Erreur lors du chargement du test"
+msgstr ""
+
+#: templates/test_edit.html:217
+msgid "Erreur lors de la mise à jour du test: "
+msgstr ""
+
+#: templates/test_execute.html:3 templates/test_execute.html:9
+msgid "Exécution du test"
+msgstr ""
+
+#: templates/test_execute.html:38
+msgid "Nombre d'actions :"
+msgstr ""
+
+#: templates/test_execute.html:39
+msgid "Variables du test :"
+msgstr ""
+
+#: templates/test_execute.html:53
+msgid "Configuration d'exécution"
+msgstr ""
+
+#: templates/test_execute.html:65
+msgid "Lancer le test"
+msgstr ""
+
+#: templates/test_execute.html:79
+msgid "Statut d'exécution"
+msgstr ""
+
+#: templates/test_execute.html:91
+msgid "Re-exécuter le test"
+msgstr ""
+
+#: templates/test_execute.html:106
+msgid "Logs d'exécution"
+msgstr ""
+
+#: templates/test_execute.html:108
+msgid "Effacer"
+msgstr ""
+
+#: templates/admin/deleted.html:211 templates/admin/deleted.html:277
+#: templates/test_execute.html:129
+msgid "Sans nom"
+msgstr "未命名"
+
+#: templates/test_execute.html:130
+msgid "Aucune description"
+msgstr ""
+
+#: templates/test_execute.html:138
+msgid "Aucune"
+msgstr ""
+
+#: templates/test_execute.html:163
+msgid "Sélectionnez un environnement"
+msgstr ""
+
+#: templates/test_execute.html:179
+msgid "Erreur lors du chargement des environnements"
+msgstr ""
+
+#: templates/test_execute.html:264
+msgid "Veuillez sélectionner un environnement"
+msgstr ""
+
+#: templates/test_execute.html:269
+msgid "Lancement..."
+msgstr ""
+
+#: templates/test_execute.html:277
+msgid "Erreur lors du lancement du test: "
+msgstr ""
+
+#: templates/test_execute.html:278
+msgid "Erreur"
+msgstr "错误"
+
+#: templates/test_execute.html:301
+msgid "Sélectionnez un environnement pour relancer le test"
+msgstr ""
+
+#: templates/admin/deleted.html:8
+msgid "Gestion des éléments supprimés"
+msgstr "已删除项目管理"
+
+#: templates/admin/deleted.html:18
+msgid "Tests"
+msgstr "测试"
+
+#: templates/admin/deleted.html:23
+msgid "Campagnes"
+msgstr "活动"
+
+#: templates/admin/deleted.html:28
+msgid "Rapports"
+msgstr "报告"
+
+#: templates/admin/deleted.html:38
+msgid "Tests supprimés"
+msgstr "已删除的测试"
+
+#: templates/admin/deleted.html:41 templates/admin/deleted.html:63
+#: templates/admin/deleted.html:85
+msgid "Restaurer sélection"
+msgstr "恢复选择"
+
+#: templates/admin/deleted.html:44 templates/admin/deleted.html:66
+#: templates/admin/deleted.html:88
+msgid "Supprimer définitivement"
+msgstr "永久删除"
+
+#: templates/admin/deleted.html:60
+msgid "Campagnes supprimées"
+msgstr "已删除的活动"
+
+#: templates/admin/deleted.html:82
+msgid "Rapports supprimés"
+msgstr "已删除的报告"
+
+#: templates/admin/deleted.html:200
+#, fuzzy
+msgid "Aucun test supprimé"
+msgstr "已删除的测试"
+
+#: templates/admin/deleted.html:206 templates/admin/deleted.html:239
+#: templates/admin/deleted.html:272
+msgid "Date de suppression"
+msgstr "删除日期"
+
+#: templates/admin/deleted.html:233
+#, fuzzy
+msgid "Aucune campagne supprimée"
+msgstr "已删除的活动"
+
+#: templates/admin/deleted.html:266
+#, fuzzy
+msgid "Aucun rapport supprimé"
+msgstr "已删除的报告"
+
+#: templates/admin/deleted.html:272 templates/admin/variables.html:77
+msgid "Filière"
+msgstr "分支"
+
+#: templates/admin/deleted.html:375 templates/admin/deleted.html:413
+msgid "Accès refusé : vous devez être administrateur."
+msgstr "访问被拒绝：您必须是管理员。"
+
+#: templates/admin/deleted.html:385
+#, fuzzy
+msgid "élément(s) restauré(s) avec succès"
+msgstr "测试创建成功"
+
+#: templates/admin/deleted.html:388
+msgid "Restauration partielle."
+msgstr "部分恢复。"
+
+#: templates/admin/deleted.html:388 templates/admin/deleted.html:426
+#, fuzzy
+msgid "erreur(s)"
+msgstr "错误"
+
+#: templates/admin/deleted.html:393
+msgid "Erreur lors de la restauration"
+msgstr "恢复时出错"
+
+#: templates/admin/deleted.html:423
+#, fuzzy
+msgid "élément(s) supprimé(s) définitivement"
+msgstr "永久删除"
+
+#: templates/admin/deleted.html:426
+msgid "Suppression partielle."
+msgstr "部分删除。"
+
+#: templates/admin/deleted.html:431
+msgid "Erreur lors de la suppression"
+msgstr "删除时出错"
+
+#: templates/admin/user_add.html:3 templates/admin/user_add.html:9
+#: templates/admin/users.html:13
+msgid "Nouvel utilisateur"
+msgstr "新用户"
+
+#: templates/admin/user_add.html:22 templates/admin/user_edit.html:22
+msgid "Informations de l'utilisateur"
+msgstr "用户信息"
+
+#: templates/admin/user_add.html:27 templates/admin/user_edit.html:34
+msgid "Nom complet *"
+msgstr "全名 *"
+
+#: templates/admin/user_add.html:29 templates/admin/user_edit.html:36
+msgid "Ex: Jean Dupont"
+msgstr "例如：张三"
+
+#: templates/admin/user_add.html:33 templates/admin/user_edit.html:40
+msgid "Email *"
+msgstr "电子邮件 *"
+
+#: templates/admin/user_add.html:35 templates/admin/user_edit.html:42
+msgid "Ex: jean.dupont@example.com"
+msgstr "例如：zhang.san@example.com"
+
+#: templates/admin/user_add.html:37
+msgid "L'adresse email servira d'identifiant de connexion"
+msgstr "电子邮件地址将用作登录 ID"
+
+#: templates/admin/user_add.html:42
+msgid "Mot de passe *"
+msgstr "密码 *"
+
+#: templates/admin/user_add.html:44 templates/admin/user_edit.html:77
+msgid "Minimum 8 caractères"
+msgstr "至少 8 个字符"
+
+#: templates/admin/user_add.html:46 templates/admin/user_edit.html:79
+#: templates/admin/user_edit.html:168
+msgid "Le mot de passe doit contenir au moins 8 caractères"
+msgstr "密码必须包含至少 8 个字符"
+
+#: templates/admin/user_add.html:51
+msgid "Confirmer le mot de passe *"
+msgstr "确认密码 *"
+
+#: templates/admin/user_add.html:53 templates/admin/user_edit.html:86
+msgid "Ressaisir le mot de passe"
+msgstr "重新输入密码"
+
+#: templates/admin/user_add.html:57 templates/admin/user_edit.html:49
+msgid "Rôle *"
+msgstr "角色 *"
+
+#: templates/admin/user_add.html:59 templates/admin/user_edit.html:51
+#: templates/admin/users.html:79
+msgid "Utilisateur"
+msgstr "用户"
+
+#: templates/admin/user_add.html:60 templates/admin/user_edit.html:52
+#: templates/admin/users.html:79
+msgid "Administrateur"
+msgstr "管理员"
+
+#: templates/admin/user_add.html:63 templates/admin/user_edit.html:55
+msgid "Les administrateurs ont accès à toutes les fonctionnalités"
+msgstr "管理员可以访问所有功能"
+
+#: templates/admin/user_add.html:69
+msgid "Créer l'utilisateur"
+msgstr "创建用户"
+
+#: templates/admin/user_add.html:90 templates/admin/user_edit.html:163
+msgid "Les mots de passe ne correspondent pas"
+msgstr "密码不匹配"
+
+#: templates/admin/user_add.html:105 templates/admin/user_edit.html:186
+#: templates/admin/variable_add.html:124 templates/admin/variable_edit.html:166
+msgid "Veuillez remplir tous les champs obligatoires"
+msgstr "请填写所有必填字段"
+
+#: templates/admin/user_add.html:116
+#, fuzzy
+msgid "Erreur lors de la création de l'utilisateur"
+msgstr "用户信息"
+
+#: templates/admin/user_edit.html:3
+msgid "Modifier utilisateur"
+msgstr ""
+
+#: templates/admin/user_edit.html:9
+msgid "Modifier l'utilisateur"
+msgstr "编辑用户"
+
+#: templates/admin/user_edit.html:29
+msgid "Chargement des données..."
+msgstr "正在加载数据..."
+
+#: templates/admin/user_edit.html:44
+msgid "L'adresse email sert d'identifiant de connexion"
+msgstr "电子邮件地址用作登录 ID"
+
+#: templates/admin/user_edit.html:65
+msgid "Modifier le mot de passe de l'utilisateur"
+msgstr "更改用户密码"
+
+#: templates/admin/user_edit.html:71
+msgid "Nouveau mot de passe"
+msgstr "新密码"
+
+#: templates/admin/user_edit.html:72
+msgid "Saisissez le nouveau mot de passe pour cet utilisateur"
+msgstr "输入此用户的新密码"
+
+#: templates/admin/user_edit.html:75
+msgid "Nouveau mot de passe *"
+msgstr "新密码 *"
+
+#: templates/admin/user_edit.html:84
+msgid "Confirmer le nouveau mot de passe *"
+msgstr "确认新密码 *"
+
+#: templates/admin/user_edit.html:140
+#, fuzzy
+msgid "Erreur lors du chargement des données de l'utilisateur"
+msgstr "更改用户密码"
+
+#: templates/admin/user_edit.html:158
+msgid "Veuillez remplir les deux champs de mot de passe"
+msgstr "请填写两个密码字段"
+
+#: templates/admin/user_edit.html:192
+#, fuzzy
+msgid "Utilisateur modifié avec succès"
+msgstr "用户创建成功"
+
+#: templates/admin/user_edit.html:197
+#, fuzzy
+msgid "Erreur lors de la modification de l'utilisateur"
+msgstr "用户信息"
+
+#: templates/admin/users.html:3 templates/admin/users.html:9
+msgid "Gestion des utilisateurs"
+msgstr "用户管理"
+
+#: templates/admin/users.html:22
+msgid "Liste des utilisateurs"
+msgstr "用户列表"
+
+#: templates/admin/users.html:68
+msgid "Rôle"
+msgstr "角色"
+
+#: templates/admin/users.html:106
+#, fuzzy
+msgid "Aucun utilisateur trouvé"
+msgstr "新用户"
+
+#: templates/admin/users.html:113
+#, fuzzy
+msgid "Erreur lors du chargement des utilisateurs"
+msgstr "用户列表"
+
+#: templates/admin/users.html:120
+msgid "Êtes-vous sûr de vouloir supprimer cet utilisateur ?"
+msgstr "您确定要删除此用户吗？"
+
+#: templates/admin/users.html:126
+#, fuzzy
+msgid "Utilisateur supprimé avec succès"
+msgstr "用户创建成功"
+
+#: templates/admin/users.html:129
+#, fuzzy
+msgid "Erreur lors de la suppression de l'utilisateur"
+msgstr "更改用户密码"
+
+#: templates/admin/variable_add.html:3 templates/admin/variable_add.html:9
+#: templates/admin/variables.html:13
+#, fuzzy
+msgid "Nouvelle variable"
+msgstr "新活动"
+
+#: templates/admin/variable_add.html:22 templates/admin/variable_edit.html:22
+msgid "Informations de la variable"
+msgstr "变量信息"
+
+#: templates/admin/variable_add.html:27 templates/admin/variable_edit.html:33
+msgid "Clé de la variable *"
+msgstr "变量键 *"
+
+#: templates/admin/variable_add.html:29 templates/admin/variable_edit.html:35
+msgid "Ex: API_URL, DATABASE_HOST"
+msgstr "例如：API_URL, DATABASE_HOST"
+
+#: templates/admin/variable_add.html:31 templates/admin/variable_edit.html:37
+msgid "Le nom unique de la variable (généralement en MAJUSCULES)"
+msgstr "变量的唯一名称（通常为大写）"
+
+#: templates/admin/variable_add.html:36 templates/admin/variable_edit.html:42
+msgid "Valeur *"
+msgstr "值 *"
+
+#: templates/admin/variable_add.html:38 templates/admin/variable_edit.html:44
+msgid "Ex: https://api.example.com"
+msgstr "例如：https://api.example.com"
+
+#: templates/admin/variable_add.html:42 templates/admin/variable_edit.html:48
+msgid "Environnement (filière) *"
+msgstr "环境（分支）*"
+
+#: templates/admin/variable_add.html:44 templates/admin/variable_edit.html:50
+msgid "Ex: DEV, TEST, STAGING, PROD"
+msgstr "例如：DEV, TEST, STAGING, PROD"
+
+#: templates/admin/variable_add.html:50 templates/admin/variable_edit.html:56
+msgid "Description de la variable et son utilisation"
+msgstr "变量及其用法的描述"
+
+#: templates/admin/variable_add.html:56 templates/admin/variable_edit.html:62
+msgid "Variable racine (privilèges élevés)"
+msgstr "根变量（提升的权限）"
+
+#: templates/admin/variable_add.html:59 templates/admin/variable_edit.html:65
+msgid "Cochez cette option si la variable nécessite des privilèges administrateur"
+msgstr "如果变量需要管理员权限，请选中此选项"
+
+#: templates/admin/variable_add.html:65
+#, fuzzy
+msgid "Créer la variable"
+msgstr "变量键 *"
+
+#: templates/admin/variable_add.html:130
+#, fuzzy
+msgid "Variable créée avec succès"
+msgstr "活动创建成功"
+
+#: templates/admin/variable_add.html:135
+#, fuzzy
+msgid "Erreur lors de la création de la variable"
+msgstr "变量信息"
+
+#: templates/admin/variable_edit.html:3 templates/admin/variable_edit.html:9
+msgid "Modifier la variable"
+msgstr "编辑变量"
+
+#: templates/admin/variable_edit.html:71
+msgid "Mettre à jour la variable"
+msgstr "更新变量"
+
+#: templates/admin/variable_edit.html:74
+msgid "Supprimer la variable"
+msgstr "删除变量"
+
+#: templates/admin/variable_edit.html:145
+msgid "Erreur lors du chargement de la variable"
+msgstr "加载变量时出错"
+
+#: templates/admin/variable_edit.html:172
+#, fuzzy
+msgid "Variable mise à jour avec succès"
+msgstr "活动更新成功"
+
+#: templates/admin/variable_edit.html:177
+#, fuzzy
+msgid "Erreur lors de la mise à jour de la variable"
+msgstr "更新变量"
+
+#: templates/admin/variable_edit.html:183 templates/admin/variables.html:211
+msgid "Êtes-vous sûr de vouloir supprimer cette variable ?"
+msgstr "您确定要删除此变量吗？"
+
+#: templates/admin/variable_edit.html:189 templates/admin/variables.html:217
+#, fuzzy
+msgid "Variable supprimée avec succès"
+msgstr "测试删除成功"
+
+#: templates/admin/variable_edit.html:194 templates/admin/variables.html:220
+msgid "Erreur lors de la suppression de la variable"
+msgstr "删除变量时出错"
+
+#: templates/admin/variables.html:3 templates/admin/variables.html:9
+#, fuzzy
+msgid "Gestion des variables"
+msgstr "活动管理"
+
+#: templates/admin/variables.html:22
+#, fuzzy
+msgid "Toutes"
+msgstr "添加"
+
+#: templates/admin/variables.html:25
+#, fuzzy
+msgid "Par environnement"
+msgstr "环境（分支）*"
+
+#: templates/admin/variables.html:35
+#, fuzzy
+msgid "Liste des variables"
+msgstr "变量键 *"
+
+#: templates/admin/variables.html:75 templates/admin/variables.html:159
+msgid "Clé"
+msgstr "键"
+
+#: templates/admin/variables.html:76 templates/admin/variables.html:160
+#, fuzzy
+msgid "Valeur"
+msgstr "值 *"
+
+#: templates/admin/variables.html:79
+msgid "Root"
+msgstr "根"
+
+#: templates/admin/variables.html:95 templates/admin/variables.html:176
+#, fuzzy
+msgid "Créer une variable enfant"
+msgstr "变量键 *"
+
+#: templates/admin/variables.html:120 templates/admin/variables.html:198
+msgid "Aucune variable trouvée"
+msgstr ""
+
+#: templates/admin/variables.html:127 templates/admin/variables.html:204
+msgid "Erreur lors du chargement des variables"
+msgstr ""
+
+#: utils/validation.py:17
+#, python-brace-format
+msgid "Le mot de passe doit contenir au moins {} caractères"
+msgstr ""
+
+#: utils/validation.py:19
+msgid "Mot de passe valide"
+msgstr ""
+
+#: utils/validation.py:26
+#, python-brace-format
+msgid "Champs manquants : {}"
+msgstr ""
+
+#: utils/validation.py:28
+msgid "Tous les champs requis sont présents"
+msgstr ""
+

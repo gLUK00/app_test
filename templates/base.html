@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="{{ session.get('language', 'en') }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -37,36 +37,46 @@
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('web.dashboard') }}">
-                            <i class="fas fa-home"></i> Tableau de bord
+                            <i class="fas fa-home"></i> {{ _('Tableau de bord') }}
                         </a>
                     </li>
                     {% if user.role == 'admin' %}
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                            <i class="fas fa-cog"></i> Administration
+                            <i class="fas fa-cog"></i> {{ _('Administration') }}
                         </a>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="{{ url_for('web.admin_users') }}">
-                                <i class="fas fa-users"></i> Utilisateurs
+                                <i class="fas fa-users"></i> {{ _('Utilisateurs') }}
                             </a></li>
                             <li><a class="dropdown-item" href="{{ url_for('web.admin_variables') }}">
-                                <i class="fas fa-code"></i> Variables
+                                <i class="fas fa-code"></i> {{ _('Variables') }}
                             </a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item" href="{{ url_for('web.admin_deleted') }}">
-                                <i class="fas fa-trash-restore text-info"></i> Éléments supprimés
-                            </a></li>
-                            <li><a class="dropdown-item" href="{{ url_for('web.admin_plugins_errors') }}">
-                                <i class="fas fa-exclamation-triangle text-warning"></i> Erreurs de plugins
+                                <i class="fas fa-trash-restore text-info"></i> {{ _('Éléments supprimés') }}
                             </a></li>
                         </ul>
                     </li>
                     {% endif %}
                 </ul>
                 <ul class="navbar-nav">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownLanguage" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-globe"></i> {{ session.get('language', 'en')|upper }}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownLanguage">
+                            <li><a class="dropdown-item" href="{{ url_for('web.set_language', lang_code='en') }}">🇬🇧 English</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('web.set_language', lang_code='fr') }}">🇫🇷 Français</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('web.set_language', lang_code='es') }}">🇪🇸 Español</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('web.set_language', lang_code='zh') }}">🇨🇳 中文</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('web.set_language', lang_code='de') }}">🇩🇪 Deutsch</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('web.set_language', lang_code='ja') }}">🇯🇵 日本語</a></li>
+                        </ul>
+                    </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#" onclick="logout()">
-                            <i class="fas fa-sign-out-alt"></i> Déconnexion
+                            <i class="fas fa-sign-out-alt"></i> {{ _('Déconnexion') }}
                         </a>
                     </li>
                 </ul>

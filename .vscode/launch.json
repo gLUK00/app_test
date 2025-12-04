@@ -23,6 +23,29 @@
             "env": {
                 "PYTHONPATH": "${workspaceFolder}"
             }
+        },
+        {
+            "name": "TestGyver: Import Variables (Docker)",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/import_variables.py",
+            "args": ["init/import-var-test-docker.json"],
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            }
+        },
+        {
+            "name": "TestGyver: Manage Translations",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/init/manage_translations.py",
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            }
         }
     ]
 }

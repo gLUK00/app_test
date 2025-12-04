@@ -693,11 +693,6 @@ POST /api/plugins/reload
 POST /api/plugins/{type}/reload
 ```
 
-### Statistiques des plugins
-```
-GET /api/plugins/stats
-```
-
 ## Bonnes pratiques
 
 1. **Nommage** : Utilisez des noms de fichiers descriptifs et en snake_case

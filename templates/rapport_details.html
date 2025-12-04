@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Détails du rapport - {{ app_name }}{% endblock %}
+{% block title %}{{ _('Détails du rapport') }} - {{ app_name }}{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -101,16 +101,16 @@
 <div class="container mt-4">
     <div class="row mb-4">
         <div class="col-md-8">
-            <h1><i class="fas fa-file-alt"></i> Détails du rapport</h1>
+            <h1><i class="fas fa-file-alt"></i> {{ _('Détails du rapport') }}</h1>
         </div>
         <div class="col-md-4 text-end">
             {% if campain_id %}
             <a href="{{ url_for('web.campain_details', campain_id=campain_id) }}" class="btn btn-secondary">
-                <i class="fas fa-arrow-left"></i> Retour
+                <i class="fas fa-arrow-left"></i> {{ _('Retour') }}
             </a>
             {% else %}
             <a href="{{ url_for('web.dashboard') }}" class="btn btn-secondary">
-                <i class="fas fa-arrow-left"></i> Retour
+                <i class="fas fa-arrow-left"></i> {{ _('Retour') }}
             </a>
             {% endif %}
         </div>
@@ -121,26 +121,26 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    <i class="fas fa-info-circle"></i> Informations générales
+                    <i class="fas fa-info-circle"></i> {{ _('Informations générales') }}
                 </div>
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-3">
-                            <p><strong>Nom :</strong> <span id="rapportName">-</span></p>
-                            <p><strong>Environnement :</strong> <span class="badge bg-info" id="rapportFiliere">-</span></p>
+                            <p><strong>{{ _('Nom :') }}</strong> <span id="rapportName">-</span></p>
+                            <p><strong>{{ _('Environnement :') }}</strong> <span class="badge bg-info" id="rapportFiliere">-</span></p>
                         </div>
                         <div class="col-md-3">
-                            <p><strong>Date de création :</strong> <span id="rapportDate">-</span></p>
-                            <p><strong>Statut :</strong> <span id="rapportStatus">-</span></p>
+                            <p><strong>{{ _('Date de création :') }}</strong> <span id="rapportDate">-</span></p>
+                            <p><strong>{{ _('Statut :') }}</strong> <span id="rapportStatus">-</span></p>
                         </div>
                         <div class="col-md-3">
-                            <p><strong>Temps d'exécution :</strong></p>
+                            <p><strong>{{ _("Temps d'exécution :") }}</strong></p>
                             <p class="fs-4 text-primary mb-0">
                                 <i class="fas fa-stopwatch"></i> <span id="rapportExecutionTime">-</span>
                             </p>
                         </div>
                         <div class="col-md-3">
-                            <p><strong>Progression :</strong></p>
+                            <p><strong>{{ _('Progression :') }}</strong></p>
                             <div class="progress" style="height: 25px;">
                                 <div class="progress-bar" id="rapportProgress" role="progressbar" 
                                      style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
@@ -160,17 +160,17 @@
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <span>
-                        <i class="fas fa-vial"></i> Tests exécutés
+                        <i class="fas fa-vial"></i> {{ _('Tests exécutés') }}
                     </span>
                     <span id="liveIndicator" style="display: none;">
                         <span class="live-indicator"></span>
-                        <small class="text-muted">En cours...</small>
+                        <small class="text-muted">{{ _('En cours...') }}</small>
                     </span>
                 </div>
                 <div class="card-body">
                     <div id="testsLoading" class="text-center">
                         <div class="spinner-border text-primary" role="status">
-                            <span class="visually-hidden">Chargement...</span>
+                            <span class="visually-hidden">{{ _('Chargement...') }}</span>
                         </div>
                     </div>
                     
@@ -180,7 +180,7 @@
                     
                     <div id="noTests" style="display: none;" class="text-center text-muted py-4">
                         <i class="fas fa-inbox fa-3x mb-3"></i>
-                        <p>Aucun test dans ce rapport</p>
+                        <p>{{ _('Aucun test dans ce rapport') }}</p>
                     </div>
                 </div>
             </div>
@@ -242,7 +242,7 @@ function initWebSocket() {
             document.getElementById('liveIndicator').style.display = 'none';
             updateRapportStatus(data.status);
             updateProgress(100);
-            Notification.success('Exécution de la campagne terminée');
+            Notification.success("{{ _('Exécution de la campagne terminée') }}");
             
             // Recharger les détails du rapport pour s'assurer de la synchronisation
             loadRapportDetails();
@@ -254,7 +254,7 @@ function initWebSocket() {
             console.error('Erreur campagne:', data.error);
             isLive = false;
             document.getElementById('liveIndicator').style.display = 'none';
-            Notification.error('Erreur lors de l\'exécution de la campagne');
+            Notification.error("{{ _('Erreur lors de l\'exécution de la campagne') }}");
         }
     });
     
@@ -293,7 +293,7 @@ async function loadRapportDetails() {
         
     } catch (error) {
         console.error('Erreur lors du chargement du rapport:', error);
-        Notification.error('Erreur lors du chargement du rapport');
+        Notification.error("{{ _('Erreur lors du chargement du rapport') }}");
     }
 }
 
@@ -311,7 +311,7 @@ function loadTests(tests) {
     const accordion = document.getElementById('testsAccordion');
     accordion.innerHTML = tests.map((test, index) => {
         const status = test.status || 'pending';
-        const logs = test.logs || 'Aucun log disponible';
+        const logs = test.logs || "{{ _('Aucun log disponible') }}";
         const testId = test.testId || test.id || `test-${index + 1}`;
         
         let statusIcon = '';
@@ -322,27 +322,27 @@ function loadTests(tests) {
             case 'pending':
                 statusIcon = 'fa-clock';
                 statusClass = 'test-status-pending';
-                statusText = 'En attente';
+                statusText = "{{ _('En attente') }}";
                 break;
             case 'running':
                 statusIcon = 'fa-spinner fa-spin';
                 statusClass = 'test-status-running';
-                statusText = 'En cours';
+                statusText = "{{ _('En cours') }}";
                 break;
             case 'passed':
                 statusIcon = 'fa-check-circle';
                 statusClass = 'test-status-passed';
-                statusText = 'Réussi';
+                statusText = "{{ _('Réussi') }}";
                 break;
             case 'failed':
                 statusIcon = 'fa-times-circle';
                 statusClass = 'test-status-failed';
-                statusText = 'Échoué';
+                statusText = "{{ _('Échoué') }}";
                 break;
             case 'skipped':
                 statusIcon = 'fa-forward';
                 statusClass = 'test-status-skipped';
-                statusText = 'Ignoré';
+                statusText = "{{ _('Ignoré') }}";
                 break;
         }
         
@@ -371,9 +371,9 @@ function loadTests(tests) {
                      data-bs-parent="#testsAccordion">
                     <div class="accordion-body">
                         <div class="mb-3">
-                            <strong>Temps d'exécution:</strong> ${executionTime}
+                            <strong>{{ _("Temps d'exécution:") }}</strong> ${executionTime}
                         </div>
-                        <h6>Logs d'exécution:</h6>
+                        <h6>{{ _("Logs d'exécution:") }}</h6>
                         <div class="test-log" id="logs-${testId}">${escapeHtml(logs)}</div>
                     </div>
                 </div>
@@ -396,27 +396,27 @@ function updateTestStatus(testId, status, logs) {
         case 'pending':
             statusIcon = 'fa-clock';
             statusClass = 'test-status-pending';
-            statusText = 'En attente';
+            statusText = "{{ _('En attente') }}";
             break;
         case 'running':
             statusIcon = 'fa-spinner fa-spin';
             statusClass = 'test-status-running';
-            statusText = 'En cours';
+            statusText = "{{ _('En cours') }}";
             break;
         case 'passed':
             statusIcon = 'fa-check-circle';
             statusClass = 'test-status-passed';
-            statusText = 'Réussi';
+            statusText = "{{ _('Réussi') }}";
             break;
         case 'failed':
             statusIcon = 'fa-times-circle';
             statusClass = 'test-status-failed';
-            statusText = 'Échoué';
+            statusText = "{{ _('Échoué') }}";
             break;
         case 'skipped':
             statusIcon = 'fa-forward';
             statusClass = 'test-status-skipped';
-            statusText = 'Ignoré';
+            statusText = "{{ _('Ignoré') }}";
             break;
     }
     
@@ -467,19 +467,19 @@ function updateRapportStatus(status) {
     switch(status) {
         case 'pending':
             statusBadge = 'bg-secondary';
-            statusText = 'En attente';
+            statusText = "{{ _('En attente') }}";
             break;
         case 'running':
             statusBadge = 'bg-primary';
-            statusText = 'En cours';
+            statusText = "{{ _('En cours') }}";
             break;
         case 'completed':
             statusBadge = 'bg-success';
-            statusText = 'Terminé';
+            statusText = "{{ _('Terminé') }}";
             break;
         case 'failed':
             statusBadge = 'bg-danger';
-            statusText = 'Échoué';
+            statusText = "{{ _('Échoué') }}";
             break;
     }
     

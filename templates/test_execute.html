@@ -1,16 +1,16 @@
 {% extends "base.html" %}
 
-{% block title %}Exécution du test - {{ app_name }}{% endblock %}
+{% block title %}{{ _('Exécution du test') }} - {{ app_name }}{% endblock %}
 
 {% block content %}
 <div class="container mt-4">
     <div class="row mb-4">
         <div class="col-md-8">
-            <h1><i class="fas fa-play-circle"></i> Exécution du test</h1>
+            <h1><i class="fas fa-play-circle"></i> {{ _('Exécution du test') }}</h1>
         </div>
         <div class="col-md-4 text-end">
             <a href="#" id="btnRetour" class="btn btn-secondary">
-                <i class="fas fa-arrow-left"></i> Retour
+                <i class="fas fa-arrow-left"></i> {{ _('Retour') }}
             </a>
         </div>
     </div>
@@ -20,23 +20,23 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    <i class="fas fa-info-circle"></i> Informations du test
+                    <i class="fas fa-info-circle"></i> {{ _('Informations du test') }}
                 </div>
                 <div class="card-body">
                     <div id="testLoading" class="text-center">
                         <div class="spinner-border text-primary" role="status">
-                            <span class="visually-hidden">Chargement...</span>
+                            <span class="visually-hidden">{{ _('Chargement...') }}</span>
                         </div>
                     </div>
                     <div id="testInfo" style="display: none;">
                         <div class="row">
                             <div class="col-md-6">
-                                <p><strong>Nom :</strong> <span id="testName">-</span></p>
-                                <p><strong>Description :</strong> <span id="testDescription">-</span></p>
+                                <p><strong>{{ _('Nom :') }}</strong> <span id="testName">-</span></p>
+                                <p><strong>{{ _('Description :') }}</strong> <span id="testDescription">-</span></p>
                             </div>
                             <div class="col-md-6">
-                                <p><strong>Nombre d'actions :</strong> <span id="testActionsCount">-</span></p>
-                                <p><strong>Variables du test :</strong> <span id="testVariables">-</span></p>
+                                <p><strong>{{ _("Nombre d'actions :") }}</strong> <span id="testActionsCount">-</span></p>
+                                <p><strong>{{ _('Variables du test :') }}</strong> <span id="testVariables">-</span></p>
                             </div>
                         </div>
                     </div>
@@ -50,19 +50,19 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    <i class="fas fa-cog"></i> Configuration d'exécution
+                    <i class="fas fa-cog"></i> {{ _("Configuration d'exécution") }}
                 </div>
                 <div class="card-body">
                     <div class="row align-items-end">
                         <div class="col-md-6">
-                            <label for="selectFiliere" class="form-label">Environnement :</label>
+                            <label for="selectFiliere" class="form-label">{{ _('Environnement :') }}</label>
                             <select id="selectFiliere" class="form-select">
-                                <option value="">Chargement...</option>
+                                <option value="">{{ _('Chargement...') }}</option>
                             </select>
                         </div>
                         <div class="col-md-6">
                             <button id="btnExecute" class="btn btn-success" disabled>
-                                <i class="fas fa-play"></i> Lancer le test
+                                <i class="fas fa-play"></i> {{ _('Lancer le test') }}
                             </button>
                         </div>
                     </div>
@@ -76,19 +76,19 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    <i class="fas fa-chart-line"></i> Statut d'exécution
+                    <i class="fas fa-chart-line"></i> {{ _("Statut d'exécution") }}
                 </div>
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-12 text-center">
                             <h4>
                                 <span id="statusBadge" class="badge bg-secondary">
-                                    <i class="fas fa-clock"></i> En attente
+                                    <i class="fas fa-clock"></i> {{ _('En attente') }}
                                 </span>
                             </h4>
                             <div id="reExecuteSection" style="display: none; margin-top: 20px;">
                                 <button id="btnReExecute" class="btn btn-primary btn-lg">
-                                    <i class="fas fa-redo"></i> Re-exécuter le test
+                                    <i class="fas fa-redo"></i> {{ _('Re-exécuter le test') }}
                                 </button>
                             </div>
                         </div>
@@ -103,9 +103,9 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
-                    <span><i class="fas fa-file-alt"></i> Logs d'exécution</span>
+                    <span><i class="fas fa-file-alt"></i> {{ _("Logs d'exécution") }}</span>
                     <button id="btnClearLogs" class="btn btn-sm btn-outline-secondary">
-                        <i class="fas fa-eraser"></i> Effacer
+                        <i class="fas fa-eraser"></i> {{ _('Effacer') }}
                     </button>
                 </div>
                 <div class="card-body">
@@ -126,8 +126,8 @@
         try {
             testData = await API.get(`/api/tests/${testId}`);
             
-            document.getElementById('testName').textContent = testData.name || 'Sans nom';
-            document.getElementById('testDescription').textContent = testData.description || 'Aucune description';
+            document.getElementById('testName').textContent = testData.name || "{{ _('Sans nom') }}";
+            document.getElementById('testDescription').textContent = testData.description || "{{ _('Aucune description') }}";
             document.getElementById('testActionsCount').textContent = testData.actions ? testData.actions.length : 0;
             
             // Afficher les variables du test
@@ -135,7 +135,7 @@
                 const varsHtml = testData.variables.map(v => `<span class="badge bg-success me-1">${v}</span>`).join('');
                 document.getElementById('testVariables').innerHTML = varsHtml;
             } else {
-                document.getElementById('testVariables').textContent = 'Aucune';
+                document.getElementById('testVariables').textContent = "{{ _('Aucune') }}";
             }
             
             // Mettre à jour le bouton retour
@@ -150,7 +150,7 @@
             
         } catch (error) {
             console.error('Erreur:', error);
-            Notification.error('Erreur lors du chargement du test');
+            Notification.error("{{ _('Erreur lors du chargement du test') }}");
         }
     }
     
@@ -160,7 +160,7 @@
             const filieres = await API.get('/api/tests/filieres');
             const select = document.getElementById('selectFiliere');
             
-            select.innerHTML = '<option value="">Sélectionnez un environnement</option>';
+            select.innerHTML = '<option value="">{{ _("Sélectionnez un environnement") }}</option>';
             
             filieres.forEach(filiere => {
                 const option = document.createElement('option');
@@ -176,7 +176,7 @@
             
         } catch (error) {
             console.error('Erreur:', error);
-            Notification.error('Erreur lors du chargement des environnements');
+            Notification.error("{{ _('Erreur lors du chargement des environnements') }}");
         }
     }
     
@@ -198,7 +198,7 @@
         
         socket.on('test_started', function(data) {
             console.log('Test démarré:', data);
-            updateStatus('running', 'En cours');
+            updateStatus('running', "{{ _('En cours') }}");
             
             // Désactiver les contrôles
             document.getElementById('executionControls').style.display = 'none';
@@ -214,7 +214,7 @@
         
         socket.on('test_completed', function(data) {
             console.log('Test terminé:', data);
-            updateStatus(data.status, data.status === 'passed' ? 'Réussi' : 'Échoué');
+            updateStatus(data.status, data.status === 'passed' ? "{{ _('Réussi') }}" : "{{ _('Échoué') }}");
             
             // Afficher le bouton de re-exécution
             document.getElementById('reExecuteSection').style.display = 'block';
@@ -261,12 +261,12 @@
         const filiere = document.getElementById('selectFiliere').value;
         
         if (!filiere) {
-            Notification.error('Veuillez sélectionner un environnement');
+            Notification.error("{{ _('Veuillez sélectionner un environnement') }}");
             return;
         }
         
         try {
-            updateStatus('pending', 'Lancement...');
+            updateStatus('pending', "{{ _('Lancement...') }}");
             document.getElementById('executionStatus').style.display = 'block';
             
             const result = await API.post(`/api/tests/${testId}/execute`, { filiere });
@@ -274,8 +274,8 @@
             
         } catch (error) {
             console.error('Erreur:', error);
-            Notification.error('Erreur lors du lancement du test: ' + error.message);
-            updateStatus('failed', 'Erreur');
+            Notification.error("{{ _('Erreur lors du lancement du test: ') }}" + error.message);
+            updateStatus('failed', "{{ _('Erreur') }}");
         }
     }
     
@@ -298,7 +298,7 @@
         document.getElementById('btnExecute').disabled = true;
         
         // Notification
-        Notification.info('Sélectionnez un environnement pour relancer le test');
+        Notification.info("{{ _('Sélectionnez un environnement pour relancer le test') }}");
     }
     
     // Initialisation au chargement

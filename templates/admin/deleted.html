@@ -1,13 +1,13 @@
 {% extends "base.html" %}
 
-{% block title %}Éléments supprimés - {{ app_name }}{% endblock %}
+{% block title %}{{ _('Éléments supprimés') }} - {{ app_name }}{% endblock %}
 
 {% block content %}
 <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2><i class="fas fa-trash-restore"></i> Gestion des éléments supprimés</h2>
+        <h2><i class="fas fa-trash-restore"></i> {{ _('Gestion des éléments supprimés') }}</h2>
         <a href="{{ url_for('web.dashboard') }}" class="btn btn-secondary">
-            <i class="fas fa-arrow-left"></i> Retour
+            <i class="fas fa-arrow-left"></i> {{ _('Retour') }}
         </a>
     </div>
 
@@ -15,17 +15,17 @@
     <ul class="nav nav-tabs" id="deletedTabs" role="tablist">
         <li class="nav-item" role="presentation">
             <button class="nav-link active" id="tests-tab" data-bs-toggle="tab" data-bs-target="#tests" type="button" role="tab">
-                <i class="fas fa-vial"></i> Tests (<span id="testsCount">0</span>)
+                <i class="fas fa-vial"></i> {{ _('Tests') }} (<span id="testsCount">0</span>)
             </button>
         </li>
         <li class="nav-item" role="presentation">
             <button class="nav-link" id="campains-tab" data-bs-toggle="tab" data-bs-target="#campains" type="button" role="tab">
-                <i class="fas fa-flask"></i> Campagnes (<span id="campainsCount">0</span>)
+                <i class="fas fa-flask"></i> {{ _('Campagnes') }} (<span id="campainsCount">0</span>)
             </button>
         </li>
         <li class="nav-item" role="presentation">
             <button class="nav-link" id="rapports-tab" data-bs-toggle="tab" data-bs-target="#rapports" type="button" role="tab">
-                <i class="fas fa-file-alt"></i> Rapports (<span id="rapportsCount">0</span>)
+                <i class="fas fa-file-alt"></i> {{ _('Rapports') }} (<span id="rapportsCount">0</span>)
             </button>
         </li>
     </ul>
@@ -35,19 +35,19 @@
         <div class="tab-pane fade show active" id="tests" role="tabpanel">
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">Tests supprimés</h5>
+                    <h5 class="mb-0">{{ _('Tests supprimés') }}</h5>
                     <div>
                         <button class="btn btn-sm btn-success me-2" onclick="restoreSelected('test')" id="restoreTestsBtn" disabled>
-                            <i class="fas fa-undo"></i> Restaurer sélection
+                            <i class="fas fa-undo"></i> {{ _('Restaurer sélection') }}
                         </button>
                         <button class="btn btn-sm btn-danger" onclick="deleteSelected('test')" id="deleteTestsBtn" disabled>
-                            <i class="fas fa-trash"></i> Supprimer définitivement
+                            <i class="fas fa-trash"></i> {{ _('Supprimer définitivement') }}
                         </button>
                     </div>
                 </div>
                 <div class="card-body">
                     <div id="testsContainer">
-                        <p class="text-muted text-center">Chargement...</p>
+                        <p class="text-muted text-center">{{ _('Chargement...') }}</p>
                     </div>
                 </div>
             </div>
@@ -57,19 +57,19 @@
         <div class="tab-pane fade" id="campains" role="tabpanel">
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">Campagnes supprimées</h5>
+                    <h5 class="mb-0">{{ _('Campagnes supprimées') }}</h5>
                     <div>
                         <button class="btn btn-sm btn-success me-2" onclick="restoreSelected('campain')" id="restoreCampainsBtn" disabled>
-                            <i class="fas fa-undo"></i> Restaurer sélection
+                            <i class="fas fa-undo"></i> {{ _('Restaurer sélection') }}
                         </button>
                         <button class="btn btn-sm btn-danger" onclick="deleteSelected('campain')" id="deleteCampainsBtn" disabled>
-                            <i class="fas fa-trash"></i> Supprimer définitivement
+                            <i class="fas fa-trash"></i> {{ _('Supprimer définitivement') }}
                         </button>
                     </div>
                 </div>
                 <div class="card-body">
                     <div id="campainsContainer">
-                        <p class="text-muted text-center">Chargement...</p>
+                        <p class="text-muted text-center">{{ _('Chargement...') }}</p>
                     </div>
                 </div>
             </div>
@@ -79,19 +79,19 @@
         <div class="tab-pane fade" id="rapports" role="tabpanel">
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">Rapports supprimés</h5>
+                    <h5 class="mb-0">{{ _('Rapports supprimés') }}</h5>
                     <div>
                         <button class="btn btn-sm btn-success me-2" onclick="restoreSelected('rapport')" id="restoreRapportsBtn" disabled>
-                            <i class="fas fa-undo"></i> Restaurer sélection
+                            <i class="fas fa-undo"></i> {{ _('Restaurer sélection') }}
                         </button>
                         <button class="btn btn-sm btn-danger" onclick="deleteSelected('rapport')" id="deleteRapportsBtn" disabled>
-                            <i class="fas fa-trash"></i> Supprimer définitivement
+                            <i class="fas fa-trash"></i> {{ _('Supprimer définitivement') }}
                         </button>
                     </div>
                 </div>
                 <div class="card-body">
                     <div id="rapportsContainer">
-                        <p class="text-muted text-center">Chargement...</p>
+                        <p class="text-muted text-center">{{ _('Chargement...') }}</p>
                     </div>
                 </div>
             </div>
@@ -197,18 +197,18 @@ function displayTests(tests) {
     const container = document.getElementById('testsContainer');
     
     if (tests.length === 0) {
-        container.innerHTML = '<p class="text-muted text-center">Aucun test supprimé</p>';
+        container.innerHTML = '<p class="text-muted text-center">{{ _("Aucun test supprimé") }}</p>';
         return;
     }
 
     let html = '<div class="table-responsive"><table class="table table-hover"><thead><tr>';
     html += '<th><input type="checkbox" id="selectAllTests" onchange="toggleSelectAll(\'test\')"></th>';
-    html += '<th>Nom</th><th>Description</th><th>Date de suppression</th><th>Actions</th></tr></thead><tbody>';
+    html += '<th>{{ _("Nom") }}</th><th>{{ _("Description") }}</th><th>{{ _("Date de suppression") }}</th><th>{{ _("Actions") }}</th></tr></thead><tbody>';
 
     tests.forEach(test => {
         html += `<tr>
             <td><input type="checkbox" class="item-checkbox" data-type="test" data-id="${test._id}" onchange="updateButtons()"></td>
-            <td>${test.name || 'Sans nom'}</td>
+            <td>${test.name || "{{ _('Sans nom') }}"}</td>
             <td>${test.description || '-'}</td>
             <td>${test.dateDeleted ? new Date(test.dateDeleted).toLocaleString('fr-FR') : '-'}</td>
             <td>
@@ -230,13 +230,13 @@ function displayCampains(campains) {
     const container = document.getElementById('campainsContainer');
     
     if (campains.length === 0) {
-        container.innerHTML = '<p class="text-muted text-center">Aucune campagne supprimée</p>';
+        container.innerHTML = '<p class="text-muted text-center">{{ _("Aucune campagne supprimée") }}</p>';
         return;
     }
 
     let html = '<div class="table-responsive"><table class="table table-hover"><thead><tr>';
     html += '<th><input type="checkbox" id="selectAllCampains" onchange="toggleSelectAll(\'campain\')"></th>';
-    html += '<th>Nom</th><th>Description</th><th>Date de suppression</th><th>Actions</th></tr></thead><tbody>';
+    html += '<th>{{ _("Nom") }}</th><th>{{ _("Description") }}</th><th>{{ _("Date de suppression") }}</th><th>{{ _("Actions") }}</th></tr></thead><tbody>';
 
     campains.forEach(campain => {
         html += `<tr>
@@ -263,18 +263,18 @@ function displayRapports(rapports) {
     const container = document.getElementById('rapportsContainer');
     
     if (rapports.length === 0) {
-        container.innerHTML = '<p class="text-muted text-center">Aucun rapport supprimé</p>';
+        container.innerHTML = '<p class="text-muted text-center">{{ _("Aucun rapport supprimé") }}</p>';
         return;
     }
 
     let html = '<div class="table-responsive"><table class="table table-hover"><thead><tr>';
     html += '<th><input type="checkbox" id="selectAllRapports" onchange="toggleSelectAll(\'rapport\')"></th>';
-    html += '<th>Nom</th><th>Filière</th><th>Date de suppression</th><th>Actions</th></tr></thead><tbody>';
+    html += '<th>{{ _("Nom") }}</th><th>{{ _("Filière") }}</th><th>{{ _("Date de suppression") }}</th><th>{{ _("Actions") }}</th></tr></thead><tbody>';
 
     rapports.forEach(rapport => {
         html += `<tr>
             <td><input type="checkbox" class="item-checkbox" data-type="rapport" data-id="${rapport._id}" onchange="updateButtons()"></td>
-            <td>${rapport.details || 'Sans nom'}</td>
+            <td>${rapport.details || "{{ _('Sans nom') }}"}</td>
             <td>${rapport.filiere || '-'}</td>
             <td>${rapport.dateDeleted ? new Date(rapport.dateDeleted).toLocaleString('fr-FR') : '-'}</td>
             <td>
@@ -372,7 +372,7 @@ async function confirmRestore() {
             return;
         }
         if (response.status === 403) {
-            alert('Accès refusé : vous devez être administrateur.');
+            alert("{{ _('Accès refusé : vous devez être administrateur.') }}");
             window.location.href = '/dashboard';
             return;
         }
@@ -382,15 +382,15 @@ async function confirmRestore() {
         bootstrap.Modal.getInstance(document.getElementById('confirmRestoreModal')).hide();
         
         if (data.success) {
-            alert(`${data.restored.length} élément(s) restauré(s) avec succès`);
+            alert(`${data.restored.length} {{ _('élément(s) restauré(s) avec succès') }}`);
             loadDeletedItems();
         } else {
-            alert(`Restauration partielle. ${data.errors.length} erreur(s)`);
+            alert(`{{ _('Restauration partielle.') }} ${data.errors.length} {{ _('erreur(s)') }}`);
             loadDeletedItems();
         }
     } catch (error) {
         console.error('Erreur:', error);
-        alert('Erreur lors de la restauration');
+        alert("{{ _('Erreur lors de la restauration') }}");
     }
 }
 
@@ -410,7 +410,7 @@ async function confirmDelete() {
             return;
         }
         if (response.status === 403) {
-            alert('Accès refusé : vous devez être administrateur.');
+            alert("{{ _('Accès refusé : vous devez être administrateur.') }}");
             window.location.href = '/dashboard';
             return;
         }
@@ -420,15 +420,15 @@ async function confirmDelete() {
         bootstrap.Modal.getInstance(document.getElementById('confirmDeleteModal')).hide();
         
         if (data.success) {
-            alert(`${data.deleted.length} élément(s) supprimé(s) définitivement`);
+            alert(`${data.deleted.length} {{ _('élément(s) supprimé(s) définitivement') }}`);
             loadDeletedItems();
         } else {
-            alert(`Suppression partielle. ${data.errors.length} erreur(s)`);
+            alert(`{{ _('Suppression partielle.') }} ${data.errors.length} {{ _('erreur(s)') }}`);
             loadDeletedItems();
         }
     } catch (error) {
         console.error('Erreur:', error);
-        alert('Erreur lors de la suppression');
+        alert("{{ _('Erreur lors de la suppression') }}");
     }
 }
 </script>

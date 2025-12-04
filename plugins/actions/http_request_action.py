@@ -102,7 +102,7 @@ class HTTPRequestAction(ActionBase):
             }
         ]
     
-    def execute(self, action_context):
+    def execute(self, action_context, test_variables=None):
         """
         Exécute une requête HTTP.
         

@@ -1,16 +1,16 @@
 {% extends "base.html" %}
 
-{% block title %}Gestion des variables - {{ app_name }}{% endblock %}
+{% block title %}{{ _('Gestion des variables') }} - {{ app_name }}{% endblock %}
 
 {% block content %}
 <div class="container mt-4">
     <div class="row mb-4">
         <div class="col-md-8">
-            <h1><i class="fas fa-code"></i> Gestion des variables</h1>
+            <h1><i class="fas fa-code"></i> {{ _('Gestion des variables') }}</h1>
         </div>
         <div class="col-md-4 text-end">
             <a href="{{ url_for('web.admin_variables_add') }}" class="btn btn-primary">
-                <i class="fas fa-plus"></i> Nouvelle variable
+                <i class="fas fa-plus"></i> {{ _('Nouvelle variable') }}
             </a>
         </div>
     </div>
@@ -19,10 +19,10 @@
         <div class="col-md-12">
             <div class="btn-group" role="group">
                 <button type="button" class="btn btn-outline-primary" id="btnAllVariables" onclick="loadVariables('all')">
-                    Toutes
+                    {{ _('Toutes') }}
                 </button>
                 <button type="button" class="btn btn-outline-primary active" id="btnGroupedVariables" onclick="loadVariablesByFiliere()">
-                    Par environnement
+                    {{ _('Par environnement') }}
                 </button>
             </div>
         </div>
@@ -32,13 +32,13 @@
         <div class="col-md-12">
             <div class="card">
                 <div class="card-header">
-                    <i class="fas fa-list"></i> Liste des variables
+                    <i class="fas fa-list"></i> {{ _('Liste des variables') }}
                 </div>
                 <div class="card-body">
                     <div id="variablesList">
                         <div class="text-center">
                             <div class="spinner-border text-primary" role="status">
-                                <span class="visually-hidden">Chargement...</span>
+                                <span class="visually-hidden">{{ _('Chargement...') }}</span>
                             </div>
                         </div>
                     </div>
@@ -49,6 +49,9 @@
     </div>
 </div>
 {% endblock %}
+
+
+```
 
 {% block extra_js %}
 <script>
@@ -69,12 +72,12 @@
                         <table class="table table-hover">
                             <thead>
                                 <tr>
-                                    <th>Clé</th>
-                                    <th>Valeur</th>
-                                    <th>Filière</th>
-                                    <th>Description</th>
-                                    <th>Root</th>
-                                    <th>Actions</th>
+                                    <th>{{ _('Clé') }}</th>
+                                    <th>{{ _('Valeur') }}</th>
+                                    <th>{{ _('Filière') }}</th>
+                                    <th>{{ _('Description') }}</th>
+                                    <th>{{ _('Root') }}</th>
+                                    <th>{{ _('Actions') }}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -89,7 +92,7 @@
                                         </td>
                                         <td>
                                             ${variable.isRoot ? `
-                                                <a href="/admin/variables/add?parent_key=${encodeURIComponent(variable.key)}" class="btn btn-sm btn-success" title="Créer une variable enfant">
+                                                <a href="/admin/variables/add?parent_key=${encodeURIComponent(variable.key)}" class="btn btn-sm btn-success" title="{{ _('Créer une variable enfant') }}">
                                                     <i class="fas fa-plus"></i>
                                                 </a>
                                             ` : ''}
@@ -114,14 +117,14 @@
             } else {
                 listDiv.innerHTML = `
                     <div class="alert alert-info">
-                        <i class="fas fa-info-circle"></i> Aucune variable trouvée
+                        <i class="fas fa-info-circle"></i> {{ _('Aucune variable trouvée') }}
                     </div>
                 `;
             }
         } catch (error) {
             listDiv.innerHTML = `
                 <div class="alert alert-danger">
-                    <i class="fas fa-exclamation-triangle"></i> Erreur lors du chargement des variables
+                    <i class="fas fa-exclamation-triangle"></i> {{ _('Erreur lors du chargement des variables') }}
                 </div>
             `;
         }
@@ -153,10 +156,10 @@
                             <table class="table table-sm table-hover">
                                 <thead>
                                     <tr>
-                                        <th>Clé</th>
-                                        <th>Valeur</th>
-                                        <th>Description</th>
-                                        <th>Actions</th>
+                                        <th>{{ _('Clé') }}</th>
+                                        <th>{{ _('Valeur') }}</th>
+                                        <th>{{ _('Description') }}</th>
+                                        <th>{{ _('Actions') }}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -170,7 +173,7 @@
                                             <td>${v.description || '-'}</td>
                                             <td>
                                                 ${v.isRoot ? `
-                                                    <a href="/admin/variables/add?parent_key=${encodeURIComponent(v.key)}" class="btn btn-sm btn-success" title="Créer une variable enfant">
+                                                    <a href="/admin/variables/add?parent_key=${encodeURIComponent(v.key)}" class="btn btn-sm btn-success" title="{{ _('Créer une variable enfant') }}">
                                                         <i class="fas fa-plus"></i>
                                                     </a>
                                                 ` : ''}
@@ -192,29 +195,29 @@
             
             listDiv.innerHTML = html || `
                 <div class="alert alert-info">
-                    <i class="fas fa-info-circle"></i> Aucune variable trouvée
+                    <i class="fas fa-info-circle"></i> {{ _('Aucune variable trouvée') }}
                 </div>
             `;
         } catch (error) {
             listDiv.innerHTML = `
                 <div class="alert alert-danger">
-                    <i class="fas fa-exclamation-triangle"></i> Erreur lors du chargement des variables
+                    <i class="fas fa-exclamation-triangle"></i> {{ _('Erreur lors du chargement des variables') }}
                 </div>
             `;
         }
     }
     
     async function deleteVariable(id) {
-        if (!Utils.confirmDelete('Êtes-vous sûr de vouloir supprimer cette variable ?')) {
+        if (!Utils.confirmDelete("{{ _('Êtes-vous sûr de vouloir supprimer cette variable ?') }}")) {
             return;
         }
         
         try {
             await API.delete(`/api/variables/${id}`);
-            Notification.success('Variable supprimée avec succès');
+            Notification.success("{{ _('Variable supprimée avec succès') }}");
             loadVariables();
         } catch (error) {
-            Notification.error('Erreur lors de la suppression de la variable');
+            Notification.error("{{ _('Erreur lors de la suppression de la variable') }}");
         }
     }
     

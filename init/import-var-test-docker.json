@@ -1,0 +1,176 @@
+[
+    {
+        "key": "FTP_HOST",
+        "value": "127.0.0.1",
+        "filiere": "D01",
+        "description": ""
+    },
+    {
+        "key": "FTP_USER_NAME",
+        "value": "testuser",
+        "filiere": "D01",
+        "description": ""
+    },
+    {
+        "key": "FTP_PORT",
+        "value": "21",
+        "filiere": "D01",
+        "description": ""
+    },
+    {
+        "key": "FTP_USER_PASS",
+        "value": "testpass",
+        "filiere": "D01",
+        "description": ""
+    },
+    {
+        "key": "SFTP_HOST",
+        "value": "127.0.0.1",
+        "filiere": "D01",
+        "description": ""
+    },
+    {
+        "key": "SFTP_PASSWORD",
+        "value": "testpass",
+        "filiere": "D01",
+        "description": ""
+    },
+    {
+        "key": "SFTP_PORT",
+        "value": "2222",
+        "filiere": "D01",
+        "description": ""
+    },
+    {
+        "key": "SFTP_USERNAME",
+        "value": "testuser",
+        "filiere": "D01",
+        "description": ""
+    },
+    {
+        "key": "SSH_HOST",
+        "value": "127.0.0.1",
+        "filiere": "D01",
+        "description": ""
+    },
+    {
+        "key": "SSH_PASSWORD",
+        "value": "testpass",
+        "filiere": "D01",
+        "description": ""
+    },
+    {
+        "key": "SSH_PORT",
+        "value": "2223",
+        "filiere": "D01",
+        "description": ""
+    },
+    {
+        "key": "SSH_USERNAME",
+        "value": "testuser",
+        "filiere": "D01",
+        "description": ""
+    },
+    {
+        "key": "WEBDAV_PASSWORD",
+        "value": "testpass",
+        "filiere": "D01",
+        "description": ""
+    },
+    {
+        "key": "WEBDAV_URL",
+        "value": "http://127.0.0.1:8080",
+        "filiere": "D01",
+        "description": ""
+    },
+    {
+        "key": "WEBDAV_USERNAME",
+        "value": "testuser",
+        "filiere": "D01",
+        "description": ""
+    },
+    {
+        "key": "HTTP_BASE_URL",
+        "value": "http://127.0.0.1:8082",
+        "filiere": "D01",
+        "description": "Valeur auto (fullcamp_20251118_094856)"
+    },
+    {
+        "key": "HTTP_SAMPLE_BODY",
+        "value": "{\"message\": \"ping fullcamp_20251118_094856\"}",
+        "filiere": "D01",
+        "description": "Valeur auto (fullcamp_20251118_094856)"
+    },
+    {
+        "key": "FTP_USERNAME",
+        "value": "testuser",
+        "filiere": "D01",
+        "description": "Valeur auto (fullcamp_20251118_095532)"
+    },
+    {
+        "key": "FTP_PASSWORD",
+        "value": "testpass",
+        "filiere": "D01",
+        "description": "Valeur auto (fullcamp_20251118_095532)"
+    },
+    {
+        "key": "FTP_SAMPLE_TEXT",
+        "value": "FTP payload fullcamp_20251118_095532",
+        "filiere": "D01",
+        "description": "Valeur auto (fullcamp_20251118_095532)"
+    },
+    {
+        "key": "SFTP_SAMPLE_TEXT",
+        "value": "SFTP payload fullcamp_20251118_095532",
+        "filiere": "D01",
+        "description": "Valeur auto (fullcamp_20251118_095532)"
+    },
+    {
+        "key": "SSH_COMMAND",
+        "value": "ls -1 /",
+        "filiere": "D01",
+        "description": "Valeur auto (fullcamp_20251118_095532)"
+    },
+    {
+        "key": "IO_SAMPLE_TEXT",
+        "value": "Fichier de travail généré fullcamp_20251118_095532",
+        "filiere": "D01",
+        "description": "Valeur auto (fullcamp_20251118_095532)"
+    },
+    {
+        "key": "VAR_SAMPLE_INT",
+        "value": "200",
+        "filiere": "D01",
+        "description": "Valeur auto (fullcamp_20251118_095532)"
+    },
+    {
+        "key": "VAR_SAMPLE_FLOAT",
+        "value": "42.5",
+        "filiere": "D01",
+        "description": "Valeur auto (fullcamp_20251118_095532)"
+    },
+    {
+        "key": "VAR_SAMPLE_BOOL",
+        "value": "true",
+        "filiere": "D01",
+        "description": "Valeur auto (fullcamp_20251118_095532)"
+    },
+    {
+        "key": "VAR_SAMPLE_LIST",
+        "value": "[\"admin\", \"user\", \"editor\"]",
+        "filiere": "D01",
+        "description": "Valeur auto (fullcamp_20251118_095532)"
+    },
+    {
+        "key": "VAR_SAMPLE_DICT",
+        "value": "{\"id\": 123, \"name\": \"John Doe\", \"active\": true}",
+        "filiere": "D01",
+        "description": "Valeur auto (fullcamp_20251118_095532)"
+    },
+    {
+        "key": "VAR_SAMPLE_JSON",
+        "value": "{\"status\": \"ok\", \"balance\": \"199.99\"}",
+        "filiere": "D01",
+        "description": "Valeur auto (fullcamp_20251118_095532)"
+    }
+]

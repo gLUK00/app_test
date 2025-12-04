@@ -1,5 +1,6 @@
 """Routes API pour la gestion des campagnes."""
 from flask import Blueprint, request, jsonify, send_file, current_app
+from flask_babel import gettext as _
 from werkzeug.utils import secure_filename
 from models.campain import Campain
 from utils.auth import token_required
@@ -39,7 +40,7 @@ def get_campains():
         return jsonify(result), 200
     
     except Exception as e:
-        return jsonify({'message': f'Erreur serveur: {str(e)}'}), 500
+        return jsonify({'message': _('Erreur serveur: {}').format(str(e))}), 500
 
 @campains_bp.route('', methods=['POST'])
 @token_required
@@ -66,12 +67,12 @@ def create_campain():
             print(f"Avertissement: Impossible de créer le répertoire de travail: {e}")
         
         return jsonify({
-            'message': 'Campagne créée avec succès',
+            'message': _('Campagne créée avec succès'),
             'campain_id': campain_id
         }), 201
     
     except Exception as e:
-        return jsonify({'message': f'Erreur serveur: {str(e)}'}), 500
+        return jsonify({'message': _('Erreur serveur: {}').format(str(e))}), 500
 
 @campains_bp.route('/<campain_id>', methods=['GET'])
 @token_required
@@ -81,12 +82,12 @@ def get_campain(campain_id):
         campain = Campain.find_by_id(campain_id)
         
         if not campain:
-            return jsonify({'message': 'Campagne non trouvée'}), 404
+            return jsonify({'message': _('Campagne non trouvée')}), 404
         
         return jsonify(campain), 200
     
     except Exception as e:
-        return jsonify({'message': f'Erreur serveur: {str(e)}'}), 500
+        return jsonify({'message': _('Erreur serveur: {}').format(str(e))}), 500
 
 @campains_bp.route('/<campain_id>', methods=['PUT'])
 @token_required
@@ -97,7 +98,7 @@ def update_campain(campain_id):
         
         Campain.update(campain_id, data)
         
-        return jsonify({'message': 'Campagne mise à jour avec succès'}), 200
+        return jsonify({'message': _('Campagne mise à jour avec succès')}), 200
     
     except Exception as e:
         return jsonify({'message': f'Erreur serveur: {str(e)}'}), 500
@@ -240,6 +241,49 @@ def upload_file(campain_id):
             'message': 'Fichier uploadé avec succès',
             'file': file_info
         }), 201
+    
+    except Exception as e:
+        return jsonify({'message': f'Erreur serveur: {str(e)}'}), 500
+
+
+@campains_bp.route('/<campain_id>/files/<filename>', methods=['PUT'])
+@token_required
+def rename_file(campain_id, filename):
+    """Renomme un fichier du répertoire de travail de la campagne."""
+    try:
+        # Vérifier que la campagne existe
+        campain = Campain.find_by_id(campain_id)
+        if not campain:
+            return jsonify({'message': 'Campagne non trouvée'}), 404
+        
+        data = request.get_json()
+        new_name = data.get('new_name')
+        
+        if not new_name:
+            return jsonify({'message': 'Nouveau nom manquant'}), 400
+            
+        new_filename = secure_filename(new_name)
+        if not new_filename:
+            return jsonify({'message': 'Nom de fichier invalide'}), 400
+            
+        # Récupérer le répertoire files de la campagne
+        campain_dir = Path(get_campain_workdir(campain_id)) / "files"
+        old_file_path = campain_dir / secure_filename(filename)
+        new_file_path = campain_dir / new_filename
+        
+        if not old_file_path.exists() or not old_file_path.is_file():
+            return jsonify({'message': 'Fichier source non trouvé'}), 404
+            
+        if new_file_path.exists() and new_filename != secure_filename(filename):
+            return jsonify({'message': 'Un fichier avec ce nom existe déjà'}), 409
+            
+        # Renommer le fichier
+        os.rename(str(old_file_path), str(new_file_path))
+        
+        # Émettre un événement WebSocket
+        emit_files_updated(campain_id)
+        
+        return jsonify({'message': 'Fichier renommé avec succès', 'new_name': new_filename}), 200
     
     except Exception as e:
         return jsonify({'message': f'Erreur serveur: {str(e)}'}), 500

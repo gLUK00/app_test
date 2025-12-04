@@ -1,5 +1,6 @@
 """Utilitaires pour la validation des données."""
 import re
+from flask_babel import gettext as _
 from utils.db import load_config
 
 def validate_email(email):
@@ -13,18 +14,18 @@ def validate_password(password):
     min_length = config['security']['password_min_length']
     
     if len(password) < min_length:
-        return False, f"Le mot de passe doit contenir au moins {min_length} caractères"
+        return False, _("Le mot de passe doit contenir au moins {} caractères").format(min_length)
     
-    return True, "Mot de passe valide"
+    return True, _("Mot de passe valide")
 
 def validate_required_fields(data, required_fields):
     """Vérifie que tous les champs requis sont présents dans les données."""
     missing_fields = [field for field in required_fields if field not in data or not data[field]]
     
     if missing_fields:
-        return False, f"Champs manquants : {', '.join(missing_fields)}"
+        return False, _("Champs manquants : {}").format(', '.join(missing_fields))
     
-    return True, "Tous les champs requis sont présents"
+    return True, _("Tous les champs requis sont présents")
 
 def sanitize_string(value):
     """Nettoie une chaîne de caractères pour éviter les injections."""

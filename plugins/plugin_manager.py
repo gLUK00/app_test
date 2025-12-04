@@ -128,28 +128,6 @@ class PluginManager:
         """
         return self.plugins
     
-    def get_errors(self):
-        """
-        Retourne la liste des erreurs de chargement de plugins.
-        
-        Returns:
-            list: Liste des erreurs avec détails
-        """
-        return self.errors
-    
-    def has_errors(self):
-        """
-        Vérifie s'il y a des erreurs de chargement.
-        
-        Returns:
-            bool: True si des erreurs existent
-        """
-        return len(self.errors) > 0
-    
-    def clear_errors(self):
-        """Efface la liste des erreurs."""
-        self.errors.clear()
-    
     def reload_plugins(self):
         """Recharge tous les plugins (utile pour le développement)."""
         self.plugins.clear()

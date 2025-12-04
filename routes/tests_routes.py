@@ -1,5 +1,6 @@
 """Routes API pour la gestion des tests."""
 from flask import Blueprint, request, jsonify, current_app
+from flask_babel import _
 from models.test import Test
 from models.variable import Variable
 from utils.auth import token_required
@@ -34,7 +35,7 @@ def get_tests():
         return jsonify(result), 200
     
     except Exception as e:
-        return jsonify({'message': f'Erreur serveur: {str(e)}'}), 500
+        return jsonify({'message': _('Erreur serveur: %(error)s', error=str(e))}), 500
 
 @tests_bp.route('', methods=['POST'])
 @token_required
@@ -58,12 +59,12 @@ def create_test():
         )
         
         return jsonify({
-            'message': 'Test créé avec succès',
+            'message': _('Test créé avec succès'),
             'test_id': test_id
         }), 201
     
     except Exception as e:
-        return jsonify({'message': f'Erreur serveur: {str(e)}'}), 500
+        return jsonify({'message': _('Erreur serveur: %(error)s', error=str(e))}), 500
 
 @tests_bp.route('/<test_id>', methods=['GET'])
 @token_required
@@ -73,12 +74,12 @@ def get_test(test_id):
         test = Test.find_by_id(test_id)
         
         if not test:
-            return jsonify({'message': 'Test non trouvé'}), 404
+            return jsonify({'message': _('Test non trouvé')}), 404
         
         return jsonify(test), 200
     
     except Exception as e:
-        return jsonify({'message': f'Erreur serveur: {str(e)}'}), 500
+        return jsonify({'message': _('Erreur serveur: %(error)s', error=str(e))}), 500
 
 @tests_bp.route('/<test_id>', methods=['PUT'])
 @token_required
@@ -96,11 +97,11 @@ def update_test(test_id):
         
         Test.update(test_id, data)
         
-        return jsonify({'message': 'Test mis à jour avec succès'}), 200
+        return jsonify({'message': _('Test mis à jour avec succès')}), 200
     
     except Exception as e:
         print(f"[ERROR] Erreur lors de la mise à jour: {str(e)}")
-        return jsonify({'message': f'Erreur serveur: {str(e)}'}), 500
+        return jsonify({'message': _('Erreur serveur: %(error)s', error=str(e))}), 500
 
 @tests_bp.route('/<test_id>', methods=['DELETE'])
 @token_required
@@ -110,12 +111,12 @@ def delete_test(test_id):
         success = Test.delete(test_id)
         
         if not success:
-            return jsonify({'message': 'Test non trouvé'}), 404
+            return jsonify({'message': _('Test non trouvé')}), 404
         
-        return jsonify({'message': 'Test supprimé avec succès'}), 200
+        return jsonify({'message': _('Test supprimé avec succès')}), 200
     
     except Exception as e:
-        return jsonify({'message': f'Erreur serveur: {str(e)}'}), 500
+        return jsonify({'message': _('Erreur serveur: %(error)s', error=str(e))}), 500
 
 @tests_bp.route('/<test_id>/actions', methods=['POST'])
 @token_required
@@ -131,10 +132,10 @@ def add_action(test_id):
         
         Test.add_action(test_id, data)
         
-        return jsonify({'message': 'Action ajoutée avec succès'}), 200
+        return jsonify({'message': _('Action ajoutée avec succès')}), 200
     
     except Exception as e:
-        return jsonify({'message': f'Erreur serveur: {str(e)}'}), 500
+        return jsonify({'message': _('Erreur serveur: %(error)s', error=str(e))}), 500
 
 @tests_bp.route('/filieres', methods=['GET'])
 @token_required
@@ -145,7 +146,7 @@ def get_filieres():
         return jsonify(filieres), 200
     
     except Exception as e:
-        return jsonify({'message': f'Erreur serveur: {str(e)}'}), 500
+        return jsonify({'message': _('Erreur serveur: %(error)s', error=str(e))}), 500
 
 @tests_bp.route('/<test_id>/execute', methods=['POST'])
 @token_required
@@ -164,23 +165,23 @@ def execute_test(test_id):
         # Vérifier que le test existe
         test = Test.find_by_id(test_id)
         if not test:
-            return jsonify({'message': 'Test non trouvé'}), 404
+            return jsonify({'message': _('Test non trouvé')}), 404
         
         # Récupérer le test_executor depuis l'app
         test_executor = current_app.config.get('TEST_EXECUTOR')
         if not test_executor:
-            return jsonify({'message': 'Exécuteur de test non disponible'}), 500
+            return jsonify({'message': _('Exécuteur de test non disponible')}), 500
         
         # Lancer l'exécution
         test_executor.execute_test(test_id, filiere)
         
         return jsonify({
-            'message': 'Exécution du test lancée',
+            'message': _('Exécution du test lancée'),
             'test_id': test_id
         }), 200
     
     except Exception as e:
-        return jsonify({'message': f'Erreur serveur: {str(e)}'}), 500
+        return jsonify({'message': _('Erreur serveur: %(error)s', error=str(e))}), 500
 
 @tests_bp.route('/<test_id>/move-up', methods=['POST'])
 @token_required
@@ -190,12 +191,12 @@ def move_test_up(test_id):
         success = Test.move_up(test_id)
         
         if not success:
-            return jsonify({'message': 'Impossible de déplacer le test (déjà en première position ou test introuvable)'}), 400
+            return jsonify({'message': _('Impossible de déplacer le test (déjà en première position ou test introuvable)')}), 400
         
-        return jsonify({'message': 'Test déplacé vers le haut avec succès'}), 200
+        return jsonify({'message': _('Test déplacé vers le haut avec succès')}), 200
     
     except Exception as e:
-        return jsonify({'message': f'Erreur serveur: {str(e)}'}), 500
+        return jsonify({'message': _('Erreur serveur: %(error)s', error=str(e))}), 500
 
 @tests_bp.route('/<test_id>/move-down', methods=['POST'])
 @token_required
@@ -205,9 +206,9 @@ def move_test_down(test_id):
         success = Test.move_down(test_id)
         
         if not success:
-            return jsonify({'message': 'Impossible de déplacer le test (déjà en dernière position ou test introuvable)'}), 400
+            return jsonify({'message': _('Impossible de déplacer le test (déjà en dernière position ou test introuvable)')}), 400
         
-        return jsonify({'message': 'Test déplacé vers le bas avec succès'}), 200
+        return jsonify({'message': _('Test déplacé vers le bas avec succès')}), 200
     
     except Exception as e:
-        return jsonify({'message': f'Erreur serveur: {str(e)}'}), 500
+        return jsonify({'message': _('Erreur serveur: %(error)s', error=str(e))}), 500

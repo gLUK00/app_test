@@ -181,6 +181,29 @@ class TestActionsManager {
             input = document.createElement('textarea');
             input.className = 'form-control';
             input.rows = 3;
+        } else if (field.type === 'checkbox') {
+            // Pour les checkbox, on refait la structure pour correspondre à Bootstrap
+            divWrapper.innerHTML = ''; // Supprimer le label ajouté précédemment
+            
+            const formCheck = document.createElement('div');
+            formCheck.className = 'form-check';
+            
+            input = document.createElement('input');
+            input.type = 'checkbox';
+            input.className = 'form-check-input';
+            input.id = field.name;
+            input.name = field.name;
+            
+            const checkLabel = document.createElement('label');
+            checkLabel.className = 'form-check-label';
+            checkLabel.setAttribute('for', field.name);
+            checkLabel.textContent = field.label + (field.required ? ' *' : '');
+            
+            formCheck.appendChild(input);
+            formCheck.appendChild(checkLabel);
+            divWrapper.appendChild(formCheck);
+            
+            return divWrapper;
         } else if (field.type === 'number') {
             input = document.createElement('input');
             input.type = 'number';
@@ -234,11 +257,13 @@ class TestActionsManager {
             dynamicFieldsContainer.appendChild(fieldElement);
             
             // Remplir avec les valeurs existantes si on édite
-            if (currentParameters && currentParameters[field.name]) {
+            if (currentParameters && currentParameters[field.name] !== undefined) {
                 const input = fieldElement.querySelector(`#${field.name}`);
                 if (input) {
                     const value = currentParameters[field.name];
-                    if (typeof value === 'object') {
+                    if (input.type === 'checkbox') {
+                        input.checked = value === true || value === 'true' || value === 1 || value === '1';
+                    } else if (typeof value === 'object') {
                         input.value = JSON.stringify(value, null, 2);
                     } else {
                         input.value = value;
@@ -565,19 +590,23 @@ class TestActionsManager {
         }
         
         inputs.forEach(input => {
-            const value = input.value.trim();
-            if (value) {
-                // Essayer de parser le JSON si le champ contient du JSON
-                if ((input.name === 'headers' || input.name === 'body') && value) {
-                    try {
-                        actionData[input.name] = JSON.parse(value);
-                    } catch (error) {
+            if (input.type === 'checkbox') {
+                actionData[input.name] = input.checked;
+            } else {
+                const value = input.value.trim();
+                if (value) {
+                    // Essayer de parser le JSON si le champ contient du JSON
+                    if ((input.name === 'headers' || input.name === 'body') && value) {
+                        try {
+                            actionData[input.name] = JSON.parse(value);
+                        } catch (error) {
+                            actionData[input.name] = value;
+                        }
+                    } else if (input.type === 'number') {
+                        actionData[input.name] = parseInt(value);
+                    } else {
                         actionData[input.name] = value;
                     }
-                } else if (input.type === 'number') {
-                    actionData[input.name] = parseInt(value);
-                } else {
-                    actionData[input.name] = value;
                 }
             }
         });

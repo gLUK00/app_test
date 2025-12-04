@@ -84,7 +84,7 @@ class WebdavAction(ActionBase):
                 "name": "targFile",
                 "type": "string",
                 "label": "Fichier cible/chemin",
-                "placeholder": "pour move, download, upload",
+                "placeholder": "pour move, download, upload, mkdir",
                 "required": False
             }
         ]
@@ -98,7 +98,7 @@ class WebdavAction(ActionBase):
             }
         ]
     
-    def execute(self, action_context):
+    def execute(self, action_context, test_variables=None):
         """
         Exécute une opération WebDAV.
         
@@ -133,8 +133,8 @@ class WebdavAction(ActionBase):
                 return self.get_result( True, { "webdav_response": listing })
             if action == "MKDIR":
                 # Créer récursivement les répertoires si nécessaire
-                self._mkdir_recursive(client, src_file)
-                self.add_trace(f"Répertoire créé: {src_file}")
+                self._mkdir_recursive(client, targ_file)
+                self.add_trace(f"Répertoire créé: {targ_file}")
                 return self.get_result( True, { "webdav_response": True } )
             if action == "REMOVE":
                 # Utiliser la méthode delete avec récursivité

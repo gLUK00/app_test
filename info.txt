@@ -1,3 +1,125 @@
+
+
+
+
+
+
+--------------------------------------------
+
+--------------------------------------------
+
+--------------------------------------------
+
+effectuer un analyse de la partie front et back (au niveau des chaines) et mettre en place le mecanisme d'internationalisation (i18n) avec Flask-Babel.
+
+--------------------------------------------
+
+Contexte :
+Je travaille sur une application Flask avec MongoDB (PyMongo) et Jinja2. Je souhaite mettre en place un système d'internationalisation (i18n) complet.
+
+Objectif :
+Rendre l'application multi-langue (Anglais par défaut, Français, Espagnol, Chinois, Allemand, Japonais) en utilisant Flask-Babel.
+
+Tâches à réaliser :
+
+  1 Configuration et Dépendances :
+
+    Ajouter Flask-Babel au fichier requirements.txt.
+    Configurer l'extension Babel dans app.py.
+    Créer un fichier de configuration babel.cfg pour l'extraction des chaînes de caractères (fichiers .py et templates .html).
+
+  2 Modèle de Données (MongoDB) :
+
+    Modifier le modèle User dans user.py pour ajouter un champ language (string, défaut : 'en').
+    Mettre à jour la méthode de création d'utilisateur si nécessaire.
+
+  3 Logique de Sélection de la Langue :
+
+    Implémenter la fonction sélecteur de locale (@babel.localeselector) dans app.py avec la priorité suivante :
+      Langue stockée dans le profil utilisateur (si connecté).
+      Langue stockée en session.
+      Langue du navigateur (request.accept_languages).
+      Français par défaut.
+
+  4 Routes et Contrôleurs :
+
+    Créer une route /set_language/<lang_code> qui :
+      Vérifie si la langue est supportée.
+      Met à jour la session.
+      Met à jour le profil utilisateur en base de données si l'utilisateur est connecté.
+      Redirige l'utilisateur vers la page précédente.
+
+  5 Interface Utilisateur (Frontend) :
+
+    Modifier base.html pour ajouter un sélecteur de langue dans la barre de navigation (navbar).
+    Ce sélecteur doit être un menu déroulant affichant la langue active et permettant de changer vers les autres langues supportées (EN, FR, ES, ZH, DE, JA).
+
+  6 Processus de Traduction :
+
+    Fournir les commandes terminal pour :
+      Extraire les chaînes de caractères (pybabel extract).
+      Initialiser les catalogues pour chaque langue (pybabel init).
+      Compiler les traductions (pybabel compile).
+    Donner un exemple de comment marquer une chaîne à traduire dans un fichier Python (ex: _('Texte')) et dans un template Jinja2 (ex: {{ _('Texte') }}).
+
+Contraintes :
+
+  Ne pas casser l'existant.
+  Assurer que la langue par défaut reste l'anglais si aucune préférence n'est détectée.
+
+----------------------
+
+aide moi à créer un prompt pour mettre l'application en multi-langue
+
+----------------------
+
+dans le menu Administration, supprime l'entrée "Plugins"
+- étudier les impacts sur l'existant pour s'assurer que tout fonctionne correctement sans cette entrée
+- supprimer les dépendances orfelines liées à la suppression de cette entrée
+
+----------------------
+
+Mettre en place un mécanisme d'initialisation de variables au démarrage de l'application via un fichier JSON.
+
+1. Logique d'import (utils/initialization.py) :
+   - ce fichier prend en paramètre le chemin du fichier JSON à lire
+   - Le format attendu est une liste d'objets : `[{"key": "...", "value": "...", "filiere": "...", "description": "..."}]`.
+
+2. Règles de gestion (Modèle Variable) :
+  - Pour chaque variable du fichier JSON :
+    - Chercher si une variable avec cette `key` existe déjà en base (collection `variables`).
+      - Si elle n'existe pas : Une varialbe Root sera créée dans la base de données avec les champs `key`, `value` à vide, `filiere` à vide, `description` de la variable et `isRoot` à True.
+      - Si elle existe dans la filiere : Mettre à jour ses champs `value`, `filiere` et `description`.
+      - Si elle n'existe pas dans la filiere mais existe en Root : Créer une nouvelle variable dans la filiere avec les champs `key`, `value`, `filiere`, `description` et `isRoot` à False.
+   - Gérer les erreurs proprement (fichier introuvable, JSON invalide) avec des logs, sans faire planter le démarrage de l'application.
+
+3. Test :
+   - Créer un fichier d'exemple `init/variables.json.example`.
+
+
+----------------------
+
+
+Ajouter une fonctionnalité de renommage de fichier dans le détail d'une campagne.
+
+Frontend (templates/campain_details.html) :
+- Ajouter un bouton "Renommer" (icône crayon) à côté du bouton "Supprimer" pour chaque fichier dans la liste.
+- Au clic, ouvrir une modale Bootstrap demandant le nouveau nom du fichier (pré-rempli avec le nom actuel).
+- Gérer la validation du formulaire de la modale.
+
+Backend (routes/campains_routes.py) :
+- Créer une route API : PUT /api/campains/:id/files/:filename
+- Le body de la requête contiendra le nouveau nom : { "new_name": "nouveau_nom.txt" }
+- Utiliser `secure_filename` pour sécuriser le nouveau nom.
+- Renommer le fichier physiquement dans le répertoire de travail de la campagne.
+- Gérer les erreurs (fichier source inexistant, fichier cible déjà existant).
+
+Mise à jour temps réel :
+- Après le renommage réussi, émettre l'événement WebSocket 'files_updated' (comme pour l'upload et la suppression) pour rafraîchir la liste automatiquement sans recharger la page.
+
+
+----------------------
+
 Ce projet est une application de test d'applications web multi-environnements, conçue pour démontrer les capacités de diverses technologies web.
 
 Le nom de l'application "TestGyver" est un jeu de mots entre "Test" et "MacGyver", suggérant une approche ingénieuse et polyvalente pour la réalisation de tests.
@@ -216,6 +338,10 @@ Avec des fichiers d'autres langues :
 - README.de.md
 - README.it.md
 
+-----------------------
+
+
+-----------------------
 
 
 -----------------------

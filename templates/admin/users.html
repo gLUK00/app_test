@@ -1,16 +1,16 @@
 {% extends "base.html" %}
 
-{% block title %}Gestion des utilisateurs - {{ app_name }}{% endblock %}
+{% block title %}{{ _('Gestion des utilisateurs') }} - {{ app_name }}{% endblock %}
 
 {% block content %}
 <div class="container mt-4">
     <div class="row mb-4">
         <div class="col-md-8">
-            <h1><i class="fas fa-users"></i> Gestion des utilisateurs</h1>
+            <h1><i class="fas fa-users"></i> {{ _('Gestion des utilisateurs') }}</h1>
         </div>
         <div class="col-md-4 text-end">
             <a href="{{ url_for('web.admin_users_add') }}" class="btn btn-primary">
-                <i class="fas fa-user-plus"></i> Nouvel utilisateur
+                <i class="fas fa-user-plus"></i> {{ _('Nouvel utilisateur') }}
             </a>
         </div>
     </div>
@@ -19,13 +19,13 @@
         <div class="col-md-12">
             <div class="card">
                 <div class="card-header">
-                    <i class="fas fa-list"></i> Liste des utilisateurs
+                    <i class="fas fa-list"></i> {{ _('Liste des utilisateurs') }}
                 </div>
                 <div class="card-body">
                     <div id="usersList">
                         <div class="text-center">
                             <div class="spinner-border text-primary" role="status">
-                                <span class="visually-hidden">Chargement...</span>
+                                <span class="visually-hidden">{{ _('Chargement...') }}</span>
                             </div>
                         </div>
                     </div>
@@ -63,10 +63,10 @@
                         <table class="table table-hover">
                             <thead>
                                 <tr>
-                                    <th>Nom</th>
-                                    <th>Email</th>
-                                    <th>Rôle</th>
-                                    <th>Actions</th>
+                                    <th>{{ _('Nom') }}</th>
+                                    <th>{{ _('Email') }}</th>
+                                    <th>{{ _('Rôle') }}</th>
+                                    <th>{{ _('Actions') }}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -76,7 +76,7 @@
                                         <td>${user.email}</td>
                                         <td>
                                             <span class="badge bg-${user.role === 'admin' ? 'danger' : 'primary'}">
-                                                ${user.role === 'admin' ? 'Administrateur' : 'Utilisateur'}
+                                                ${user.role === 'admin' ? "{{ _('Administrateur') }}" : "{{ _('Utilisateur') }}"}
                                             </span>
                                         </td>
                                         <td>
@@ -103,30 +103,30 @@
             } else {
                 listDiv.innerHTML = `
                     <div class="alert alert-info">
-                        <i class="fas fa-info-circle"></i> Aucun utilisateur trouvé
+                        <i class="fas fa-info-circle"></i> {{ _('Aucun utilisateur trouvé') }}
                     </div>
                 `;
             }
         } catch (error) {
             listDiv.innerHTML = `
                 <div class="alert alert-danger">
-                    <i class="fas fa-exclamation-triangle"></i> Erreur lors du chargement des utilisateurs
+                    <i class="fas fa-exclamation-triangle"></i> {{ _('Erreur lors du chargement des utilisateurs') }}
                 </div>
             `;
         }
     }
     
     async function deleteUser(id) {
-        if (!Utils.confirmDelete('Êtes-vous sûr de vouloir supprimer cet utilisateur ?')) {
+        if (!Utils.confirmDelete("{{ _('Êtes-vous sûr de vouloir supprimer cet utilisateur ?') }}")) {
             return;
         }
         
         try {
             await API.delete(`/api/users/${id}`);
-            Notification.success('Utilisateur supprimé avec succès');
+            Notification.success("{{ _('Utilisateur supprimé avec succès') }}");
             loadUsers();
         } catch (error) {
-            Notification.error('Erreur lors de la suppression de l\'utilisateur');
+            Notification.error("{{ _('Erreur lors de la suppression de l\'utilisateur') }}");
         }
     }
     

@@ -178,7 +178,7 @@ return {
 };
 """
     
-    def execute(self, action_context):
+    def execute(self, action_context, test_variables=None):
         """
         Exécute une opération FTP.
         

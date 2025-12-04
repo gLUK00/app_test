@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """Routes API pour l'authentification."""
 from flask import Blueprint, request, jsonify, make_response
+from flask_babel import gettext as _
 from models.user import User
 from utils.auth import generate_token, token_required
 from utils.validation import validate_required_fields
@@ -26,7 +27,7 @@ def login():
         
         # Vérifier les identifiants
         if not User.verify_password(email, password):
-            return jsonify({'message': 'Email ou mot de passe incorrect'}), 401
+            return jsonify({'message': _('Email ou mot de passe incorrect')}), 401
         
         # Récupérer l'utilisateur
         user = User.find_by_email(email)
@@ -35,7 +36,7 @@ def login():
         token = generate_token(user['_id'], user['role'])
         
         response = make_response(jsonify({
-            'message': 'Authentification réussie',
+            'message': _('Authentification réussie'),
             'token': token,
             'user': {
                 'id': user['_id'],

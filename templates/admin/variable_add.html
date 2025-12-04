@@ -1,16 +1,16 @@
 {% extends "base.html" %}
 
-{% block title %}Nouvelle variable - {{ app_name }}{% endblock %}
+{% block title %}{{ _('Nouvelle variable') }} - {{ app_name }}{% endblock %}
 
 {% block content %}
 <div class="container mt-4">
     <div class="row mb-4">
         <div class="col-md-8">
-            <h1><i class="fas fa-plus-circle"></i> Nouvelle variable</h1>
+            <h1><i class="fas fa-plus-circle"></i> {{ _('Nouvelle variable') }}</h1>
         </div>
         <div class="col-md-4 text-end">
             <a href="{{ url_for('web.admin_variables') }}" class="btn btn-secondary">
-                <i class="fas fa-arrow-left"></i> Retour
+                <i class="fas fa-arrow-left"></i> {{ _('Retour') }}
             </a>
         </div>
     </div>
@@ -19,50 +19,50 @@
         <div class="col-md-8 mx-auto">
             <div class="card">
                 <div class="card-header">
-                    <i class="fas fa-edit"></i> Informations de la variable
+                    <i class="fas fa-edit"></i> {{ _('Informations de la variable') }}
                 </div>
                 <div class="card-body">
                     <form id="variableForm">
                         <div class="mb-3">
-                            <label for="key" class="form-label">Clé de la variable *</label>
+                            <label for="key" class="form-label">{{ _('Clé de la variable *') }}</label>
                             <input type="text" class="form-control" id="key" required 
-                                   placeholder="Ex: API_URL, DATABASE_HOST">
+                                   placeholder="{{ _('Ex: API_URL, DATABASE_HOST') }}">
                             <small class="form-text text-muted">
-                                Le nom unique de la variable (généralement en MAJUSCULES)
+                                {{ _('Le nom unique de la variable (généralement en MAJUSCULES)') }}
                             </small>
                         </div>
                         
                         <div class="mb-3">
-                            <label for="value" class="form-label">Valeur *</label>
+                            <label for="value" class="form-label">{{ _('Valeur *') }}</label>
                             <input type="text" class="form-control" id="value" required
-                                   placeholder="Ex: https://api.example.com">
+                                   placeholder="{{ _('Ex: https://api.example.com') }}">
                         </div>
                         
                         <div class="mb-3">
-                            <label for="filiere" class="form-label">Environnement (filière) *</label>
+                            <label for="filiere" class="form-label">{{ _('Environnement (filière) *') }}</label>
                             <input type="text" class="form-control" id="filiere" required
-                                   placeholder="Ex: DEV, TEST, STAGING, PROD">
+                                   placeholder="{{ _('Ex: DEV, TEST, STAGING, PROD') }}">
                         </div>
                         
                         <div class="mb-3">
-                            <label for="description" class="form-label">Description</label>
+                            <label for="description" class="form-label">{{ _('Description') }}</label>
                             <textarea class="form-control" id="description" rows="3"
-                                      placeholder="Description de la variable et son utilisation"></textarea>
+                                      placeholder="{{ _('Description de la variable et son utilisation') }}"></textarea>
                         </div>
                         
                         <div class="mb-3 form-check">
                             <input type="checkbox" class="form-check-input" id="isRoot">
                             <label class="form-check-label" for="isRoot">
-                                Variable racine (privilèges élevés)
+                                {{ _('Variable racine (privilèges élevés)') }}
                             </label>
                             <small class="form-text text-muted d-block">
-                                Cochez cette option si la variable nécessite des privilèges administrateur
+                                {{ _('Cochez cette option si la variable nécessite des privilèges administrateur') }}
                             </small>
                         </div>
                         
                         <div class="d-grid gap-2">
                             <button type="submit" class="btn btn-primary btn-lg">
-                                <i class="fas fa-save"></i> Créer la variable
+                                <i class="fas fa-save"></i> {{ _('Créer la variable') }}
                             </button>
                         </div>
                     </form>
@@ -107,7 +107,7 @@
             valueInput.required = true;
         }
     });
-    
+
     document.getElementById('variableForm').addEventListener('submit', async (e) => {
         e.preventDefault();
         
@@ -121,19 +121,20 @@
         
         // Validation de base
         if (!data.key || (!data.filiere && !data.value && !data.isRoot)) {
-            Notification.error('Veuillez remplir tous les champs obligatoires');
+            Notification.error("{{ _('Veuillez remplir tous les champs obligatoires') }}");
             return;
         }
         
         try {
-            const result = await API.post('/api/variables', data);
-            Notification.success('Variable créée avec succès');
+            await API.post('/api/variables', data);
+            Notification.success("{{ _('Variable créée avec succès') }}");
             setTimeout(() => {
                 window.location.href = '/admin/variables';
             }, 1000);
         } catch (error) {
-            Notification.error(error.message || 'Erreur lors de la création de la variable');
+            Notification.error(error.message || "{{ _('Erreur lors de la création de la variable') }}");
         }
     });
 </script>
 {% endblock %}
+```

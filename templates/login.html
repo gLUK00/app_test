@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Connexion - {{ app_name }}</title>
+    <title>{{ _('Connexion') }} - {{ app_name }}</title>
     
     <!-- Bootstrap CSS -->
     <link href="{{ url_for('static', filename='vendor/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
@@ -27,7 +27,7 @@
                     <div id="pixel-art-mac" class="pixel-art-mac">
                         <pre></pre>
                     </div>
-                    <p class="branding-slogan">Really! Are you serious?</p>
+                    <p class="branding-slogan">{{ _('Really! Are you serious?') }}</p>
                 </div>
             </div>
         </div>
@@ -37,7 +37,7 @@
             <div class="login-header">
                 <i class="fas fa-vial fa-3x text-primary mb-3"></i>
                 <h2>{{ app_name }}</h2>
-                <p class="text-muted">Plateforme de test multi-environnements</p>
+                <p class="text-muted">{{ _('Plateforme de test multi-environnements') }}</p>
             </div>
             
             <!-- Messages Flash -->
@@ -56,21 +56,21 @@
             <form id="loginForm">
                 <div class="mb-3">
                     <label for="email" class="form-label">
-                        <i class="fas fa-envelope"></i> Email
+                        <i class="fas fa-envelope"></i> {{ _('Email') }}
                     </label>
                     <input type="email" class="form-control" id="email" autocomplete="email" required>
                 </div>
                 
                 <div class="mb-3">
                     <label for="password" class="form-label">
-                        <i class="fas fa-lock"></i> Mot de passe
+                        <i class="fas fa-lock"></i> {{ _('Mot de passe') }}
                     </label>
                     <input type="password" class="form-control" id="password" autocomplete="current-password" required>
                 </div>
                 
                 <div class="d-grid">
                     <button type="submit" class="btn btn-primary btn-lg">
-                        <i class="fas fa-sign-in-alt"></i> Se connecter
+                        <i class="fas fa-sign-in-alt"></i> {{ _('Se connecter') }}
                     </button>
                 </div>
             </form>
@@ -108,7 +108,7 @@
         
         if (errorParam === 'session_expired') {
             const errorDiv = document.getElementById('errorMessage');
-            errorDiv.textContent = 'Votre session a expiré. Veuillez vous reconnecter.';
+            errorDiv.textContent = "{{ _('Votre session a expiré. Veuillez vous reconnecter.') }}";
             errorDiv.classList.remove('d-none');
             
             // Nettoyer l'URL
@@ -137,11 +137,11 @@
                     Auth.setToken(data.token);
                     window.location.href = '/dashboard';
                 } else {
-                    errorDiv.textContent = data.message || 'Erreur de connexion';
+                    errorDiv.textContent = data.message || "{{ _('Erreur de connexion') }}";
                     errorDiv.classList.remove('d-none');
                 }
             } catch (error) {
-                errorDiv.textContent = 'Erreur de connexion au serveur';
+                errorDiv.textContent = "{{ _('Erreur de connexion au serveur') }}";
                 errorDiv.classList.remove('d-none');
             }
         });

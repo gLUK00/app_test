@@ -8,7 +8,7 @@ class VarAction(ActionBase):
     
     # Métadonnées du plugin
     plugin_name = "var"
-    label = "Variables (Conversion)"
+    label = "Variables (Conversion/Valorisation)"
     version = "1.0.0"
     author = "TestGyver Team"
     
@@ -50,6 +50,12 @@ class VarAction(ActionBase):
                 "type": "string",
                 "label": "Variable par défaut (optionnel)",
                 "placeholder": "156.32, true, [1,2,3], {'key':'value'}, etc.",
+                "required": False
+            },
+            {
+                "name": "force_valuation",
+                "type": "checkbox",
+                "label": "Forcer la valorisation (optionnel)",
                 "required": False
             },
             {
@@ -192,12 +198,16 @@ return {
             variable_name = context.get('variable_name')
             default_value = context.get('default_value')
             target_type = context.get('target_type')
-            variables = context.get('variables', {})
+            #variables = context.get('variables', {})
+            force_valuation = context.get('force_valuation', False)
             
             logs.append(f"Conversion de la variable '{variable_name}' vers le type '{target_type}'")
             
             # Récupérer la valeur de la variable
-            if 'app.' + variable_name not in test_variables and default_value is None:
+            if force_valuation and default_value is not None:
+                original_value = default_value
+                logs.append(f"Valorisation forcée. Utilisation de la valeur par défaut : {default_value}")
+            elif 'app.' + variable_name not in test_variables and default_value is None:
                 logs.append(f"❌ ERREUR : Variable '{variable_name}' introuvable")
                 return self.get_result( False, None )
             

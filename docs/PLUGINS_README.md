@@ -110,11 +110,6 @@ GET /api/plugins/actions/http
 POST /api/plugins/reload
 ```
 
-#### Statistiques des plugins
-```bash
-GET /api/plugins/stats
-```
-
 ### Via le code Python
 
 ```python

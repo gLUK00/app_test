@@ -1,23 +1,23 @@
 {% extends "base.html" %}
 
-{% block title %}Tableau de bord - {{ app_name }}{% endblock %}
+{% block title %}{{ _('Tableau de bord') }} - {{ app_name }}{% endblock %}
 
 {% block content %}
 <div class="container mt-4">
     <div class="row mb-4">
         <div class="col-md-12">
-            <h1><i class="fas fa-chart-line"></i> Tableau de bord</h1>
-            <p class="text-muted">Bienvenue sur votre espace de gestion des campagnes de tests</p>
+            <h1><i class="fas fa-chart-line"></i> {{ _('Tableau de bord') }}</h1>
+            <p class="text-muted">{{ _('Bienvenue sur votre espace de gestion des campagnes de tests') }}</p>
         </div>
     </div>
     
     <div class="row mb-4">
         <div class="col-md-12 text-end">
             <button class="btn btn-info me-2" data-bs-toggle="modal" data-bs-target="#importCampainModal">
-                <i class="fas fa-file-import"></i> Importer une campagne
+                <i class="fas fa-file-import"></i> {{ _('Importer une campagne') }}
             </button>
             <a href="{{ url_for('web.add_campain') }}" class="btn btn-primary">
-                <i class="fas fa-plus"></i> Nouvelle campagne
+                <i class="fas fa-plus"></i> {{ _('Nouvelle campagne') }}
             </a>
         </div>
     </div>
@@ -26,13 +26,13 @@
         <div class="col-md-12">
             <div class="card">
                 <div class="card-header">
-                    <i class="fas fa-list"></i> Campagnes de tests
+                    <i class="fas fa-list"></i> {{ _('Campagnes de tests') }}
                 </div>
                 <div class="card-body">
                     <div id="campaignsList">
                         <div class="text-center">
                             <div class="spinner-border text-primary" role="status">
-                                <span class="visually-hidden">Chargement...</span>
+                                <span class="visually-hidden">{{ _('Chargement...') }}</span>
                             </div>
                         </div>
                     </div>
@@ -49,31 +49,31 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="importCampainModalLabel">
-                    <i class="fas fa-file-import"></i> Importer une campagne
+                    <i class="fas fa-file-import"></i> {{ _('Importer une campagne') }}
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <form id="importCampainForm">
                     <div class="mb-3">
-                        <label for="importFile" class="form-label">Fichier JSON <span class="text-danger">*</span></label>
+                        <label for="importFile" class="form-label">{{ _('Fichier JSON') }} <span class="text-danger">*</span></label>
                         <input type="file" class="form-control" id="importFile" accept=".json" required>
-                        <div class="form-text">Sélectionnez un fichier exporté précédemment (.json)</div>
+                        <div class="form-text">{{ _('Sélectionnez un fichier exporté précédemment (.json)') }}</div>
                     </div>
                     <div class="mb-3">
-                        <label for="importName" class="form-label">Nom de la campagne</label>
-                        <input type="text" class="form-control" id="importName" placeholder="Laisser vide pour utiliser le nom par défaut">
-                        <div class="form-text">Par défaut : "Import de [Nom original]"</div>
+                        <label for="importName" class="form-label">{{ _('Nom de la campagne') }}</label>
+                        <input type="text" class="form-control" id="importName" placeholder="{{ _('Laisser vide pour utiliser le nom par défaut') }}">
+                        <div class="form-text">{{ _('Par défaut : "Import de [Nom original]"') }}</div>
                     </div>
                 </form>
                 <div id="importError" class="alert alert-danger mt-3" style="display: none;"></div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                    <i class="fas fa-times"></i> Annuler
+                    <i class="fas fa-times"></i> {{ _('Annuler') }}
                 </button>
                 <button type="button" class="btn btn-info" id="confirmImportBtn">
-                    <i class="fas fa-file-import"></i> Importer
+                    <i class="fas fa-file-import"></i> {{ _('Importer') }}
                 </button>
             </div>
         </div>
@@ -98,10 +98,10 @@
                         <table class="table table-hover">
                             <thead>
                                 <tr>
-                                    <th>Nom</th>
-                                    <th>Description</th>
-                                    <th>Date de création</th>
-                                    <th>Actions</th>
+                                    <th>{{ _('Nom') }}</th>
+                                    <th>{{ _('Description') }}</th>
+                                    <th>{{ _('Date de création') }}</th>
+                                    <th>{{ _('Actions') }}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -133,31 +133,31 @@
             } else {
                 listDiv.innerHTML = `
                     <div class="alert alert-info">
-                        <i class="fas fa-info-circle"></i> Aucune campagne trouvée. 
-                        <a href="${'{{ url_for("web.add_campain") }}'}" class="alert-link">Créez votre première campagne</a>
+                        <i class="fas fa-info-circle"></i> {{ _('Aucune campagne trouvée.') }} 
+                        <a href="${'{{ url_for("web.add_campain") }}'}" class="alert-link">{{ _('Créez votre première campagne') }}</a>
                     </div>
                 `;
             }
         } catch (error) {
             listDiv.innerHTML = `
                 <div class="alert alert-danger">
-                    <i class="fas fa-exclamation-triangle"></i> Erreur lors du chargement des campagnes
+                    <i class="fas fa-exclamation-triangle"></i> {{ _('Erreur lors du chargement des campagnes') }}
                 </div>
             `;
         }
     }
     
     async function deleteCampaign(id) {
-        if (!Utils.confirmDelete('Êtes-vous sûr de vouloir supprimer cette campagne ?')) {
+        if (!Utils.confirmDelete("{{ _('Êtes-vous sûr de vouloir supprimer cette campagne ?') }}")) {
             return;
         }
         
         try {
             await API.delete(`/api/campains/${id}`);
-            Notification.success('Campagne supprimée avec succès');
+            Notification.success("{{ _('Campagne supprimée avec succès') }}");
             loadCampaigns(currentPage);
         } catch (error) {
-            Notification.error('Erreur lors de la suppression de la campagne');
+            Notification.error("{{ _('Erreur lors de la suppression de la campagne') }}");
         }
     }
     
@@ -178,7 +178,7 @@
             const modal = bootstrap.Modal.getInstance(document.getElementById('importCampainModal'));
             
             if (fileInput.files.length === 0) {
-                errorDiv.textContent = 'Veuillez sélectionner un fichier JSON.';
+                errorDiv.textContent = "{{ _('Veuillez sélectionner un fichier JSON.') }}";
                 errorDiv.style.display = 'block';
                 return;
             }
@@ -194,7 +194,7 @@
                 const btn = document.getElementById('confirmImportBtn');
                 const originalText = btn.innerHTML;
                 btn.disabled = true;
-                btn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Import...';
+                btn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> {{ _("Import...") }}';
                 errorDiv.style.display = 'none';
                 
                 const token = localStorage.getItem('token');
@@ -213,7 +213,7 @@
                 }
                 
                 // Succès
-                Notification.success('Campagne importée avec succès');
+                Notification.success("{{ _('Campagne importée avec succès') }}");
                 modal.hide();
                 
                 // Redirection vers la campagne importée
@@ -227,7 +227,7 @@
                 // Réactiver le bouton
                 const btn = document.getElementById('confirmImportBtn');
                 btn.disabled = false;
-                btn.innerHTML = '<i class="fas fa-file-import"></i> Importer';
+                btn.innerHTML = '<i class="fas fa-file-import"></i> {{ _("Importer") }}';
             }
         });
     });

@@ -1,6 +1,7 @@
 """Modèle pour la gestion des utilisateurs."""
 from bson import ObjectId
 import bcrypt
+from flask_babel import gettext as _
 from utils.db import get_collection
 from utils.validation import validate_email, validate_password
 
@@ -10,23 +11,23 @@ class User:
     collection_name = 'users'
     
     @staticmethod
-    def create(name, email, password, role='user'):
+    def create(name, email, password, role='user', language='en'):
         """Crée un nouvel utilisateur."""
         # Validation
         if not validate_email(email):
-            raise ValueError("Format d'email invalide")
+            raise ValueError(_("Format d'email invalide"))
         
         is_valid, message = validate_password(password)
         if not is_valid:
             raise ValueError(message)
         
         if role not in ['admin', 'user']:
-            raise ValueError("Rôle invalide. Doit être 'admin' ou 'user'")
+            raise ValueError(_("Rôle invalide. Doit être 'admin' ou 'user'"))
         
         # Vérifier si l'email existe déjà
         collection = get_collection(User.collection_name)
         if collection.find_one({'email': email}):
-            raise ValueError("Cet email est déjà utilisé")
+            raise ValueError(_("Cet email est déjà utilisé"))
         
         # Hasher le mot de passe
         password_hash = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
@@ -35,7 +36,8 @@ class User:
             'name': name,
             'email': email,
             'password': password_hash,
-            'role': role
+            'role': role,
+            'language': language
         }
         
         result = collection.insert_one(user_data)
@@ -99,7 +101,7 @@ class User:
         
         if 'email' in data:
             if not validate_email(data['email']):
-                raise ValueError("Format d'email invalide")
+                raise ValueError(_("Format d'email invalide"))
             update_data['email'] = data['email']
         
         if 'password' in data:
@@ -110,8 +112,11 @@ class User:
         
         if 'role' in data:
             if data['role'] not in ['admin', 'user']:
-                raise ValueError("Rôle invalide")
+                raise ValueError(_("Rôle invalide"))
             update_data['role'] = data['role']
+            
+        if 'language' in data:
+            update_data['language'] = data['language']
         
         if update_data:
             collection.update_one({'_id': ObjectId(user_id)}, {'$set': update_data})

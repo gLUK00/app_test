@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Détails de la campagne - {{ app_name }}{% endblock %}
+{% block title %}{{ _('Détails de la campagne') }} - {{ app_name }}{% endblock %}
 
 {% block content %}
 <div class="container mt-4">
@@ -8,17 +8,17 @@
         <div class="col-md-8">
             <h1>
                 <i class="fas fa-clipboard-list"></i> 
-                <span id="campainName">Chargement...</span>
-                <i id="editCampainNameIcon" class="fas fa-pencil-alt ms-2" style="cursor: pointer; font-size: 0.7em; color: #6c757d;" title="Renommer la campagne"></i>
+                <span id="campainName">{{ _('Chargement...') }}</span>
+                <i id="editCampainNameIcon" class="fas fa-pencil-alt ms-2" style="cursor: pointer; font-size: 0.7em; color: #6c757d;" title="{{ _('Renommer la campagne') }}"></i>
                 <input type="text" id="campainNameInput" class="form-control d-inline-block" style="display: none !important; width: auto; max-width: 500px;" />
             </h1>
         </div>
         <div class="col-md-4 text-end">
             <button class="btn btn-info me-2" data-bs-toggle="modal" data-bs-target="#exportCampainModal">
-                <i class="fas fa-file-export"></i> Exporter la campagne
+                <i class="fas fa-file-export"></i> {{ _('Exporter la campagne') }}
             </button>
             <a href="{{ url_for('web.dashboard') }}" class="btn btn-secondary">
-                <i class="fas fa-arrow-left"></i> Retour
+                <i class="fas fa-arrow-left"></i> {{ _('Retour') }}
             </a>
         </div>
     </div>
@@ -28,17 +28,17 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header campain-info-header">
-                    <i class="fas fa-info-circle"></i> Informations
+                    <i class="fas fa-info-circle"></i> {{ _('Informations') }}
                 </div>
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-6">
-                            <p><strong>Nom :</strong> <span id="detailName">-</span></p>
-                            <p><strong>Description :</strong> <span id="detailDescription">-</span></p>
+                            <p><strong>{{ _('Nom :') }}</strong> <span id="detailName">-</span></p>
+                            <p><strong>{{ _('Description :') }}</strong> <span id="detailDescription">-</span></p>
                         </div>
                         <div class="col-md-6">
-                            <p><strong>Créée le :</strong> <span id="detailDateCreated">-</span></p>
-                            <p><strong>Créée par :</strong> <span id="detailUserCreated">-</span></p>
+                            <p><strong>{{ _('Créée le :') }}</strong> <span id="detailDateCreated">-</span></p>
+                            <p><strong>{{ _('Créée par :') }}</strong> <span id="detailUserCreated">-</span></p>
                         </div>
                     </div>
                 </div>
@@ -51,15 +51,15 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header campain-files-header d-flex justify-content-between align-items-center">
-                    <span><i class="fas fa-folder-open"></i> Fichiers</span>
+                    <span><i class="fas fa-folder-open"></i> {{ _('Fichiers') }}</span>
                     <button class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#uploadFileModal">
-                        <i class="fas fa-upload"></i> Ajouter un fichier
+                        <i class="fas fa-upload"></i> {{ _('Ajouter un fichier') }}
                     </button>
                 </div>
                 <div class="card-body">
                     <div id="filesLoading" class="text-center">
                         <div class="spinner-border text-warning" role="status">
-                            <span class="visually-hidden">Chargement...</span>
+                            <span class="visually-hidden">{{ _('Chargement...') }}</span>
                         </div>
                     </div>
                     <div id="filesContainer" style="display: none;">
@@ -67,10 +67,10 @@
                             <table class="table table-hover">
                                 <thead>
                                     <tr>
-                                        <th>Nom du fichier</th>
-                                        <th>Taille (Ko)</th>
-                                        <th>Date de modification</th>
-                                        <th style="width: 150px;">Actions</th>
+                                        <th>{{ _('Nom du fichier') }}</th>
+                                        <th>{{ _('Taille (Ko)') }}</th>
+                                        <th>{{ _('Date de modification') }}</th>
+                                        <th style="width: 200px;">{{ _('Actions') }}</th>
                                     </tr>
                                 </thead>
                                 <tbody id="filesTableBody">
@@ -81,7 +81,7 @@
                     </div>
                     <div id="noFiles" style="display: none;" class="text-center text-muted py-4">
                         <i class="fas fa-inbox fa-3x mb-3"></i>
-                        <p>Aucun fichier dans cette campagne</p>
+                        <p>{{ _('Aucun fichier dans cette campagne') }}</p>
                     </div>
                 </div>
             </div>
@@ -93,9 +93,9 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
-                    <span><i class="fas fa-vial"></i> Tests de la campagne</span>
+                    <span><i class="fas fa-vial"></i> {{ _('Tests de la campagne') }}</span>
                     <a href="{{ url_for('web.add_test', campain_id=campain_id) }}" class="btn btn-sm btn-light">
-                        <i class="fas fa-plus"></i> Ajouter un test
+                        <i class="fas fa-plus"></i> {{ _('Ajouter un test') }}
                     </a>
                 </div>
                 <div class="card-body">
@@ -256,6 +256,37 @@
                 </button>
                 <button type="button" class="btn btn-primary" id="uploadFileBtn">
                     <i class="fas fa-upload"></i> Uploader
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modale de renommage de fichier -->
+<div class="modal fade" id="renameFileModal" tabindex="-1" aria-labelledby="renameFileModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="renameFileModalLabel">
+                    <i class="fas fa-edit"></i> Renommer le fichier
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="renameFileForm">
+                    <input type="hidden" id="oldFileName">
+                    <div class="mb-3">
+                        <label for="newFileName" class="form-label">Nouveau nom <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="newFileName" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times"></i> Annuler
+                </button>
+                <button type="button" class="btn btn-primary" id="confirmRenameFileBtn">
+                    <i class="fas fa-save"></i> Enregistrer
                 </button>
             </div>
         </div>
@@ -672,6 +703,9 @@ async function loadFiles() {
                         <button class="btn btn-sm btn-success" onclick="downloadFile('${escapeHtml(file.name)}')">
                             <i class="fas fa-download"></i>
                         </button>
+                        <button class="btn btn-sm btn-warning" onclick="openRenameFileModal('${escapeHtml(file.name)}')">
+                            <i class="fas fa-pencil-alt"></i>
+                        </button>
                         <button class="btn btn-sm btn-danger" onclick="deleteFile('${escapeHtml(file.name)}')">
                             <i class="fas fa-trash"></i>
                         </button>
@@ -755,6 +789,67 @@ function downloadFile(filename) {
     const token = localStorage.getItem('token');
     window.location.href = `/api/campains/${campainId}/files/${encodeURIComponent(filename)}?token=${token}`;
 }
+
+// Renommage de fichier
+function openRenameFileModal(filename) {
+    document.getElementById('oldFileName').value = filename;
+    document.getElementById('newFileName').value = filename;
+    const modal = new bootstrap.Modal(document.getElementById('renameFileModal'));
+    modal.show();
+}
+
+document.getElementById('confirmRenameFileBtn').addEventListener('click', async () => {
+    const oldName = document.getElementById('oldFileName').value;
+    const newName = document.getElementById('newFileName').value.trim();
+    
+    if (!newName) {
+        Notification.warning('Le nom du fichier ne peut pas être vide');
+        return;
+    }
+    
+    if (oldName === newName) {
+        bootstrap.Modal.getInstance(document.getElementById('renameFileModal')).hide();
+        return;
+    }
+    
+    const btn = document.getElementById('confirmRenameFileBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enregistrement...';
+    
+    try {
+        const token = localStorage.getItem('token');
+        const response = await fetch(`/api/campains/${campainId}/files/${encodeURIComponent(oldName)}`, {
+            method: 'PUT',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ new_name: newName })
+        });
+        
+        const data = await response.json();
+        
+        if (!response.ok) {
+            throw new Error(data.message || 'Erreur lors du renommage');
+        }
+        
+        Notification.success(data.message || 'Fichier renommé avec succès');
+        
+        // Fermer la modale
+        const modal = bootstrap.Modal.getInstance(document.getElementById('renameFileModal'));
+        modal.hide();
+        
+        // Recharger la liste (sera aussi fait via WebSocket)
+        loadFiles();
+        
+    } catch (error) {
+        console.error('Erreur lors du renommage:', error);
+        Notification.error(error.message || 'Erreur lors du renommage du fichier');
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-save"></i> Enregistrer';
+    }
+});
 
 // Suppression d'un fichier
 async function deleteFile(filename) {
@@ -920,7 +1015,7 @@ socket.on('campain_error', (data) => {
     console.log('Erreur de campagne:', data);
     updateRapportStatusUI(data.rapport_id, 'failed');
     loadRapports();
-    Notification.error('Erreur lors de l\'exécution de la campagne');
+    Notification.error("{{ _('Erreur lors de l\'exécution de la campagne') }}");
 });
 
 // Fonction pour rejoindre les rooms des rapports actifs
@@ -943,7 +1038,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const url = `/api/campains/${campainId}/export?include_files=${includeFiles}`;
             
             // Notification de début
-            Notification.info('Export en cours...');
+            Notification.info("{{ _('Export en cours...') }}");
             
             const response = await fetch(url, {
                 method: 'GET',
@@ -979,7 +1074,7 @@ document.addEventListener('DOMContentLoaded', () => {
             document.body.removeChild(a);
             
             modal.hide();
-            Notification.success('Export réussi');
+            Notification.success("{{ _('Export réussi') }}");
             
         } catch (error) {
             console.error('Erreur export:', error);
@@ -1027,7 +1122,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const newName = campainNameInput.value.trim();
             
             if (!newName) {
-                Notification.error('Le nom de la campagne ne peut pas être vide');
+                Notification.error("{{ _('Le nom de la campagne ne peut pas être vide') }}");
                 campainNameInput.focus();
                 return;
             }
@@ -1042,11 +1137,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 const data = await API.put(`/api/campains/${campainId}/rename`, { name: newName });
                 campainNameSpan.textContent = newName;
                 document.getElementById('detailName').textContent = newName;
-                Notification.success('Campagne renommée avec succès');
+                Notification.success("{{ _('Campagne renommée avec succès') }}");
                 cancelEdit();
             } catch (error) {
                 console.error('Erreur renommage:', error);
-                Notification.error(error.message || 'Erreur lors du renommage de la campagne');
+                Notification.error(error.message || "{{ _('Erreur lors du renommage de la campagne') }}");
                 campainNameInput.focus();
             }
         } else if (e.key === 'Escape') {
