@@ -59,6 +59,28 @@ The complete documentation is available in the `docs/` folder.
     flask run
     ```
 
+## 🐳 Docker (official image)
+
+Image: `gluk46546546/testgyver:0.0.2`
+
+- Pull the image:
+    ```bash
+    docker pull gluk46546546/testgyver:0.0.2
+    ```
+- Run exposing port 5000:
+    ```bash
+    docker run --rm -p 5000:5000 gluk46546546/testgyver:0.0.2
+    ```
+- Configure MongoDB via environment variables (example):
+    ```bash
+    docker run --rm -p 5000:5000 \
+        -e MONGO_HOST=host.docker.internal \
+        -e MONGO_PORT=27017 \
+        -e MONGO_DB=testgyver \
+        gluk46546546/testgyver:0.0.2
+    ```
+
+
 ## 🧩 Key Features
 
 *   **Campaign Management**: Create, organize, and execute test campaigns.
