@@ -71,7 +71,7 @@ Image: `gluk46546546/testgyver:0.0.2`
     ```bash
     docker run --rm -p 5000:5000 gluk46546546/testgyver:0.0.2
     ```
-- Configure MongoDB via environment variables (example):
+- Configure MongoDB using environment variables (example):
     ```bash
     docker run --rm -p 5000:5000 \
         -e MONGO_HOST=host.docker.internal \
