@@ -1,5 +1,7 @@
 # TestGyver
 
+![Docker Pulls](https://img.shields.io/docker/pulls/gluk46546546/testgyver)
+[![Docker Hub](https://img.shields.io/badge/Docker%20Hub-gluk46546546/testgyver-blue?logo=docker)](https://hub.docker.com/r/gluk46546546/testgyver)
 ![Version](https://img.shields.io/badge/version-1.0.0-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
