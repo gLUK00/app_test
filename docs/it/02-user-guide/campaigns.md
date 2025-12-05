@@ -10,13 +10,15 @@ Una **Campagna** raggruppa test per una funzionalità o flusso.
     *   **Descrizione**: Facoltativa.
 3.  Salva e verrai reindirizzato al dettaglio.
 
-> **[SCREENSHOT]** Form "Add Campaign".
+![Form "Add Campaign"](../../assets/campaign_add.png)
+> Form "Add Campaign".
 
 ## Dettaglio Campagna
 
 Centro di controllo.
 
-> **[SCREENSHOT]** Pagina con Informazioni, File, Tests.
+![Dettagli campagna](../../assets/campaign_detail.png)
+> Pagina con Informazioni, File, Tests.
 
 ### 1. Informazioni
 Metadati. Puoi modificare o eliminare.
@@ -44,7 +46,8 @@ Tutti i test della campagna.
     *   **Stop on Failure**: Ferma al primo errore.
 3.  **Avvia**: gira in background.
 
-> **[SCREENSHOT]** Modal esecuzione con scelta ambiente.
+![Modal di esecuzione](../../assets/campaign_rapport.png)
+> Modal esecuzione con scelta ambiente.
 
 ### Monitoraggio Live
 Barra di avanzamento e stato.

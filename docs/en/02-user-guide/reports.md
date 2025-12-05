@@ -10,8 +10,8 @@ Reports provide a detailed history of campaign executions.
 ## Report Details
 
 Clicking on a report opens the detailed view:
-
-> **[SCREENSHOT]** Report details page showing the status header and the list of executed tests with their status icons.
+![Report details](../../assets/campaign_rapport.png)
+> Report details page showing the status header and the list of executed tests with their status icons.
 
 ### Header
 *   **Status**: Success, Failure, or Running.

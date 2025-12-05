@@ -11,7 +11,8 @@ Los informes dan el histórico detallado de ejecuciones.
 
 Al hacer clic se abre la vista detallada:
 
-> **[CAPTURA]** Página de reporte con estado y lista de tests ejecutados.
+![Página de reporte](../../assets/campaign_rapport.png)
+> Página de reporte con estado y lista de tests ejecutados.
 
 ### Encabezado
 *   **Estado**: Success, Failure o Running.

@@ -14,12 +14,14 @@
 2.  HTTP / SSH / Wait などのタイプを選択。
 3.  パラメータを設定。
 
-> **[SCREENSHOT]** HTTP アクション設定フォーム。
+![HTTP アクション設定フォーム](../../assets/action_request.png)
+> HTTP アクション設定フォーム。
 
 ### 変数オートコンプリート
 入力時に利用可能な変数を提案：
 
-> **[SCREENSHOT]** `{{` 入力時のドロップダウン。
+![変数オートコンプリート](../../assets/autocomplete.png)
+> `{{` 入力時のドロップダウン。
 
 *   <span style="color:blue">**グローバル変数**</span>: `{{variable_name}}`
 *   <span style="color:green">**テスト変数**</span>: `{{app.variable_name}}`

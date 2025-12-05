@@ -10,13 +10,15 @@
     *   **Description**: 任意
 3.  保存すると詳細ページへ遷移。
 
-> **[SCREENSHOT]** 「Add Campaign」フォーム。
+![「Add Campaign」フォーム](../../assets/campaign_add.png)
+> 「Add Campaign」フォーム。
 
 ## 詳細ビュー
 
 コントロールセンター。
 
-> **[SCREENSHOT]** Information / Files / Tests セクション。
+![キャンペーン詳細](../../assets/campaign_detail.png)
+> Information / Files / Tests セクション。
 
 ### 1. Information
 メタデータ表示。編集・削除可能。
@@ -44,7 +46,8 @@
     *   **Stop on Failure**: 最初の失敗で停止。
 3.  実行（バックグラウンド）。
 
-> **[SCREENSHOT]** 環境選択付きモーダル。
+![実行モーダル](../../assets/campaign_rapport.png)
+> 環境選択付きモーダル。
 
 ### リアルタイム監視
 進捗バーとステータス。

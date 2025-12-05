@@ -11,7 +11,8 @@
 
 クリックで詳細ビューへ：
 
-> **[SCREENSHOT]** ステータスとテスト一覧。
+![レポート詳細](../../assets/campaign_rapport.png)
+> ステータスとテスト一覧。
 
 ### ヘッダー
 *   **Status**: Success / Failure / Running

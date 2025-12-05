@@ -10,13 +10,15 @@ Eine **Kampagne** gruppiert Tests für ein Feature oder einen Workflow.
     *   **Beschreibung**: Optionaler Zweck.
 3.  Speichern. Du wirst zur Detailseite weitergeleitet.
 
-> **[SCREENSHOT]** Formular "Add Campaign".
+![Add-Campaign-Formular](../../assets/campaign_add.png)
+> Formular "Add Campaign".
 
 ## Detailansicht
 
 Kontrollzentrum der Kampagne.
 
-> **[SCREENSHOT]** Details mit Information, Dateien, Tests.
+![Kampagnen-Details](../../assets/campaign_detail.png)
+> Details mit Information, Dateien, Tests.
 
 ### 1. Information
 Zeigt Metadaten. Bearbeiten oder löschen möglich.
@@ -44,7 +46,8 @@ Alle Tests der Kampagne.
     *   **Stop on Failure**: Bei Fehler stoppen.
 3.  **Starten**: Läuft im Hintergrund.
 
-> **[SCREENSHOT]** Ausführungsmodal mit Umgebungswahl.
+![Ausführungsmodal](../../assets/campaign_rapport.png)
+> Ausführungsmodal mit Umgebungswahl.
 
 ### Live-Monitoring
 Fortschrittsbalken und Status.

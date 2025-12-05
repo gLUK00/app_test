@@ -14,12 +14,14 @@
 2.  选择动作类型：HTTP、SSH、Wait 等。
 3.  配置参数。
 
-> **[SCREENSHOT]** 动作配置表单（HTTP 示例）。
+![动作配置表单](../../assets/action_request.png)
+> 动作配置表单（HTTP 示例）。
 
 ### 变量自动完成
 输入时会提示变量：
 
-> **[SCREENSHOT]** 输入 `{{` 时的下拉提示。
+![变量自动完成](../../assets/autocomplete.png)
+> 输入 `{{` 时的下拉提示。
 
 *   <span style="color:blue">**全局变量**</span>：`{{variable_name}}`
 *   <span style="color:green">**测试变量**</span>：`{{app.variable_name}}`

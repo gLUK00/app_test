@@ -10,13 +10,15 @@ Accede a la URL configurada (por defecto: `http://localhost:5000`). Verás la p�
     *   Email: `admin@test.com`
     *   Contraseña: `Password123`
 
-> **[CAPTURA]** Página de login con la mascota pixel art.
+![Página de login](../../assets/login_page.png)
+> Página de login con la mascota pixel art.
 
 ## Visión General del Dashboard
 
 Al iniciar sesión llegas al **Dashboard**.
 
-> **[CAPTURA]** Dashboard con lista de campañas y barra de navegación.
+![Dashboard con campañas](../../assets/dashboard.png)
+> Dashboard con lista de campañas y barra de navegación.
 
 *   **Lista de Campañas**: Zona central con tus campañas.
 *   **Barra de navegación**:

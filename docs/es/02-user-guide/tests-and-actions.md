@@ -16,12 +16,14 @@ Las acciones son los bloques de construcción del test.
 2.  **Tipo de Acción**: Elige entre plugins disponibles (HTTP, SSH, Wait...).
 3.  **Configura**: Completa parámetros específicos.
 
-> **[CAPTURA]** Formulario de acción (ej. HTTP) con campos.
+![Formulario de acción](../../assets/action_request.png)
+> Formulario de acción (ej. HTTP) con campos.
 
 ### Autocompletado de Variables
 Al escribir, TestGyver sugiere variables:
 
-> **[CAPTURA]** Dropdown de autocompletado al escribir `{{` con sugerencias coloreadas.
+![Autocompletado de variables](../../assets/autocomplete.png)
+> Dropdown de autocompletado al escribir `{{` con sugerencias coloreadas.
 
 *   <span style="color:blue">**Variables Globales**</span>: `{{variable_name}}`
 *   <span style="color:green">**Variables de Test**</span>: `{{app.variable_name}}`

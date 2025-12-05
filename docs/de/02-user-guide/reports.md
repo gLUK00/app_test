@@ -11,7 +11,8 @@ Reports zeigen die Ausführungshistorie.
 
 Klick öffnet die Detailansicht:
 
-> **[SCREENSHOT]** Report-Seite mit Status und Testliste.
+![Report-Seite](../../assets/campaign_rapport.png)
+> Report-Seite mit Status und Testliste.
 
 ### Header
 *   **Status**: Success, Failure oder Running.

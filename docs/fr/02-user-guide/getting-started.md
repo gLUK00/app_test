@@ -11,13 +11,15 @@ Vous serez accueilli par la page de connexion mettant en vedette notre mascotte.
     *   Email : `admin@test.com`
     *   Mot de passe : `Password123`
 
-> **[SCREENSHOT]** Page de connexion avec la mascotte MacGyver en pixel art.
+![Page de connexion](../../assets/login_page.png)
+> Page de connexion avec la mascotte MacGyver en pixel art.
 
 ## Aperçu du Tableau de Bord
 
 Une fois connecté, vous arrivez sur le **Tableau de Bord** (Dashboard).
 
-> **[SCREENSHOT]** Vue du Dashboard montrant la liste des campagnes et la barre de navigation.
+![Vue Dashboard](../../assets/dashboard.png)
+> Vue du Dashboard montrant la liste des campagnes et la barre de navigation.
 
 *   **Liste des Campagnes** : La zone centrale affichant toutes vos campagnes de test.
 *   **Barre de Navigation** :

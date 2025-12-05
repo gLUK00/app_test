@@ -11,7 +11,8 @@
 
 点击打开详情页：
 
-> **[SCREENSHOT]** 报告页，含状态和测试列表。
+![报告详情](../../assets/campaign_rapport.png)
+> 报告页，含状态和测试列表。
 
 ### 头部
 *   **状态**：Success / Failure / Running

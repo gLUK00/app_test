@@ -10,13 +10,15 @@
     *   Email: `admin@test.com`
     *   密码: `Password123`
 
-> **[SCREENSHOT]** 登录页（像素风吉祥物）。
+![登录页](../../assets/login_page.png)
+> 登录页（像素风吉祥物）。
 
 ## 仪表盘概览
 
 登录后进入 **Dashboard**。
 
-> **[SCREENSHOT]** 仪表盘、活动列表和导航栏。
+![仪表盘](../../assets/dashboard.png)
+> 仪表盘、活动列表和导航栏。
 
 *   **活动列表**：显示所有测试活动。
 *   **导航栏**：

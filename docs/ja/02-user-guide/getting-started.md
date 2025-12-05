@@ -10,13 +10,15 @@
     *   Email: `admin@test.com`
     *   Password: `Password123`
 
-> **[SCREENSHOT]** マスコット付きログイン画面。
+![ログイン画面](../../assets/login_page.png)
+> マスコット付きログイン画面。
 
 ## ダッシュボード概要
 
 ログイン後、**Dashboard** に遷移します。
 
-> **[SCREENSHOT]** キャンペーン一覧とナビ。
+![ダッシュボード](../../assets/dashboard.png)
+> キャンペーン一覧とナビ。
 
 *   **キャンペーン一覧**: すべてのテストキャンペーン。
 *   **ナビバー**:

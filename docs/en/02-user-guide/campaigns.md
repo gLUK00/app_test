@@ -10,13 +10,14 @@ A **Campaign** is a logical grouping of tests designed to validate a specific fe
     *   **Description**: Optional details about the campaign's purpose.
 3.  Click **Save**. You will be redirected to the Campaign Details page.
 
-> **[SCREENSHOT]** The "Add Campaign" form.
+![Add Campaign form](../../assets/campaign_add.png)
+> The "Add Campaign" form.
 
 ## Campaign Details View
 
 This is the control center for your campaign.
-
-> **[SCREENSHOT]** Campaign Details page showing Information, Files, and Tests sections.
+![Campaign details view](../../assets/campaign_detail.png)
+> Campaign Details page showing Information, Files, and Tests sections.
 
 ### 1. Information
 Displays the metadata of the campaign. You can edit or delete the campaign from here.
@@ -44,7 +45,8 @@ Shows all tests in the campaign.
     *   **Stop on Failure**: If checked, the campaign stops immediately if a test fails.
 3.  **Launch**: The execution runs in the background.
 
-> **[SCREENSHOT]** The "Execute Campaign" modal with environment selection.
+![Execute Campaign modal](../../assets/campaign_rapport.png)
+> The "Execute Campaign" modal with environment selection.
 
 ### Real-time Monitoring
 You will see a progress bar and status updates.

@@ -16,12 +16,14 @@ Les actions sont les briques élémentaires de votre test.
 2.  **Sélectionner le Type d'Action** : Choisissez parmi les plugins disponibles (ex: Requête HTTP, Commande SSH, Attente).
 3.  **Configurer l'Action** : Remplissez les paramètres spécifiques pour l'action choisie.
 
-> **[SCREENSHOT]** Formulaire de configuration d'une action (ex: Requête HTTP) montrant les champs de saisie.
+![Formulaire de configuration d'une action](../../assets/action_request.png)
+> Formulaire de configuration d'une action (ex: Requête HTTP) montrant les champs de saisie.
 
 ### Autocomplétion des Variables
 Lorsque vous tapez dans les champs texte, TestGyver suggère les variables disponibles :
 
-> **[SCREENSHOT]** Menu déroulant d'autocomplétion apparaissant lors de la saisie de `{{`, montrant les suggestions colorées.
+![Menu d'autocomplétion des variables](../../assets/autocomplete.png)
+> Menu déroulant d'autocomplétion apparaissant lors de la saisie de `{{`, montrant les suggestions colorées.
 
 *   <span style="color:blue">**Variables Globales**</span> : `{{variable_name}}`
 *   <span style="color:green">**Variables de Test**</span> : `{{app.variable_name}}`

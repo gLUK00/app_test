@@ -10,13 +10,15 @@
     *   **Description**：可选说明。
 3.  保存后跳转到详情页。
 
-> **[SCREENSHOT]** “Add Campaign” 表单。
+![“Add Campaign” 表单](../../assets/campaign_add.png)
+> “Add Campaign” 表单。
 
 ## 活动详情
 
 控制中心。
 
-> **[SCREENSHOT]** 信息、文件、测试分区。
+![活动详情](../../assets/campaign_detail.png)
+> 信息、文件、测试分区。
 
 ### 1. 信息
 显示元数据，可编辑/删除。
@@ -44,7 +46,8 @@
     *   **Stop on Failure**：首个失败即停止。
 3.  启动，后台运行。
 
-> **[SCREENSHOT]** 执行弹窗，含环境选择。
+![执行弹窗](../../assets/campaign_rapport.png)
+> 执行弹窗，含环境选择。
 
 ### 实时监控
 显示进度与状态。

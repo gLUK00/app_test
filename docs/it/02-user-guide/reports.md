@@ -11,7 +11,8 @@ I report forniscono lo storico dettagliato delle esecuzioni.
 
 Cliccando apri la vista dettagliata:
 
-> **[SCREENSHOT]** Pagina report con stato e lista test.
+![Pagina report](../../assets/campaign_rapport.png)
+> Pagina report con stato e lista test.
 
 ### Header
 *   **Status**: Success, Failure o Running.

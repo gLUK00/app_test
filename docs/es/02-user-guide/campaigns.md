@@ -10,13 +10,15 @@ Una **Campaña** agrupa tests para validar una funcionalidad o flujo.
     *   **Descripción**: Opcional, propósito de la campaña.
 3.  Guarda. Serás redirigido al detalle de la campaña.
 
-> **[CAPTURA]** Formulario "Añadir Campaña".
+![Formulario "Añadir Campaña"](../../assets/campaign_add.png)
+> Formulario "Añadir Campaña".
 
 ## Vista de Detalle
 
 Centro de control de la campaña.
 
-> **[CAPTURA]** Página de detalles mostrando Información, Ficheros y Tests.
+![Detalles de campaña](../../assets/campaign_detail.png)
+> Página de detalles mostrando Información, Ficheros y Tests.
 
 ### 1. Información
 Muestra metadatos. Puedes editar o borrar la campaña.
@@ -44,7 +46,8 @@ Muestra todos los tests.
     *   **Parar en fallo**: Si se marca, detiene al primer fallo.
 3.  **Lanzar**: Se ejecuta en background.
 
-> **[CAPTURA]** Modal de ejecución con selección de entorno.
+![Modal de ejecución](../../assets/campaign_rapport.png)
+> Modal de ejecución con selección de entorno.
 
 ### Monitorización en tiempo real
 Verás barra de progreso y estados.

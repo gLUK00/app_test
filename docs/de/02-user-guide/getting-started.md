@@ -10,13 +10,15 @@ Rufe die konfigurierte URL auf (Standard: `http://localhost:5000`). Du siehst di
     *   Email: `admin@test.com`
     *   Passwort: `Password123`
 
-> **[SCREENSHOT]** Login-Seite mit Pixel-Art-Maskottchen.
+![Login-Seite](../../assets/login_page.png)
+> Login-Seite mit Pixel-Art-Maskottchen.
 
 ## Dashboard-Übersicht
 
 Nach dem Login landest du im **Dashboard**.
 
-> **[SCREENSHOT]** Dashboard mit Kampagnenliste und Navigation.
+![Dashboard](../../assets/dashboard.png)
+> Dashboard mit Kampagnenliste und Navigation.
 
 *   **Kampagnenliste**: Zentrale Übersicht aller Kampagnen.
 *   **Navigation**:

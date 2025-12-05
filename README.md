@@ -9,6 +9,8 @@
 
 The complete documentation is available in the `docs/` folder.
 
+![Login page](docs/assets/login_page.png)
+
 ### 🌍 Choose your language
 
 *   [English (Source)](docs/en/index.md)

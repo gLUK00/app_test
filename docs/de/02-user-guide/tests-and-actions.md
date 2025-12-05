@@ -16,12 +16,14 @@ Bausteine des Tests.
 2.  **Aktionstyp wählen**: Plugins wie HTTP, SSH, Wait...
 3.  **Konfigurieren**: Parameter ausfüllen.
 
-> **[SCREENSHOT]** Aktionsformular (HTTP) mit Feldern.
+![Aktionsformular](../../assets/action_request.png)
+> Aktionsformular (HTTP) mit Feldern.
 
 ### Variablen-Autocomplete
 Beim Tippen schlägt TestGyver Variablen vor:
 
-> **[SCREENSHOT]** Dropdown bei `{{` mit farbigen Vorschlägen.
+![Variablen-Autocomplete](../../assets/autocomplete.png)
+> Dropdown bei `{{` mit farbigen Vorschlägen.
 
 *   <span style="color:blue">**Globale Variablen**</span>: `{{variable_name}}`
 *   <span style="color:green">**Test-Variablen**</span>: `{{app.variable_name}}`

@@ -10,13 +10,15 @@ Une **Campagne** est un regroupement logique de tests conçus pour valider une f
     *   **Description** : Détails optionnels sur l'objectif de la campagne.
 3.  Cliquez sur **Enregistrer**. Vous serez redirigé vers la page de Détails de la Campagne.
 
-> **[SCREENSHOT]** Le formulaire "Ajouter une Campagne".
+![Formulaire Ajouter une Campagne](../../assets/campaign_add.png)
+> Le formulaire "Ajouter une Campagne".
 
 ## Vue Détails de la Campagne
 
 C'est le centre de contrôle de votre campagne.
 
-> **[SCREENSHOT]** Page de détails d'une campagne montrant les sections Informations, Fichiers et Tests.
+![Détails de campagne](../../assets/campaign_detail.png)
+> Page de détails d'une campagne montrant les sections Informations, Fichiers et Tests.
 
 ### 1. Informations
 Affiche les métadonnées de la campagne. Vous pouvez modifier ou supprimer la campagne d'ici.
@@ -44,7 +46,8 @@ Affiche tous les tests de la campagne.
     *   **Arrêt sur Erreur** : Si coché, la campagne s'arrête immédiatement si un test échoue.
 3.  **Lancer** : L'exécution démarre en arrière-plan.
 
-> **[SCREENSHOT]** La modale "Lancer la Campagne" avec la sélection de l'environnement.
+![Modale d'exécution](../../assets/campaign_rapport.png)
+> La modale "Lancer la Campagne" avec la sélection de l'environnement.
 
 ### Suivi en Temps Réel
 Vous verrez une barre de progression et des mises à jour de statut.

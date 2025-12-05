@@ -14,12 +14,14 @@ Un **Test** è una sequenza di **Azioni**. TestGyver le esegue in ordine.
 2.  **Tipo Azione**: scegli tra i plugin disponibili (HTTP, SSH, Wait...).
 3.  **Configura**: compila i parametri.
 
-> **[SCREENSHOT]** Form configurazione azione (HTTP) con campi.
+![Form di configurazione azione](../../assets/action_request.png)
+> Form configurazione azione (HTTP) con campi.
 
 ### Autocompletamento Variabili
 Suggerimenti mentre scrivi:
 
-> **[SCREENSHOT]** Dropdown su `{{` con suggerimenti colorati.
+![Autocompletamento variabili](../../assets/autocomplete.png)
+> Dropdown su `{{` con suggerimenti colorati.
 
 *   <span style="color:blue">**Variabili Globali**</span>: `{{variable_name}}`
 *   <span style="color:green">**Variabili Test**</span>: `{{app.variable_name}}`
