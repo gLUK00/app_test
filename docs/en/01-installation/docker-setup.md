@@ -67,7 +67,11 @@ If you prefer running containers individually:
     docker run -d --name mongodb -p 27017:27017 -e MONGO_INITDB_ROOT_USERNAME=root -e MONGO_INITDB_ROOT_PASSWORD=mypass mongo:6.0
     ```
 
-2.  Run the application (ensure `configuration.json` points to the correct MongoDB host, e.g., `host.docker.internal` or the container IP):
+2.  Run the application. To connect to a MongoDB instance running on your host machine (localhost), use the following command:
     ```bash
-    docker run -p 5000:5000 -v $(pwd)/configuration.json:/app/configuration.json testgyver:latest
+    docker run --rm \
+      -p 5000:5000 \
+      --add-host=host.docker.internal:host-gateway \
+      -e MONGO_HOST=host.docker.internal \
+      testgyver:latest
     ```

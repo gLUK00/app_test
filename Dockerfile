@@ -28,4 +28,4 @@ EXPOSE 5000
 ENV FLASK_APP=app \
     FLASK_ENV=production
 
-CMD ["/app/start.sh"]
+CMD ["gunicorn", "--worker-class", "eventlet", "-w", "1", "--bind", "0.0.0.0:5000", "app:app"]

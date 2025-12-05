@@ -11,9 +11,13 @@ You will be greeted by the login page featuring our mascot.
     *   Email: `admin@test.com`
     *   Password: `Password123`
 
+> **[SCREENSHOT]** Login page with the MacGyver pixel art mascot.
+
 ## Dashboard Overview
 
 Once logged in, you arrive at the **Dashboard**.
+
+> **[SCREENSHOT]** Dashboard view showing the list of campaigns and the navigation bar.
 
 *   **Campaigns List**: The central area showing all your test campaigns.
 *   **Navigation Bar**:

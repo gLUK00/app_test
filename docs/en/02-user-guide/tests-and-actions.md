@@ -16,8 +16,13 @@ Actions are the building blocks of your test.
 2.  **Select Action Type**: Choose from the available plugins (e.g., HTTP Request, SSH Command, Wait).
 3.  **Configure Action**: Fill in the specific parameters for the chosen action.
 
+> **[SCREENSHOT]** Action configuration form (e.g., HTTP Request) showing input fields.
+
 ### Variable Autocomplete
 When typing in text fields, TestGyver suggests available variables:
+
+> **[SCREENSHOT]** Autocomplete dropdown appearing while typing `{{` in a text field, showing colored suggestions.
+
 *   <span style="color:blue">**Global Variables**</span>: `{{variable_name}}`
 *   <span style="color:green">**Test Variables**</span>: `{{app.variable_name}}`
 *   <span style="color:red">**Collection Variables**</span>: `{{test.test_id}}`, `{{test.files_dir}}`

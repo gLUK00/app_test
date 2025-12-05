@@ -1,12 +1,23 @@
 """Utilitaires pour la gestion de la base de données MongoDB."""
 import json
+import os
 from pymongo import MongoClient
 from pymongo.errors import ConnectionFailure
 
 def load_config():
     """Charge la configuration depuis le fichier configuration.json."""
     with open('configuration.json', 'r', encoding='utf-8') as f:
-        return json.load(f)
+        config = json.load(f)
+        
+    # Surcharge avec les variables d'environnement si présentes
+    if 'mongo' in config:
+        config['mongo']['host'] = os.environ.get('MONGO_HOST', config['mongo']['host'])
+        config['mongo']['port'] = os.environ.get('MONGO_PORT', config['mongo']['port'])
+        config['mongo']['user'] = os.environ.get('MONGO_USER', config['mongo']['user'])
+        config['mongo']['pass'] = os.environ.get('MONGO_PASS', config['mongo']['pass'])
+        config['mongo']['bdd'] = os.environ.get('MONGO_DB', config['mongo']['bdd'])
+        
+    return config
 
 def get_db_connection():
     """Établit et retourne une connexion à la base de données MongoDB."""

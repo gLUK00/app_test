@@ -11,6 +11,8 @@ Les rapports fournissent un historique détaillé des exécutions de campagne.
 
 Cliquer sur un rapport ouvre la vue détaillée :
 
+> **[SCREENSHOT]** Page de détails d'un rapport montrant l'en-tête de statut et la liste des tests exécutés avec leurs icônes.
+
 ### En-tête
 *   **Statut** : Succès, Échec, ou En cours.
 *   **Progression** : Pourcentage de complétion.

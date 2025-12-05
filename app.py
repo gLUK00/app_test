@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """Application Flask principale pour TestGyver."""
+import os
 from flask import Flask, jsonify, request, session, g
 from flask_babel import Babel
 from models.user import User
@@ -64,7 +65,9 @@ def create_app():
     
     # Initialiser SocketIO avec le mode threading pour éviter les conflits avec le debugger
     # et assurer que les tâches de fond ne bloquent pas les heartbeats
-    socketio = SocketIO(app, cors_allowed_origins="*", async_mode='threading')
+    # En production, on laisse le mode par défaut (eventlet)
+    async_mode = 'threading' if os.environ.get('FLASK_ENV') != 'production' else None
+    socketio = SocketIO(app, cors_allowed_origins="*", async_mode=async_mode)
     
     # Stocker socketio dans les extensions pour un accès facile
     app.extensions['socketio'] = socketio
@@ -181,23 +184,24 @@ def create_app():
 # Créer l'application au niveau du module pour Flask CLI
 app = create_app()
 
+# Initialisation au démarrage (exécuté aussi avec Gunicorn)
+# Initialiser le répertoire de travail au démarrage
+print("\n" + "="*60)
+print("Initialisation du répertoire de travail des campagnes")
+print("="*60)
+ensure_workdir_exists()
+print("="*60 + "\n")
+
+# Initialiser les variables depuis le fichier JSON si présent
+print("\n" + "="*60)
+print("Initialisation des variables")
+print("="*60)
+initialize_variables_from_json('init/variables.json')
+print("="*60 + "\n")
+
 # Point d'entrée de l'application
 if __name__ == '__main__':
     config = load_config()
-    
-    # Initialiser le répertoire de travail au démarrage
-    print("\n" + "="*60)
-    print("Initialisation du répertoire de travail des campagnes")
-    print("="*60)
-    ensure_workdir_exists()
-    print("="*60 + "\n")
-    
-    # Initialiser les variables depuis le fichier JSON si présent
-    print("\n" + "="*60)
-    print("Initialisation des variables")
-    print("="*60)
-    initialize_variables_from_json('init/variables.json')
-    print("="*60 + "\n")
     
     # Utiliser socketio.run() au lieu de app.run()
     # Désactiver le rechargement automatique pour éviter les redémarrages lors de l'écriture dans workdir
