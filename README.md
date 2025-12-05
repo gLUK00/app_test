@@ -1,157 +1,70 @@
 # TestGyver
 
-## Choisir votre langue
-- Français (défaut)
-- [English](docs/README.en.md)
-- [Español](docs/README.es.md)
-- [Deutsch](docs/README.de.md)
-- [Italiano](docs/README.it.md)
+![Version](https://img.shields.io/badge/version-1.0.0-blue)
+![License](https://img.shields.io/badge/license-MIT-green)
 
-## Aperçu
-TestGyver est une application de test multi-environnements destinée à orchestrer et documenter des campagnes de tests fonctionnels ou techniques. Inspirée par l'esprit ingénieux de MacGyver, la plateforme combine flexibilité, extensibilité (plugins d'actions) et visibilité (rapports détaillés) au sein d'une interface web construite avec Flask et MongoDB.
+**TestGyver** is a multi-environment testing application designed to orchestrate and document functional or technical test campaigns. Inspired by the ingenious spirit of MacGyver, the platform combines flexibility, extensibility (action plugins), and visibility (detailed reports) within a web interface built with Flask and MongoDB.
 
-## Fonctionnalités majeures
-- Authentification JWT avec page de connexion dédiée (`/`).
-- Tableau de bord des campagnes accessible après connexion (`/dashboard`).
-- Gestion complète des campagnes et de leurs tests (création, édition, actions et rapports).
-- Modules d'administration réservés aux comptes `admin` pour gérer utilisateurs et variables multi-environnements.
-- Catalogue d'actions extensible (HTTPRequest, WebDAV, FTP, SFTP, SSH, etc.) avec masques de saisie dynamiques.
-- Génération de rapports structurés, historisation des exécutions et exposition d'une documentation Swagger (`/swagger`).
+## 📚 Documentation
 
-## Architecture technique
-- **Backend / Frontend** : Flask + Jinja2 + Bootstrap + FontAwesome.
-- **Base de données** : MongoDB (collections `users`, `variables`, `campains`, `tests`, `rapports`).
-- **Persistance** : PyMongo pour interagir avec MongoDB.
-- **Sécurité** : JWT (durée d'expiration configurable) et gestion des rôles (`admin`, `user`).
-- **Configuration** : `configuration.json` centralisant les paramètres applicatifs, MongoDB, pagination, sécurité et version.
-- **Statique** : ressources dans `static/` (CSS, JS, images) avec CDN locaux.
+The complete documentation is available in the `docs/` folder.
 
-## Prérequis
-- Python 3.11+
-- MongoDB 6.x (ou compatible) accessible selon les paramètres de `configuration.json`
-- Node facultatif si vous souhaitez étendre les assets statiques
-- `pip` et un environnement virtuel recommandé
+### 🌍 Choose your language
 
-## Installation
-1. Clonez le dépôt :
-	```bash
-	git clone <url-du-depot> && cd app_test
-	```
-2. Créez et activez un environnement virtuel :
-	```bash
-	python -m venv .venv
-	source .venv/bin/activate
-	```
-3. Installez les dépendances :
-	```bash
-	pip install -r requirements.txt
-	```
+*   [English (Source)](docs/en/index.md)
+*   [Français](docs/fr/index.md)
+*   [Español](docs/es/index.md)
+*   [Deutsch](docs/de/index.md)
+*   [Italiano](docs/it/index.md)
 
-## Configuration
-1. Copiez le modèle de configuration si disponible ou créez `configuration.json` :
-	```json
-	{
-		 "mongo": {
-			  "user": "root",
-			  "pass": "mypass",
-			  "host": "localhost",
-			  "port": "27017",
-			  "bdd": "testGyver"
-		 },
-		 "jwt_secret": "change-me",
-		 "app": {
-			  "debug": true,
-			  "port": 5000
-		 },
-		 "pagination": {
-			  "page_size": 20
-		 },
-		 "security": {
-			  "token_expiration_minutes": 60
-		 },
-		 "version": "1.0.0"
-	}
-	```
-2. Facultatif : créez un fichier `.env` (ignoré par Git) pour stocker les variables sensibles (mot de passe MongoDB, clés API, etc.).
+## 🚀 Quick Start
 
-## Exécution locale
-1. Démarrez MongoDB (localement ou via Docker) et assurez-vous que les identifiants correspondent à ceux de `configuration.json`.
-2. Exportez la variable `FLASK_APP` si nécessaire :
-	```bash
-	export FLASK_APP=app
-	export FLASK_ENV=development
-	```
-3. Lancez l'application :
-	```bash
-	flask run --host=0.0.0.0 --port=5000
-	```
-4. Accédez à l'application sur `http://localhost:5000`.
+### Prerequisites
 
-## Scripts utiles
-- **`init/create_user.py`** : création d'utilisateurs (admin ou user) en mode interactif ou ligne de commande
-  ```bash
-  # Mode interactif (recommandé)
-  python3 init/create_user.py
-  
-  # Ligne de commande
-  python3 init/create_user.py -n "Admin" -e admin@test.com -p Password123 -r admin
-  ```
-  Voir [init/CREATE_USER_README.md](init/CREATE_USER_README.md) pour plus de détails.
-- **`init/init_database.py`** : initialisation complète de la base de données avec collections et index
-- **`start.sh`** : script d'entrée standardisé (utilisé aussi par Docker). Assurez-vous qu'il est exécutable (`chmod +x start.sh`).
-- **`flask` CLI** : gérer les actions de maintenance (migrations éventuelles, etc.).
+*   Python 3.11+
+*   MongoDB 6.x
+*   Docker (optional, for containerized deployment)
 
-## Conteneurisation
-1. Construisez l'image :
-	```bash
-	docker build -t testgyver:latest .
-	```
-2. Lancez le conteneur en liant les variables d'environnement :
-	```bash
-	docker run -p 5000:5000 --env-file .env testgyver:latest
-	```
-3. Montez votre `configuration.json` si vous souhaitez l'externaliser :
-	```bash
-	docker run -p 5000:5000 \
-		 -v $(pwd)/configuration.json:/app/configuration.json \
-		 --env-file .env \
-		 testgyver:latest
-	```
+### Installation
 
-## Débogage dans VS Code
-1. Installez l'extension Python (ms-python.python) et activez votre environnement.
-2. Ouvrez le dépôt dans VS Code.
-3. Sélectionnez la configuration **TestGyver: Flask Debug** depuis l'onglet Run and Debug.
-4. Placez des points d'arrêt dans vos routes ou actions.
-5. Lancez le débogueur pour exécuter `flask run` en mode développement.
+1.  Clone the repository:
+    ```bash
+    git clone <repository-url>
+    cd app_test
+    ```
 
-## Structure des données
-- `users` : informations d'identité, rôle, mot de passe hashé.
-- `variables` : paires clé/valeur contextuelles, regroupées par filière/environnement.
-- `campains` : métadonnées d'une campagne (auteur, description, date).
-- `tests` : actions ordonnées associées à une campagne.
-- `rapports` : résultat d'exécution des tests, logs détaillés par test.
+2.  Create a virtual environment:
+    ```bash
+    python -m venv .venv
+    source .venv/bin/activate  # Linux/Mac
+    # .venv\Scripts\activate   # Windows
+    ```
 
-## API principales
-- `POST /api/login` & `POST /api/logout` : cycle d'authentification JWT.
-- `CRUD /api/users` (admin) : gestion des membres.
-- `CRUD /api/campains` : orchestration des campagnes.
-- `CRUD /api/tests` : gestion des actions par campagne.
-- `CRUD /api/variables` (admin) : configuration multi-environnements.
-- `CRUD /api/rapports` : génération et consultation des rapports.
-- `GET /swagger` : documentation interactive.
+3.  Install dependencies:
+    ```bash
+    pip install -r requirements.txt
+    ```
 
-## Personnalisation des actions
-Chaque classe dans `plugins/actions` hérite de `ActionBase` et fournit :
-- un schéma JSON décrivant le masque de saisie (type, label, placeholder, etc.) ;
-- une méthode `execute(ActionContext)` qui orchestre la logique métier ;
-- des traces d'exécution exploitables dans les rapports.
+4.  Configure the application:
+    Copy `configuration.json.example` to `configuration.json` and adjust the settings (MongoDB connection, etc.).
 
-## Aller plus loin
-- Ajoutez vos propres actions en étendant `ActionBase`.
-- Intégrez un orchestrateur (GitHub Actions, Jenkins) pour planifier l'exécution de campagnes.
-- Connectez une plateforme de notification (Slack, Teams, courriel) pour diffuser les rapports automatiquement.
+5.  Run the application:
+    ```bash
+    flask run
+    ```
 
-## Support
-Pour toute question ou suggestion merci d'ouvrir une issue GitHub ou de contacter l'équipe TestGyver.
+## 🧩 Key Features
+
+*   **Campaign Management**: Create, organize, and execute test campaigns.
+*   **Plugin System**: Extend functionality with custom action plugins (HTTP, SSH, FTP, etc.).
+*   **Real-time Reporting**: Monitor test execution via WebSockets.
+*   **Multi-environment**: Manage variables across different environments.
+
+## 🤝 Contributing
+
+We welcome contributions! Please see our [Developer Guide](docs/en/03-developer-guide/index.md) for more details.
+
+## 📄 License
+
+This project is licensed under the MIT License.
 

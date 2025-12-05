@@ -275,7 +275,7 @@ msgstr "添加测试"
 
 #: templates/campain_details.html:1018 templates/rapport_details.html:257
 msgid "Erreur lors de l'exécution de la campagne"
-msgstr ""
+msgstr "执行活动时出错"
 
 #: templates/campain_details.html:1041
 #, fuzzy
@@ -289,7 +289,7 @@ msgstr "通过"
 
 #: templates/campain_details.html:1125
 msgid "Le nom de la campagne ne peut pas être vide"
-msgstr ""
+msgstr "活动名称不能为空"
 
 #: templates/campain_details.html:1140
 #, fuzzy
@@ -362,11 +362,11 @@ msgstr "创建活动"
 
 #: templates/dashboard.html:144
 msgid "Erreur lors du chargement des campagnes"
-msgstr ""
+msgstr "加载活动时出错"
 
 #: templates/dashboard.html:151
 msgid "Êtes-vous sûr de vouloir supprimer cette campagne ?"
-msgstr ""
+msgstr "您确定要删除此活动吗？"
 
 #: templates/dashboard.html:157
 #, fuzzy
@@ -375,7 +375,7 @@ msgstr "活动创建成功"
 
 #: templates/dashboard.html:160
 msgid "Erreur lors de la suppression de la campagne"
-msgstr ""
+msgstr "删除活动时出错"
 
 #: templates/dashboard.html:181
 #, fuzzy
@@ -394,15 +394,15 @@ msgstr "活动创建成功"
 
 #: templates/login.html:6
 msgid "Connexion"
-msgstr ""
+msgstr "登录"
 
 #: templates/login.html:30
 msgid "Really! Are you serious?"
-msgstr ""
+msgstr "真的吗！你是认真的吗？"
 
 #: templates/login.html:40
 msgid "Plateforme de test multi-environnements"
-msgstr ""
+msgstr "多环境测试平台"
 
 #: templates/admin/users.html:67 templates/login.html:59
 msgid "Email"
@@ -410,15 +410,15 @@ msgstr "电子邮件"
 
 #: templates/login.html:66
 msgid "Mot de passe"
-msgstr ""
+msgstr "密码"
 
 #: templates/login.html:73
 msgid "Se connecter"
-msgstr ""
+msgstr "连接"
 
 #: templates/login.html:111
 msgid "Votre session a expiré. Veuillez vous reconnecter."
-msgstr ""
+msgstr "您的会话已过期。请重新登录。"
 
 #: templates/login.html:140
 #, fuzzy
@@ -427,59 +427,59 @@ msgstr "注销"
 
 #: templates/login.html:144
 msgid "Erreur de connexion au serveur"
-msgstr ""
+msgstr "服务器连接错误"
 
 #: templates/rapport_details.html:3 templates/rapport_details.html:104
 msgid "Détails du rapport"
-msgstr ""
+msgstr "报告详情"
 
 #: templates/rapport_details.html:124
 msgid "Informations générales"
-msgstr ""
+msgstr "一般信息"
 
 #: templates/rapport_details.html:130 templates/test_execute.html:58
 msgid "Environnement :"
-msgstr ""
+msgstr "环境："
 
 #: templates/rapport_details.html:133
 msgid "Date de création :"
-msgstr ""
+msgstr "创建日期："
 
 #: templates/rapport_details.html:134
 msgid "Statut :"
-msgstr ""
+msgstr "状态："
 
 #: templates/rapport_details.html:137
 msgid "Temps d'exécution :"
-msgstr ""
+msgstr "执行时间："
 
 #: templates/rapport_details.html:143
 msgid "Progression :"
-msgstr ""
+msgstr "进度："
 
 #: templates/rapport_details.html:163
 msgid "Tests exécutés"
-msgstr ""
+msgstr "已执行的测试"
 
 #: templates/rapport_details.html:167
 msgid "En cours..."
-msgstr ""
+msgstr "进行中..."
 
 #: templates/rapport_details.html:183
 msgid "Aucun test dans ce rapport"
-msgstr ""
+msgstr "此报告中没有测试"
 
 #: templates/rapport_details.html:245
 msgid "Exécution de la campagne terminée"
-msgstr ""
+msgstr "活动执行完成"
 
 #: templates/rapport_details.html:296
 msgid "Erreur lors du chargement du rapport"
-msgstr ""
+msgstr "加载报告时出错"
 
 #: templates/rapport_details.html:314
 msgid "Aucun log disponible"
-msgstr ""
+msgstr "无可用日志"
 
 #: templates/rapport_details.html:325 templates/rapport_details.html:399
 #: templates/rapport_details.html:470 templates/test_execute.html:86
@@ -507,11 +507,11 @@ msgstr "跳过"
 
 #: templates/rapport_details.html:374
 msgid "Temps d'exécution:"
-msgstr ""
+msgstr "执行时间："
 
 #: templates/rapport_details.html:376
 msgid "Logs d'exécution:"
-msgstr ""
+msgstr "执行日志："
 
 #: templates/rapport_details.html:478
 msgid "Terminé"
@@ -519,64 +519,64 @@ msgstr "已完成"
 
 #: templates/test_add.html:13 templates/test_edit.html:13
 msgid "Enregistrer et lancer le test"
-msgstr ""
+msgstr "保存并运行测试"
 
 #: templates/test_add.html:25 templates/test_edit.html:25
 #: templates/test_execute.html:23
 msgid "Informations du test"
-msgstr ""
+msgstr "测试信息"
 
 #: templates/test_add.html:29 templates/test_edit.html:29
 msgid "Nom du test *"
-msgstr ""
+msgstr "测试名称 *"
 
 #: templates/test_add.html:43 templates/test_edit.html:43
 msgid "Actions du test"
-msgstr ""
+msgstr "测试操作"
 
 #: templates/test_add.html:46 templates/test_add.html:117
 #: templates/test_edit.html:46 templates/test_edit.html:124
 msgid "Ajouter une variable"
-msgstr ""
+msgstr "添加变量"
 
 #: templates/test_add.html:49 templates/test_add.html:79
 #: templates/test_edit.html:49 templates/test_edit.html:86
 msgid "Ajouter une action"
-msgstr ""
+msgstr "添加操作"
 
 #: templates/test_add.html:59
 msgid "Aucune action ajoutée. Cliquez sur \"Ajouter une action\" pour commencer."
-msgstr ""
+msgstr "未添加操作。点击“添加操作”开始。"
 
 #: templates/test_add.html:67
 msgid "Créer le test"
-msgstr ""
+msgstr "创建测试"
 
 #: templates/test_add.html:85 templates/test_edit.html:92
 msgid "Type d'action *"
-msgstr ""
+msgstr "操作类型 *"
 
 #: templates/test_add.html:87 templates/test_edit.html:94
 msgid "-- Sélectionner un type --"
-msgstr ""
+msgstr "-- 选择类型 --"
 
 #: templates/test_add.html:98 templates/test_edit.html:105
 msgid "Variables de sortie"
-msgstr ""
+msgstr "输出变量"
 
 #: templates/test_add.html:99 templates/test_edit.html:106
 msgid ""
 "Sélectionnez les variables de sortie que vous souhaitez rendre "
 "disponibles pour les actions suivantes."
-msgstr ""
+msgstr "选择您希望在后续操作中可用的输出变量。"
 
 #: templates/test_add.html:106 templates/test_edit.html:113
 msgid "Enregistrer"
-msgstr ""
+msgstr "保存"
 
 #: templates/test_add.html:123 templates/test_edit.html:130
 msgid "Nom de la variable *"
-msgstr ""
+msgstr "变量名称 *"
 
 #: templates/test_add.html:126 templates/test_edit.html:133
 #, fuzzy
@@ -585,7 +585,7 @@ msgstr "变量"
 
 #: templates/test_add.html:128 templates/test_edit.html:135
 msgid "Caractères alphanumériques et underscore uniquement"
-msgstr ""
+msgstr "仅限字母数字字符和下划线"
 
 #: templates/test_add.html:134 templates/test_edit.html:141
 msgid "Ajouter"
@@ -593,19 +593,19 @@ msgstr "添加"
 
 #: templates/test_add.html:153 templates/test_edit.html:187
 msgid "Veuillez saisir un nom pour le test"
-msgstr ""
+msgstr "请输入测试名称"
 
 #: templates/test_add.html:158 templates/test_edit.html:192
 msgid "Veuillez ajouter au moins une action au test"
-msgstr ""
+msgstr "请至少向测试添加一个操作"
 
 #: templates/test_add.html:174
 msgid "Erreur lors de la création du test: "
-msgstr ""
+msgstr "创建测试时出错："
 
 #: templates/test_edit.html:3 templates/test_edit.html:9
 msgid "Modifier un test"
-msgstr ""
+msgstr "编辑测试"
 
 #: templates/admin/user_edit.html:92 templates/test_edit.html:71
 msgid "Enregistrer les modifications"
@@ -613,51 +613,51 @@ msgstr "保存更改"
 
 #: templates/test_edit.html:74
 msgid "Supprimer le test"
-msgstr ""
+msgstr "删除测试"
 
 #: templates/test_edit.html:172 templates/test_execute.html:153
 msgid "Erreur lors du chargement du test"
-msgstr ""
+msgstr "加载测试时出错"
 
 #: templates/test_edit.html:217
 msgid "Erreur lors de la mise à jour du test: "
-msgstr ""
+msgstr "更新测试时出错："
 
 #: templates/test_execute.html:3 templates/test_execute.html:9
 msgid "Exécution du test"
-msgstr ""
+msgstr "测试执行"
 
 #: templates/test_execute.html:38
 msgid "Nombre d'actions :"
-msgstr ""
+msgstr "操作数量："
 
 #: templates/test_execute.html:39
 msgid "Variables du test :"
-msgstr ""
+msgstr "测试变量："
 
 #: templates/test_execute.html:53
 msgid "Configuration d'exécution"
-msgstr ""
+msgstr "执行配置"
 
 #: templates/test_execute.html:65
 msgid "Lancer le test"
-msgstr ""
+msgstr "运行测试"
 
 #: templates/test_execute.html:79
 msgid "Statut d'exécution"
-msgstr ""
+msgstr "执行状态"
 
 #: templates/test_execute.html:91
 msgid "Re-exécuter le test"
-msgstr ""
+msgstr "重新运行测试"
 
 #: templates/test_execute.html:106
 msgid "Logs d'exécution"
-msgstr ""
+msgstr "执行日志"
 
 #: templates/test_execute.html:108
 msgid "Effacer"
-msgstr ""
+msgstr "清除"
 
 #: templates/admin/deleted.html:211 templates/admin/deleted.html:277
 #: templates/test_execute.html:129
@@ -666,31 +666,31 @@ msgstr "未命名"
 
 #: templates/test_execute.html:130
 msgid "Aucune description"
-msgstr ""
+msgstr "无描述"
 
 #: templates/test_execute.html:138
 msgid "Aucune"
-msgstr ""
+msgstr "无"
 
 #: templates/test_execute.html:163
 msgid "Sélectionnez un environnement"
-msgstr ""
+msgstr "选择环境"
 
 #: templates/test_execute.html:179
 msgid "Erreur lors du chargement des environnements"
-msgstr ""
+msgstr "加载环境时出错"
 
 #: templates/test_execute.html:264
 msgid "Veuillez sélectionner un environnement"
-msgstr ""
+msgstr "请选择环境"
 
 #: templates/test_execute.html:269
 msgid "Lancement..."
-msgstr ""
+msgstr "正在启动..."
 
 #: templates/test_execute.html:277
 msgid "Erreur lors du lancement du test: "
-msgstr ""
+msgstr "启动测试时出错："
 
 #: templates/test_execute.html:278
 msgid "Erreur"
@@ -698,7 +698,7 @@ msgstr "错误"
 
 #: templates/test_execute.html:301
 msgid "Sélectionnez un environnement pour relancer le test"
-msgstr ""
+msgstr "选择环境以重新运行测试"
 
 #: templates/admin/deleted.html:8
 msgid "Gestion des éléments supprimés"
@@ -885,7 +885,7 @@ msgstr "用户信息"
 
 #: templates/admin/user_edit.html:3
 msgid "Modifier utilisateur"
-msgstr ""
+msgstr "编辑用户"
 
 #: templates/admin/user_edit.html:9
 msgid "Modifier l'utilisateur"
@@ -1118,27 +1118,27 @@ msgstr "变量键 *"
 
 #: templates/admin/variables.html:120 templates/admin/variables.html:198
 msgid "Aucune variable trouvée"
-msgstr ""
+msgstr "未找到变量"
 
 #: templates/admin/variables.html:127 templates/admin/variables.html:204
 msgid "Erreur lors du chargement des variables"
-msgstr ""
+msgstr "加载变量时出错"
 
 #: utils/validation.py:17
 #, python-brace-format
 msgid "Le mot de passe doit contenir au moins {} caractères"
-msgstr ""
+msgstr "密码必须至少包含 {} 个字符"
 
 #: utils/validation.py:19
 msgid "Mot de passe valide"
-msgstr ""
+msgstr "有效密码"
 
 #: utils/validation.py:26
 #, python-brace-format
 msgid "Champs manquants : {}"
-msgstr ""
+msgstr "缺少字段：{}"
 
 #: utils/validation.py:28
 msgid "Tous les champs requis sont présents"
-msgstr ""
+msgstr "所有必填字段都已存在"
 

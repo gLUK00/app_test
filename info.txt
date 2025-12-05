@@ -8,6 +8,23 @@
 
 --------------------------------------------
 
+deplace l'ensemble des docs dans un repertoire docs/old pour archivage
+
+dans l'obectif de rendre le projet plus accessible aux nouveaux contributeurs et utilisateurs, et d'en faire la promotion et tenter de le rendre plus attractif, je te propose de :
+propose un plan de refonte de la documentation avec une arborescence claire et des sections dédiées aux différents aspects de l'application (installation, utilisation, développement, API, etc.)
+parcours l'ensemble du projet pour proposer une structure de documentation cohérente et facile à naviguer
+effectu un focus sur le systeme de plugins d'actions, en détaillant comment développer de nouveaux plugins, les intégrer et les utiliser dans l'application
+la version racine doit être en anglais, avec des traductions disponibles dans des sous-dossiers (fr, es, de, it, etc.)
+les fichier markdown contenant des schemas ou diagrammes doivent utiliser des outils compatibles avec le rendu Mermaid pour un affichage dans GIT
+m'indiquer par [IMAGE OU SCREENSHOT] les endroits où des illustrations seraient pertinentes pour améliorer la compréhension
+
+
+--------------------------------------------
+
+
+
+
+
 --------------------------------------------
 
 effectuer un analyse de la partie front et back (au niveau des chaines) et mettre en place le mecanisme d'internationalisation (i18n) avec Flask-Babel.
