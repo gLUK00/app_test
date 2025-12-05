@@ -16,6 +16,8 @@ The complete documentation is available in the `docs/` folder.
 *   [Español](docs/es/index.md)
 *   [Deutsch](docs/de/index.md)
 *   [Italiano](docs/it/index.md)
+*   [Japanese](docs/ja/index.md)
+*   [中文](docs/zh/index.md)
 
 ## 🚀 Quick Start
 
