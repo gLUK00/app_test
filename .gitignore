@@ -17,3 +17,6 @@ workdir/
 
 # supprimer le répertoire _build s'il est généré
 _build/
+
+# Documentation locale
+info.txt

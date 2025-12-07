@@ -79,7 +79,10 @@
 
 {% block extra_js %}
 <script>
-    document.getElementById('userForm').addEventListener('submit', async (e) => {
+    document.addEventListener('DOMContentLoaded', () => {
+        const userForm = document.getElementById('userForm');
+        if (userForm) {
+            userForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         
         const password = document.getElementById('password').value;
@@ -98,8 +101,6 @@
             role: document.getElementById('role').value
         };
         
-```
-        
         // Validation de base
         if (!data.name || !data.email || !data.password || !data.role) {
             Notification.error("{{ _('Veuillez remplir tous les champs obligatoires') }}");
@@ -114,6 +115,8 @@
             }, 1000);
         } catch (error) {
             Notification.error(error.message || "{{ _('Erreur lors de la création de l\'utilisateur') }}");
+        }
+            });
         }
     });
 </script>

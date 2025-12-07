@@ -11,7 +11,7 @@
 
 The complete documentation is available in the `docs/` folder.
 
-![Login page](docs/assets/login_page.png)
+<video src="docs/assets/testgyver-intro.mp4" controls width="100%"></video>
 
 ### 🌍 Choose your language
 
