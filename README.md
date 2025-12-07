@@ -90,7 +90,18 @@ Image: `gluk46546546/testgyver:0.0.2`
 
 ## 🤝 Contributing
 
-We welcome contributions! Please see our [Developer Guide](docs/en/03-developer-guide/index.md) for more details.
+Contributions are welcome!
+If you want to help, check out the issues tagged with **"good first issue"**:
+
+[![Good First Issues](https://img.shields.io/github/issues/gLUK00/app_test/good%20first%20issue?color=green&label=Good%20First%20Issues)](https://github.com/gLUK00/app_test/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22)
+
+1.  Fork the project.
+2.  Create your feature branch (`git checkout -b feature/AmazingFeature`).
+3.  Commit your changes (`git commit -m 'Add some AmazingFeature'`).
+4.  Push to the branch (`git push origin feature/AmazingFeature`).
+5.  Open a Pull Request.
+
+Please see our [Developer Guide](docs/en/03-developer-guide/index.md) for more details.
 
 ## 📄 License
 
