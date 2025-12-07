@@ -13,8 +13,6 @@ The complete documentation is available in the `docs/` folder.
 
 ![Démo TestGyver](docs/assets/testgyver-intro.gif)
 
-> 🎥 [Voir la vidéo complète (MP4)](docs/assets/testgyver-intro.mp4)
-
 ### 🌍 Choose your language
 
 *   [English (Source)](docs/en/index.md)
