@@ -11,8 +11,9 @@
 
 The complete documentation is available in the `docs/` folder.
 
-[![Démo vidéo](docs/assets/login_page.png)](https://github.com/gLUK00/app_test/blob/main/docs/assets/testgyver-intro.mp4?raw=true)
+![Démo TestGyver](docs/assets/testgyver-intro.gif)
 
+> 🎥 [Voir la vidéo complète (MP4)](docs/assets/testgyver-intro.mp4)
 
 ### 🌍 Choose your language
 
