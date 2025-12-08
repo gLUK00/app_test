@@ -11,7 +11,7 @@
 
 The complete documentation is available in the `docs/` folder.
 
-![Démo TestGyver](docs/assets/testgyver-intro.gif)
+![Démo TestGyver](raw/main/docs/assets/testgyver-intro.gif)
 
 ### 🌍 Choose your language
 
