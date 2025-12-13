@@ -52,7 +52,10 @@ def check_mongodb_connection(config):
     """Vérifie la connexion à MongoDB."""
     try:
         mongo = config['mongo']
-        connection_string = f"mongodb://{mongo['user']}:{mongo['pass']}@{mongo['host']}:{mongo['port']}"
+        if mongo.get('protocol') == 'srv' and mongo.get('srv'):
+            connection_string = mongo['srv']
+        else:
+            connection_string = f"mongodb://{mongo['user']}:{mongo['pass']}@{mongo['host']}:{mongo['port']}/"
         client = MongoClient(connection_string, serverSelectionTimeoutMS=8080)
         # Forcer la connexion pour vérifier
         client.admin.command('ping')
