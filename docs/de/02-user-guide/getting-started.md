@@ -4,7 +4,7 @@ Willkommen bei TestGyver! Diese Anleitung hilft dir beim ersten Einstieg.
 
 ## Login
 
-Rufe die konfigurierte URL auf (Standard: `http://localhost:5000`). Du siehst die Login-Seite mit dem Maskottchen.
+Rufe die konfigurierte URL auf (Standard: `http://localhost:8080`). Du siehst die Login-Seite mit dem Maskottchen.
 
 *   **Standard-Admin** (falls initialisiert):
     *   Email: `admin@test.com`

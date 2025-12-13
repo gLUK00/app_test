@@ -3,7 +3,7 @@ set -euo pipefail
 
 # Allow overriding the bind address and port through environment variables
 APP_HOST="${FLASK_HOST:-0.0.0.0}"
-APP_PORT="${FLASK_PORT:-5000}"
+APP_PORT="${FLASK_PORT:-8080}"
 
 if [ -f "/app/.env" ]; then
     # shellcheck disable=SC1091

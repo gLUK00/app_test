@@ -53,7 +53,7 @@ python init/create_user.py
 export FLASK_APP=app
 export FLASK_ENV=development  # Usa 'production' in deploy
 
-flask run --host=0.0.0.0 --port=5000
+flask run --host=0.0.0.0 --port=8080
 ```
 
-Apri `http://localhost:5000`.
+Apri `http://localhost:8080`.

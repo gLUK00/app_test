@@ -53,7 +53,7 @@ python init/create_user.py
 export FLASK_APP=app
 export FLASK_ENV=development  # 部署用 'production'
 
-flask run --host=0.0.0.0 --port=5000
+flask run --host=0.0.0.0 --port=8080
 ```
 
-访问 `http://localhost:5000`。
+访问 `http://localhost:8080`。

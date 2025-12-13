@@ -1,0 +1,3 @@
+Ceci est un fichier de test pour l'upload S3.
+Généré automatiquement pour les tests d'intégration.
+Date: 2025-12-07

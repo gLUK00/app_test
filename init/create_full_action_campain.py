@@ -1024,7 +1024,7 @@ def build_parser() -> argparse.ArgumentParser:
         description='Crée une campagne de tests couvrant toutes les actions disponibles.',
         formatter_class=argparse.ArgumentDefaultsHelpFormatter
     )
-    parser.add_argument('--api-url', help='URL de base de l\'API (par exemple http://127.0.0.1:5000)')
+    parser.add_argument('--api-url', help='URL de base de l\'API (par exemple http://127.0.0.1:8080)')
     parser.add_argument('--email', help='Email administrateur utilisé pour l\'authentification')
     parser.add_argument('--password', help='Mot de passe administrateur (sinon questionné)')
     parser.add_argument('--campain-name', help='Nom initial proposé pour la campagne')

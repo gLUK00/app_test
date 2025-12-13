@@ -67,13 +67,13 @@ Image: `gluk46546546/testgyver:0.0.2`
     ```bash
     docker pull gluk46546546/testgyver:0.0.2
     ```
-- Run exposing port 5000:
+- Run exposing port 8080:
     ```bash
-    docker run --rm -p 5000:5000 gluk46546546/testgyver:0.0.2
+    docker run --rm -p 8080:8080 gluk46546546/testgyver:0.0.2
     ```
 - Configure MongoDB using environment variables (example):
     ```bash
-    docker run --rm -p 5000:5000 \
+    docker run --rm -p 8080:8080 \
         -e MONGO_HOST=host.docker.internal \
         -e MONGO_PORT=27017 \
         -e MONGO_DB=testgyver \
@@ -87,6 +87,19 @@ Image: `gluk46546546/testgyver:0.0.2`
 *   **Plugin System**: Extend functionality with custom action plugins (HTTP, SSH, FTP, etc.).
 *   **Real-time Reporting**: Monitor test execution via WebSockets.
 *   **Multi-environment**: Manage variables across different environments.
+
+### 🔌 Available Action Plugins
+
+| Plugin | Description | Key Features |
+| :--- | :--- | :--- |
+| **HTTP Request** | Performs HTTP requests (REST API) | GET, POST, PUT, DELETE, Headers, JSON/Form data |
+| **FTP** | Interacts with FTP servers | Upload, Download, List, Delete, Rename |
+| **SFTP** | Secure file transfer over SSH | Upload, Download, List, Delete, Rename |
+| **SSH** | Executes remote shell commands | Command execution, Output capture |
+| **S3** | Interacts with S3-compatible storage | List Buckets, Upload, Download, Delete |
+| **WebDAV** | Manages files via WebDAV | Upload, Download, List, Delete, Mkdir |
+| **I/O (Files)** | Local file system operations | Read, Write, Copy, Move, Delete, Exists check |
+| **Variables** | Variable manipulation | Type conversion (int, float, json), Value assignment |
 
 ## 🤝 Contributing
 

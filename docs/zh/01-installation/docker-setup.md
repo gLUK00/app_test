@@ -38,7 +38,7 @@ services:
     container_name: testgyver-app
     build: .
     ports:
-      - "5000:5000"
+      - "8080:8080"
     environment:
       - FLASK_ENV=production
     depends_on:
@@ -56,7 +56,7 @@ volumes:
 docker-compose up -d
 ```
 
-应用程序将在 `http://localhost:5000` 上可用。
+应用程序将在 `http://localhost:8080` 上可用。
 
 ## 使用 Docker 手动运行
 
@@ -70,7 +70,7 @@ docker-compose up -d
 2.  运行应用程序。要连接到主机 (localhost) 上运行的 MongoDB 实例，请使用以下命令：
     ```bash
     docker run --rm \
-      -p 5000:5000 \
+      -p 8080:8080 \
       --add-host=host.docker.internal:host-gateway \
       -e MONGO_HOST=host.docker.internal \
       testgyver:latest

@@ -4,7 +4,7 @@ Benvenuto in TestGyver! Questa guida ti accompagna nel primo utilizzo.
 
 ## Login
 
-Apri l'URL configurato (default: `http://localhost:5000`). Vedrai la pagina di login con la mascotte.
+Apri l'URL configurato (default: `http://localhost:8080`). Vedrai la pagina di login con la mascotte.
 
 *   **Admin di default** (se inizializzato):
     *   Email: `admin@test.com`

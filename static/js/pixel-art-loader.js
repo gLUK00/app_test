@@ -6,7 +6,7 @@
  * const loader = new PixelArtLoader({
  *     containerId: 'pixel-art-mac',
  *     files: ['art1.txt', 'art2.txt'],
- *     interval: 5000,        // Intervalle entre les images en ms (défaut: 5000)
+ *     interval: 8080,        // Intervalle entre les images en ms (défaut: 8080)
  *     lineDelay: 50,         // Délai entre chaque ligne en ms (défaut: 50)
  *     randomTransition: true // Transition aléatoire ou séquentielle (défaut: true)
  * });
@@ -27,7 +27,7 @@ class PixelArtLoader {
         // Configuration
         this.containerId = options.containerId;
         this.files = options.files;
-        this.interval = options.interval || 5000; // 5 secondes par défaut
+        this.interval = options.interval || 8080; // 5 secondes par défaut
         this.lineDelay = options.lineDelay || 50; // 50ms entre chaque ligne
         this.basePath = options.basePath || '/static/images/art/';
         this.randomTransition = options.randomTransition !== undefined ? options.randomTransition : true; // Aléatoire par défaut

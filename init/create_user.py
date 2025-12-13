@@ -53,7 +53,7 @@ def check_mongodb_connection(config):
     try:
         mongo = config['mongo']
         connection_string = f"mongodb://{mongo['user']}:{mongo['pass']}@{mongo['host']}:{mongo['port']}"
-        client = MongoClient(connection_string, serverSelectionTimeoutMS=5000)
+        client = MongoClient(connection_string, serverSelectionTimeoutMS=8080)
         # Forcer la connexion pour vérifier
         client.admin.command('ping')
         print_success("Connexion à MongoDB établie")

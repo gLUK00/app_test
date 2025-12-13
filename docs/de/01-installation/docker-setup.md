@@ -38,7 +38,7 @@ services:
     container_name: testgyver-app
     build: .
     ports:
-      - "5000:5000"
+      - "8080:8080"
     environment:
       - FLASK_ENV=production
     depends_on:
@@ -56,7 +56,7 @@ Starten Sie den Stack:
 docker-compose up -d
 ```
 
-Die Anwendung ist unter `http://localhost:5000` verfügbar.
+Die Anwendung ist unter `http://localhost:8080` verfügbar.
 
 ## Manuelles Ausführen mit Docker
 
@@ -70,7 +70,7 @@ Wenn Sie Container lieber einzeln ausführen möchten:
 2.  Starten Sie die Anwendung. Um eine Verbindung zu einer MongoDB-Instanz herzustellen, die auf Ihrem Host-Rechner (localhost) läuft, verwenden Sie den folgenden Befehl:
     ```bash
     docker run --rm \
-      -p 5000:5000 \
+      -p 8080:8080 \
       --add-host=host.docker.internal:host-gateway \
       -e MONGO_HOST=host.docker.internal \
       testgyver:latest

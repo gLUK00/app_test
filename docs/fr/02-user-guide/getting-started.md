@@ -4,7 +4,7 @@ Bienvenue sur TestGyver ! Ce guide vous aidera à naviguer dans l'application po
 
 ## Connexion
 
-Accédez à l'application via l'URL configurée (par défaut : `http://localhost:5000`).
+Accédez à l'application via l'URL configurée (par défaut : `http://localhost:8080`).
 Vous serez accueilli par la page de connexion mettant en vedette notre mascotte.
 
 *   **Identifiants Admin par Défaut** (si initialisés) :

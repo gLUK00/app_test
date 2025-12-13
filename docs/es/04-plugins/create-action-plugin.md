@@ -98,3 +98,37 @@ Lógica principal. `context` expone variables y entorno.
 *   **Errores**: Usa try/except para no romper el runner.
 *   **Logging**: Devuelve trazas detalladas para depurar.
 *   **Validación**: Sé estricto en `validate_config`.
+
+## Probando tu Plugin
+
+Para facilitar el desarrollo y las pruebas de tus plugins, un entorno local completo está disponible a través de Docker Compose.
+
+### 1. Iniciar el Entorno de Pruebas
+
+Se proporciona un archivo `test-docker-compose.yml` en el directorio `init/`. Configura varios servicios (FTP, SFTP, WebDAV, SSH, S3/MinIO, API HTTP) para probar tus acciones contra objetivos reales.
+
+```bash
+sudo docker-compose -f init/test-docker-compose.yml up -d
+```
+
+### 2. Importar Datos de Prueba
+
+Para poblar rápidamente tu instancia de TestGyver con una campaña de prueba completa que cubra todas las acciones estándar:
+
+1.  Ve a la página **Campañas** en la aplicación.
+2.  Haz clic en **Importar**.
+3.  Selecciona el archivo `init/campain_All_tests.json`.
+
+Esta campaña contiene ejemplos de cómo configurar acciones para interactuar con los servicios proporcionados por el entorno de prueba.
+
+### 3. Importar Variables de Entorno
+
+La campaña de prueba depende de variables específicas (nombres de host, credenciales, etc.). Puedes importarlas automáticamente usando el script proporcionado.
+
+Asegúrate de que tu entorno virtual esté activo, luego ejecuta:
+
+```bash
+python import_variables.py init/import-var-test-docker.json
+```
+
+Esto creará las variables necesarias en el entorno "Global" (o el definido en el archivo JSON) para coincidir con la configuración de `test-docker-compose.yml`.

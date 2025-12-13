@@ -56,7 +56,7 @@ export FLASK_APP=app
 export FLASK_ENV=development  # Für Deployment 'production'
 
 # Flask starten
-flask run --host=0.0.0.0 --port=5000
+flask run --host=0.0.0.0 --port=8080
 ```
 
-Zugriff unter `http://localhost:5000`.
+Zugriff unter `http://localhost:8080`.

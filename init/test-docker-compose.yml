@@ -36,7 +36,7 @@ services:
     image: bytemark/webdav:latest
     container_name: test-webdav-server
     ports:
-      - "8080:80"
+      - "8070:80"
     environment:
       - AUTH_TYPE=Basic
       - USERNAME=testuser
@@ -76,6 +76,29 @@ services:
     networks:
       - test-network
 
+  # Serveur S3 (MinIO)
+  s3-server:
+    image: minio/minio:latest
+    container_name: test-s3-server
+    ports:
+      - "9002:9000"
+      - "9001:9001"
+    environment:
+      - MINIO_ROOT_USER=testuser
+      - MINIO_ROOT_PASSWORD=testpass
+    entrypoint: >
+      /bin/sh -c "
+      mkdir -p /data/test-bucket;
+      cp /tmp/initial-file.txt /data/test-bucket/initial-file.txt;
+      /usr/bin/docker-entrypoint.sh server /data --console-address ':9001';
+      "
+    volumes:
+      - s3-data:/data
+      - ./s3-test-file.txt:/tmp/initial-file.txt
+    restart: unless-stopped
+    networks:
+      - test-network
+
 volumes:
   ftp-data:
     driver: local
@@ -84,6 +107,8 @@ volumes:
   webdav-data:
     driver: local
   ssh-config:
+    driver: local
+  s3-data:
     driver: local
 
 networks:

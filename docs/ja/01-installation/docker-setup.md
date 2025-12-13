@@ -38,7 +38,7 @@ services:
     container_name: testgyver-app
     build: .
     ports:
-      - "5000:5000"
+      - "8080:8080"
     environment:
       - FLASK_ENV=production
     depends_on:
@@ -56,7 +56,7 @@ volumes:
 docker-compose up -d
 ```
 
-アプリケーションは `http://localhost:5000` で利用可能になります。
+アプリケーションは `http://localhost:8080` で利用可能になります。
 
 ## Docker での手動実行
 
@@ -70,7 +70,7 @@ docker-compose up -d
 2.  アプリケーションを実行します。ホストマシン (localhost) で実行されている MongoDB インスタンスに接続するには、次のコマンドを使用します:
     ```bash
     docker run --rm \
-      -p 5000:5000 \
+      -p 8080:8080 \
       --add-host=host.docker.internal:host-gateway \
       -e MONGO_HOST=host.docker.internal \
       testgyver:latest

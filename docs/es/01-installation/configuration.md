@@ -18,7 +18,7 @@ La aplicación se configura mediante un archivo `configuration.json` ubicado en 
     "jwt_secret": "your-secret-key",
     "app": {
         "debug": true,
-        "port": 5000,
+        "port": 8080,
         "host": "0.0.0.0"
     },
     "pagination": {

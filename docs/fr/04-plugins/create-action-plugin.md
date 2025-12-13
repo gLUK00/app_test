@@ -128,3 +128,37 @@ Le `PluginManager` découvre automatiquement les plugins dans le répertoire `pl
 *   **Gestion d'Erreur** : Enveloppez toujours votre logique d'exécution dans des blocs try/except pour éviter de faire planter le lanceur de tests.
 *   **Logging** : Retournez des traces détaillées (deuxième élément du tuple de retour) pour aider les utilisateurs à déboguer les problèmes.
 *   **Validation** : Soyez strict dans `validate_config` pour attraper les erreurs tôt.
+
+## Tester Votre Plugin
+
+Pour faciliter le développement et le test de vos plugins, un environnement local complet est disponible via Docker Compose.
+
+### 1. Démarrer l'Environnement de Test
+
+Un fichier `test-docker-compose.yml` est fourni dans le répertoire `init/`. Il met en place divers services (FTP, SFTP, WebDAV, SSH, S3/MinIO, API HTTP) pour tester vos actions contre des cibles réelles.
+
+```bash
+sudo docker-compose -f init/test-docker-compose.yml up -d
+```
+
+### 2. Importer les Données de Test
+
+Pour peupler rapidement votre instance TestGyver avec une campagne de test complète couvrant toutes les actions standard :
+
+1.  Allez sur la page **Campagnes** dans l'application.
+2.  Cliquez sur **Importer**.
+3.  Sélectionnez le fichier `init/campain_All_tests.json`.
+
+Cette campagne contient des exemples de configuration d'actions pour interagir avec les services fournis par l'environnement de test.
+
+### 3. Importer les Variables d'Environnement
+
+La campagne de test dépend de variables spécifiques (noms d'hôtes, identifiants, etc.). Vous pouvez les importer automatiquement en utilisant le script fourni.
+
+Assurez-vous que votre environnement virtuel est actif, puis exécutez :
+
+```bash
+python import_variables.py init/import-var-test-docker.json
+```
+
+Cela créera les variables nécessaires dans l'environnement "Global" (ou celui défini dans le fichier JSON) pour correspondre à la configuration de `test-docker-compose.yml`.

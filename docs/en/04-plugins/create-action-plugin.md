@@ -129,3 +129,37 @@ The `PluginManager` automatically discovers plugins in the `plugins/actions/` di
 *   **Error Handling**: Always wrap your execution logic in try/except blocks to prevent crashing the test runner.
 *   **Logging**: Return detailed traces (second element of the return tuple) to help users debug issues.
 *   **Validation**: Be strict in `validate_config` to catch errors early.
+
+## Testing Your Plugin
+
+To facilitate the development and testing of your plugins, a complete local environment is available via Docker Compose.
+
+### 1. Start the Test Environment
+
+A `test-docker-compose.yml` file is provided in the `init/` directory. It sets up various services (FTP, SFTP, WebDAV, SSH, S3/MinIO, HTTP API) to test your actions against real targets.
+
+```bash
+sudo docker-compose -f init/test-docker-compose.yml up -d
+```
+
+### 2. Import Test Data
+
+To quickly populate your TestGyver instance with a comprehensive test campaign covering all standard actions:
+
+1.  Go to the **Campaigns** page in the application.
+2.  Click on **Import**.
+3.  Select the file `init/campain_All_tests.json`.
+
+This campaign contains examples of how to configure actions to interact with the services provided by the test environment.
+
+### 3. Import Environment Variables
+
+The test campaign relies on specific variables (hostnames, credentials, etc.). You can import them automatically using the provided script.
+
+Ensure your virtual environment is active, then run:
+
+```bash
+python import_variables.py init/import-var-test-docker.json
+```
+
+This will create the necessary variables in the "Global" environment (or the one defined in the JSON file) to match the `test-docker-compose.yml` configuration.

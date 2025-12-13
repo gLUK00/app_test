@@ -20,12 +20,14 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy remaining application source
 COPY . ./
 
-# Ensure the startup script is executable
-RUN chmod +x /app/start.sh
+# Ensure the startup script is executable and set permissions for OpenShift compatibility
+RUN chmod +x /app/start.sh && \
+    chgrp -R 0 /app && \
+    chmod -R g=u /app
 
-EXPOSE 5000
+EXPOSE 8080
 
 ENV FLASK_APP=app \
     FLASK_ENV=production
 
-CMD ["gunicorn", "--worker-class", "eventlet", "-w", "1", "--bind", "0.0.0.0:5000", "app:app"]
+CMD ["gunicorn", "--worker-class", "eventlet", "-w", "1", "--bind", "0.0.0.0:8080", "app:app"]

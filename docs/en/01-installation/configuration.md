@@ -18,7 +18,7 @@ The application is configured via a `configuration.json` file located in the roo
     "jwt_secret": "your-secret-key",
     "app": {
         "debug": true,
-        "port": 5000,
+        "port": 8080,
         "host": "0.0.0.0"
     },
     "pagination": {

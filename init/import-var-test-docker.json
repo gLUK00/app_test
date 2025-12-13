@@ -79,7 +79,7 @@
     },
     {
         "key": "WEBDAV_URL",
-        "value": "http://127.0.0.1:8080",
+        "value": "http://127.0.0.1:8070",
         "filiere": "D01",
         "description": ""
     },
@@ -172,5 +172,23 @@
         "value": "{\"status\": \"ok\", \"balance\": \"199.99\"}",
         "filiere": "D01",
         "description": "Valeur auto (fullcamp_20251118_095532)"
+    },
+    {
+        "key": "S3_ENDPOINT",
+        "value": "http://127.0.0.1:9002",
+        "filiere": "D01",
+        "description": ""
+    },
+    {
+        "key": "S3_ACCESS_KEY",
+        "value": "testuser",
+        "filiere": "D01",
+        "description": ""
+    },
+    {
+        "key": "S3_SECRET_KEY",
+        "value": "testpass",
+        "filiere": "D01",
+        "description": ""
     }
 ]

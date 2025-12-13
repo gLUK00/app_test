@@ -4,7 +4,7 @@ Welcome to TestGyver! This guide will help you navigate the application for the 
 
 ## Login
 
-Access the application at the configured URL (default: `http://localhost:5000`).
+Access the application at the configured URL (default: `http://localhost:8080`).
 You will be greeted by the login page featuring our mascot.
 
 *   **Default Admin Credentials** (if initialized):

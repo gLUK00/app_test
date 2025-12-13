@@ -8,7 +8,7 @@
       "name": "TestGyver Support"
     }
   },
-  "host": "localhost:5000",
+  "host": "localhost:8080",
   "basePath": "/api",
   "schemes": ["http", "https"],
   "consumes": ["application/json"],

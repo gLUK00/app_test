@@ -88,3 +88,37 @@ Unterstützte Typen: `string`, `number`, `boolean`, `textarea`, `select`, `check
 *   **Fehlerbehandlung**: try/except nutzen.
 *   **Logging**: Detaillierte Traces zurückgeben.
 *   **Validierung**: Streng in `validate_config`.
+
+## Testen Ihres Plugins
+
+Um die Entwicklung und das Testen Ihrer Plugins zu erleichtern, steht eine vollständige lokale Umgebung über Docker Compose zur Verfügung.
+
+### 1. Testumgebung starten
+
+Eine `test-docker-compose.yml`-Datei befindet sich im Verzeichnis `init/`. Sie richtet verschiedene Dienste ein (FTP, SFTP, WebDAV, SSH, S3/MinIO, HTTP-API), um Ihre Aktionen gegen echte Ziele zu testen.
+
+```bash
+sudo docker-compose -f init/test-docker-compose.yml up -d
+```
+
+### 2. Testdaten importieren
+
+Um Ihre TestGyver-Instanz schnell mit einer umfassenden Testkampagne zu füllen, die alle Standardaktionen abdeckt:
+
+1.  Gehen Sie in der Anwendung auf die Seite **Kampagnen**.
+2.  Klicken Sie auf **Importieren**.
+3.  Wählen Sie die Datei `init/campain_All_tests.json` aus.
+
+Diese Kampagne enthält Beispiele für die Konfiguration von Aktionen zur Interaktion mit den von der Testumgebung bereitgestellten Diensten.
+
+### 3. Umgebungsvariablen importieren
+
+Die Testkampagne ist auf bestimmte Variablen angewiesen (Hostnamen, Anmeldeinformationen usw.). Sie können diese automatisch mit dem bereitgestellten Skript importieren.
+
+Stellen Sie sicher, dass Ihre virtuelle Umgebung aktiv ist, und führen Sie dann aus:
+
+```bash
+python import_variables.py init/import-var-test-docker.json
+```
+
+Dadurch werden die erforderlichen Variablen in der Umgebung "Global" (oder der in der JSON-Datei definierten) erstellt, um der Konfiguration von `test-docker-compose.yml` zu entsprechen.

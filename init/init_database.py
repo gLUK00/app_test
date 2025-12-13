@@ -55,7 +55,7 @@ def check_mongodb_connection(config):
     connection_string = f"mongodb://{mongo_config['user']}:{mongo_config['pass']}@{mongo_config['host']}:{mongo_config['port']}/"
     
     try:
-        client = MongoClient(connection_string, serverSelectionTimeoutMS=5000)
+        client = MongoClient(connection_string, serverSelectionTimeoutMS=8080)
         # Tester la connexion
         client.admin.command('ping')
         print_success(f"Connexion à MongoDB réussie ({mongo_config['host']}:{mongo_config['port']})")
@@ -235,8 +235,8 @@ def main():
         print()
         print_info("Prochaines étapes:")
         print(f"  1. Démarrez l'application: {Colors.BOLD}python app.py{Colors.END}")
-        print(f"  2. Accédez à l'interface: {Colors.BOLD}http://localhost:5000{Colors.END}")
-        print(f"  3. Consultez l'API: {Colors.BOLD}http://localhost:5000/swagger{Colors.END}")
+        print(f"  2. Accédez à l'interface: {Colors.BOLD}http://localhost:8080{Colors.END}")
+        print(f"  3. Consultez l'API: {Colors.BOLD}http://localhost:8080/swagger{Colors.END}")
         print()
         
     except KeyboardInterrupt:

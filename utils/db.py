@@ -27,7 +27,7 @@ def get_db_connection():
     connection_string = f"mongodb://{mongo_config['user']}:{mongo_config['pass']}@{mongo_config['host']}:{mongo_config['port']}/"
     
     try:
-        client = MongoClient(connection_string, serverSelectionTimeoutMS=5000)
+        client = MongoClient(connection_string, serverSelectionTimeoutMS=8080)
         # Tester la connexion
         client.admin.command('ping')
         db = client[mongo_config['bdd']]

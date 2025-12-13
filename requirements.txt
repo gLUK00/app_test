@@ -12,3 +12,4 @@ webdav4==0.10.0
 PyYAML==6.0.1
 Flask-Babel==4.0.0
 gunicorn==21.2.0
+boto3==1.34.0

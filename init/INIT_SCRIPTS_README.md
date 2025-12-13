@@ -34,7 +34,7 @@ Automatiser la création d'une campagne contenant un test exhaustif pour chaque 
 2. Lancer le serveur TestGyver (si ce n'est pas déjà fait) ;
 3. Exécuter le script :
    ```bash
-   python init/create_full_action_campain.py --api-url http://127.0.0.1:5000
+   python init/create_full_action_campain.py --api-url http://127.0.0.1:8080
    ```
 4. Suivre les invites pour saisir l'email/mot de passe admin, le nom de campagne et l'environnement cible.
 

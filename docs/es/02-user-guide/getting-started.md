@@ -4,7 +4,7 @@
 
 ## Login
 
-Accede a la URL configurada (por defecto: `http://localhost:5000`). Verás la página de login con nuestra mascota.
+Accede a la URL configurada (por defecto: `http://localhost:8080`). Verás la página de login con nuestra mascota.
 
 *   **Credenciales Admin por defecto** (si fueron inicializadas):
     *   Email: `admin@test.com`

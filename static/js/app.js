@@ -101,7 +101,7 @@ const Notification = {
         
         setTimeout(() => {
             alertDiv.remove();
-        }, 5000);
+        }, 8080);
     },
     
     success(message) {

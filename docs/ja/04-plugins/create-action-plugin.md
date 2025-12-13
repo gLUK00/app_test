@@ -83,3 +83,37 @@ UI フォーム定義。`string`, `number`, `boolean`, `textarea`, `select`, `ch
 *   **エラー処理**: try/except で runner を落とさない。
 *   **ログ**: 詳細な trace を返す。
 *   **バリデーション**: `validate_config` で早期に検証。
+
+## プラグインのテスト
+
+プラグインの開発とテストを容易にするために、Docker Compose を介して完全なローカル環境を利用できます。
+
+### 1. テスト環境の起動
+
+`init/` ディレクトリに `test-docker-compose.yml` ファイルが用意されています。これは、実際のターゲットに対してアクションをテストするためのさまざまなサービス（FTP、SFTP、WebDAV、SSH、S3/MinIO、HTTP API）をセットアップします。
+
+```bash
+sudo docker-compose -f init/test-docker-compose.yml up -d
+```
+
+### 2. テストデータのインポート
+
+すべての標準アクションをカバーする包括的なテストキャンペーンで TestGyver インスタンスをすばやく入力するには：
+
+1.  アプリケーションの **キャンペーン** ページに移動します。
+2.  **インポート** をクリックします。
+3.  ファイル `init/campain_All_tests.json` を選択します。
+
+このキャンペーンには、テスト環境によって提供されるサービスと対話するためのアクションを構成する方法の例が含まれています。
+
+### 3. 環境変数のインポート
+
+テストキャンペーンは、特定の変数（ホスト名、資格情報など）に依存しています。提供されたスクリプトを使用して、これらを自動的にインポートできます。
+
+仮想環境がアクティブであることを確認してから、以下を実行します：
+
+```bash
+python import_variables.py init/import-var-test-docker.json
+```
+
+これにより、`test-docker-compose.yml` の構成に合わせて、「グローバル」環境（または JSON ファイルで定義されている環境）に必要な変数が作成されます。

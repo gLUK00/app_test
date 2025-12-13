@@ -6,7 +6,7 @@
         "dateCreated": "2025-12-04T10:54:57.289000",
         "description": "Campagne g\u00e9n\u00e9r\u00e9e automatiquement le 18/11/2025 11:21",
         "isDeleted": false,
-        "userCreatedName": "gLULK"
+        "userCreatedName": "userGyver"
     },
     "tests": [
         {
@@ -466,11 +466,82 @@
             "variables": [],
             "order": 7,
             "isDeleted": false
+        },
+        {
+            "_id": "693d763218373c1ea9906ab3",
+            "campainId": "693168815382d2bd0193601a",
+            "userId": "69159390f0502fbeb33cd817",
+            "dateCreated": "2025-12-13T14:20:34.464000",
+            "actions": [
+                {
+                    "type": "s3",
+                    "value": {
+                        "access_key": "{{S3_ACCESS_KEY}}",
+                        "endpoint_url": "{{S3_ENDPOINT}}",
+                        "operation": "list_buckets",
+                        "secret_key": "{{S3_SECRET_KEY}}"
+                    }
+                },
+                {
+                    "type": "s3",
+                    "value": {
+                        "access_key": "{{S3_ACCESS_KEY}}",
+                        "bucket_name": "test-bucket",
+                        "endpoint_url": "{{S3_ENDPOINT}}",
+                        "operation": "list_objects",
+                        "secret_key": "{{S3_SECRET_KEY}}"
+                    }
+                },
+                {
+                    "type": "s3",
+                    "value": {
+                        "access_key": "{{S3_ACCESS_KEY}}",
+                        "bucket_name": "test-bucket",
+                        "endpoint_url": "{{S3_ENDPOINT}}",
+                        "local_path": "{{test.files_dir}}/s3-test-file.txt",
+                        "object_key": "mon_fichier.txt",
+                        "operation": "upload_file",
+                        "secret_key": "{{S3_SECRET_KEY}}"
+                    }
+                },
+                {
+                    "type": "s3",
+                    "value": {
+                        "access_key": "{{S3_ACCESS_KEY}}",
+                        "bucket_name": "test-bucket",
+                        "endpoint_url": "{{S3_ENDPOINT}}",
+                        "local_path": "{{test.work_dir}}/mon_fichier.txt",
+                        "object_key": "mon_fichier.txt",
+                        "operation": "download_file",
+                        "secret_key": "{{S3_SECRET_KEY}}"
+                    }
+                },
+                {
+                    "type": "s3",
+                    "value": {
+                        "endpoint_url": "{{S3_ENDPOINT}}",
+                        "access_key": "{{S3_ACCESS_KEY}}",
+                        "secret_key": "{{S3_SECRET_KEY}}",
+                        "operation": "delete_object",
+                        "bucket_name": "test-bucket",
+                        "object_key": "mon_fichier.txt"
+                    }
+                }
+            ],
+            "name": "S3 - et variantes",
+            "description": "Test du plugin S3",
+            "variables": [],
+            "order": 8,
+            "isDeleted": false
         }
     ],
-    "exportDate": "2025-12-04T10:59:44.282997",
+    "exportDate": "2025-12-13T14:46:17.673640",
     "version": "1.0",
     "files": [
+        {
+            "name": "s3-test-file.txt",
+            "content": "Q2VjaSBlc3QgdW4gZmljaGllciBkZSB0ZXN0IHBvdXIgbCd1cGxvYWQgUzMuCkfDqW7DqXLDqSBhdXRvbWF0aXF1ZW1lbnQgcG91ciBsZXMgdGVzdHMgZCdpbnTDqWdyYXRpb24uCkRhdGU6IDIwMjUtMTItMDcK"
+        },
         {
             "name": "test_file.bin",
             "content": "YmluYXJ5LWRhdGE="

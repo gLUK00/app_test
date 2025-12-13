@@ -11,7 +11,7 @@
     "jwt_secret": "4f51s5Gg1r41gh7",
     "app": {
         "debug": true,
-        "port": 5000,
+        "port": 8080,
         "host": "0.0.0.0"
     },
     "pagination": {
