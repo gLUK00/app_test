@@ -11,11 +11,15 @@ def load_config():
         
     # Surcharge avec les variables d'environnement si présentes
     if 'mongo' in config:
-        config['mongo']['host'] = os.environ.get('MONGO_HOST', config['mongo']['host'])
-        config['mongo']['port'] = os.environ.get('MONGO_PORT', config['mongo']['port'])
-        config['mongo']['user'] = os.environ.get('MONGO_USER', config['mongo']['user'])
-        config['mongo']['pass'] = os.environ.get('MONGO_PASS', config['mongo']['pass'])
-        config['mongo']['bdd'] = os.environ.get('MONGO_DB', config['mongo']['bdd'])
+        config['mongo']['host'] = os.environ.get('MONGO_HOST', config['mongo'].get('host'))
+        config['mongo']['port'] = os.environ.get('MONGO_PORT', config['mongo'].get('port'))
+        config['mongo']['user'] = os.environ.get('MONGO_USER', config['mongo'].get('user'))
+        config['mongo']['pass'] = os.environ.get('MONGO_PASS', config['mongo'].get('pass'))
+        config['mongo']['bdd'] = os.environ.get('MONGO_DB', config['mongo'].get('bdd'))
+        
+        # Support du protocole SRV
+        config['mongo']['protocol'] = os.environ.get('MONGO_PROTOCOL', config['mongo'].get('protocol', 'standard'))
+        config['mongo']['srv'] = os.environ.get('MONGO_SRV', config['mongo'].get('srv'))
         
     return config
 
@@ -24,7 +28,10 @@ def get_db_connection():
     config = load_config()
     mongo_config = config['mongo']
     
-    connection_string = f"mongodb://{mongo_config['user']}:{mongo_config['pass']}@{mongo_config['host']}:{mongo_config['port']}/"
+    if mongo_config.get('protocol') == 'srv' and mongo_config.get('srv'):
+        connection_string = mongo_config['srv']
+    else:
+        connection_string = f"mongodb://{mongo_config['user']}:{mongo_config['pass']}@{mongo_config['host']}:{mongo_config['port']}/"
     
     try:
         client = MongoClient(connection_string, serverSelectionTimeoutMS=8080)

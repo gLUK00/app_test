@@ -1,5 +1,8 @@
 {
     "mongo": {
+        "protocol": "standard",
+        "_protocol": "srv",
+        "_srv": "mongodb+srv://root:mypass@localhost/?tlsAllowInvalidCertificates=true",
         "user": "root",
         "pass": "mypass",
         "host": "localhost",
