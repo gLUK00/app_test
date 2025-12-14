@@ -138,6 +138,9 @@ class TestExecutor:
                 # Remplacer les variables dans les valeurs de l'action
                 resolved_value = self._resolve_variables(action_value, variables_dict, test_variables)
                 
+                # Injecter l'ID de la campagne pour les actions qui en ont besoin (ex: fichiers)
+                resolved_value['_campain_id'] = test.get('campainId')
+                
                 # Charger le plugin d'action
                 action_plugin = self.plugin_manager.get_plugin(action_type)
                 if not action_plugin:

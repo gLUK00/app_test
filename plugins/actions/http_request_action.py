@@ -1,6 +1,9 @@
 """Action pour effectuer des requêtes HTTP."""
 import requests
+import json
+import os
 from plugins.actions.action_base import ActionBase
+from utils.workdir import get_campain_workdir
 
 
 class HTTPRequestAction(ActionBase):
@@ -60,6 +63,12 @@ class HTTPRequestAction(ActionBase):
                 "type": "textarea",
                 "label": "Corps de la requête (pour POST/PUT)",
                 "placeholder": '{"key": "value"}',
+                "required": False
+            },
+            {
+                "name": "files",
+                "type": "select-file-campain",
+                "label": "Fichiers à envoyer",
                 "required": False
             },
             {
@@ -126,8 +135,46 @@ class HTTPRequestAction(ActionBase):
             
             # Parser le body si c'est une string JSON
             if isinstance(body, str) and body:
-                import json
-                body = json.loads(body)
+                try:
+                    body = json.loads(body)
+                except:
+                    pass
+
+            # Gestion des fichiers
+            files_config = action_context.get('files')
+            files_to_send = []
+            open_files = []
+            
+            if files_config:
+                campain_id = action_context.get('_campain_id')
+                if campain_id:
+                    if isinstance(files_config, str):
+                        try:
+                            files_config = json.loads(files_config)
+                        except:
+                            files_config = []
+                    
+                    if isinstance(files_config, list):
+                        try:
+                            campain_dir = get_campain_workdir(campain_id)
+                            files_dir = os.path.join(campain_dir, "files")
+                            
+                            for file_item in files_config:
+                                filename = file_item.get('filename')
+                                field_name = file_item.get('name', filename)
+                                
+                                if filename:
+                                    file_path = os.path.join(files_dir, filename)
+                                    if os.path.exists(file_path) and os.path.isfile(file_path):
+                                        try:
+                                            f = open(file_path, 'rb')
+                                            open_files.append(f)
+                                            files_to_send.append((field_name, (filename, f)))
+                                            self.add_trace(f"Ajout du fichier: {filename} (champ: {field_name})")
+                                        except Exception as e:
+                                            self.add_trace(f"Erreur lors de l'ouverture du fichier {filename}: {str(e)}")
+                        except Exception as e:
+                            self.add_trace(f"Erreur lors de la préparation des fichiers: {str(e)}")
             
             """
             oDataConvert2pdf = { 'in': sTmpFileIn, 'out': sTmpFileOut, 'type': sType, 'session': coreRequest.getSessionId() }
@@ -135,19 +182,24 @@ class HTTPRequestAction(ActionBase):
             if res.status_code != 200:
             """
             
-            # Effectuer la requête
-            if method == 'GET':
-                response = requests.get(url, headers=headers, timeout=timeout, verify=False)
-            elif method == 'POST':
-                response = requests.post(url, headers=headers, data=body, timeout=timeout, verify=False)
-            elif method == 'PUT':
-                response = requests.put(url, headers=headers, data=body, timeout=timeout, verify=False)
-            elif method == 'DELETE':
-                response = requests.delete(url, headers=headers, timeout=timeout, verify=False)
-            else:
-                self.set_code(1)
-                self.add_trace(f"Méthode HTTP non supportée: {method}")
-                return self.get_result()
+            try:
+                # Effectuer la requête
+                if method == 'GET':
+                    response = requests.get(url, headers=headers, timeout=timeout, verify=False)
+                elif method == 'POST':
+                    response = requests.post(url, headers=headers, data=body, files=files_to_send if files_to_send else None, timeout=timeout, verify=False)
+                elif method == 'PUT':
+                    response = requests.put(url, headers=headers, data=body, files=files_to_send if files_to_send else None, timeout=timeout, verify=False)
+                elif method == 'DELETE':
+                    response = requests.delete(url, headers=headers, timeout=timeout, verify=False)
+                else:
+                    self.set_code(1)
+                    self.add_trace(f"Méthode HTTP non supportée: {method}")
+                    return self.get_result()
+            finally:
+                # Fermer les fichiers
+                for f in open_files:
+                    f.close()
             
             self.add_trace(f"Statut de la réponse: {response.status_code}")
             self.add_trace(f"Temps de réponse: {response.elapsed.total_seconds()}s")

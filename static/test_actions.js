@@ -177,6 +177,129 @@ class TestActionsManager {
                 opt.textContent = variable;
                 input.appendChild(opt);
             });
+        } else if (field.type === 'select-file-campain') {
+            // Nouveau type : sélection de fichiers de la campagne
+            const container = document.createElement('div');
+            container.className = 'card p-2';
+            container.style.maxHeight = '200px';
+            container.style.overflowY = 'auto';
+            
+            // Hidden input to store the JSON value
+            input = document.createElement('input');
+            input.type = 'hidden';
+            // input.id and name will be set later
+            
+            const campainId = document.getElementById('campainId')?.value;
+            
+            if (campainId) {
+                const loading = document.createElement('div');
+                loading.className = 'text-center text-muted';
+                loading.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Chargement des fichiers...';
+                container.appendChild(loading);
+                
+                // Fetch files
+                API.get(`/api/campains/${campainId}/files`)
+                    .then(response => {
+                        container.innerHTML = '';
+                        const files = response.files || [];
+                        
+                        if (files.length === 0) {
+                            container.innerHTML = '<div class="text-muted small">Aucun fichier dans la campagne</div>';
+                            return;
+                        }
+                        
+                        const table = document.createElement('table');
+                        table.className = 'table table-sm table-borderless mb-0';
+                        
+                        files.forEach(file => {
+                            const tr = document.createElement('tr');
+                            
+                            // Checkbox
+                            const tdCheck = document.createElement('td');
+                            tdCheck.style.width = '30px';
+                            const check = document.createElement('input');
+                            check.type = 'checkbox';
+                            check.className = 'form-check-input file-select-check';
+                            check.dataset.filename = file.name;
+                            tdCheck.appendChild(check);
+                            tr.appendChild(tdCheck);
+                            
+                            // Filename
+                            const tdName = document.createElement('td');
+                            tdName.textContent = file.name;
+                            tdName.className = 'align-middle';
+                            tr.appendChild(tdName);
+                            
+                            // Rename input
+                            const tdRename = document.createElement('td');
+                            const renameInput = document.createElement('input');
+                            renameInput.type = 'text';
+                            renameInput.className = 'form-control form-control-sm file-rename-input';
+                            renameInput.placeholder = 'Nom du champ';
+                            renameInput.value = 'file'; // Default value
+                            tdRename.appendChild(renameInput);
+                            tr.appendChild(tdRename);
+                            
+                            table.appendChild(tr);
+                            
+                            // Event listeners to update hidden input
+                            const updateValue = () => {
+                                const selectedFiles = [];
+                                container.querySelectorAll('tr').forEach(row => {
+                                    const checkbox = row.querySelector('.file-select-check');
+                                    const rename = row.querySelector('.file-rename-input');
+                                    if (checkbox.checked) {
+                                        selectedFiles.push({
+                                            filename: checkbox.dataset.filename,
+                                            name: rename.value || 'file'
+                                        });
+                                    }
+                                });
+                                input.value = JSON.stringify(selectedFiles);
+                            };
+                            
+                            check.addEventListener('change', updateValue);
+                            renameInput.addEventListener('input', updateValue);
+                        });
+                        
+                        container.appendChild(table);
+                        
+                        // Restore value if exists
+                        if (input.value) {
+                            try {
+                                const savedFiles = JSON.parse(input.value);
+                                if (Array.isArray(savedFiles)) {
+                                    savedFiles.forEach(saved => {
+                                        const checkbox = container.querySelector(`.file-select-check[data-filename="${saved.filename}"]`);
+                                        if (checkbox) {
+                                            checkbox.checked = true;
+                                            const row = checkbox.closest('tr');
+                                            const rename = row.querySelector('.file-rename-input');
+                                            if (rename) rename.value = saved.name;
+                                        }
+                                    });
+                                }
+                            } catch (e) {
+                                console.error('Error parsing saved files', e);
+                            }
+                        }
+                    })
+                    .catch(err => {
+                        container.innerHTML = `<div class="text-danger small">Erreur: ${err.message}</div>`;
+                    });
+            } else {
+                container.innerHTML = '<div class="text-warning small">ID de campagne non trouvé</div>';
+            }
+            
+            divWrapper.appendChild(input); // Append input first so it's found by ID
+            divWrapper.appendChild(container);
+            
+            // We need to set ID and name here because we return divWrapper, but the loop below sets them on 'input'
+            // But 'input' is the hidden field here.
+            input.id = field.name;
+            input.name = field.name;
+            
+            return divWrapper;
         } else if (field.type === 'textarea') {
             input = document.createElement('textarea');
             input.className = 'form-control';
