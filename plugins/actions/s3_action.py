@@ -81,6 +81,14 @@ class S3Action(ActionBase):
                 "required": False
             },
             {
+                "name": "verify",
+                "type": "string",
+                "label": "Vérification SSL (verify)",
+                "placeholder": "/path/to/cert.pem ou False",
+                "required": False,
+                "description": "Chemin vers le bundle CA ou 'False' pour désactiver la vérification SSL"
+            },
+            {
                 "name": "operation",
                 "type": "select",
                 "label": "Opération",
@@ -144,6 +152,7 @@ class S3Action(ActionBase):
         access_key = action_context.get('access_key')
         secret_key = action_context.get('secret_key')
         region_name = action_context.get('region_name')
+        verify = action_context.get('verify')
         operation = action_context.get('operation')
         bucket_name = action_context.get('bucket_name')
         object_key = action_context.get('object_key')
@@ -160,6 +169,17 @@ class S3Action(ActionBase):
             s3_config['endpoint_url'] = endpoint_url
         if region_name:
             s3_config['region_name'] = region_name
+            
+        # Gestion du paramètre verify (SSL)
+        if verify:
+            if verify.lower() == 'false':
+                s3_config['verify'] = False
+                self.add_trace("Vérification SSL désactivée.")
+            elif verify.lower() == 'true':
+                s3_config['verify'] = True
+            else:
+                s3_config['verify'] = verify
+                self.add_trace(f"Utilisation du certificat CA : {verify}")
             
         self.add_trace(f"Connexion S3 vers {endpoint_url or 'AWS Default'}...")
         
