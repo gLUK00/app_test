@@ -22,6 +22,18 @@ class TestExecutor:
         # Charger les plugins d'actions
         self.plugin_manager.discover_plugins()
     
+    def _emit_log(self, test_id, message, secrets=None):
+        """Émet un log en masquant les secrets."""
+        if secrets:
+            for secret in secrets:
+                if secret and str(secret) in message:
+                    message = message.replace(str(secret), '*****')
+        
+        self.socketio.emit('test_log', {
+            'test_id': test_id,
+            'log': message
+        }, room=f'test_{test_id}')
+
     def execute_test(self, test_id, filiere):
         """
         Exécute un test individuel en arrière-plan.
@@ -86,6 +98,9 @@ class TestExecutor:
             variables = Variable.get_by_filiere(filiere)
             variables_dict = {var['key']: var['value'] for var in variables if not var.get('isRoot', False)}
             
+            # Collecter les secrets (valeurs obfusquées)
+            secrets = [str(var['value']) for var in variables if var.get('isObfuscated') and var.get('value')]
+            
             # Ajouter les variables de collection
             workdir = get_campain_workdir(campain_id)
             files_dir = str(Path(workdir) / 'files')
@@ -103,17 +118,11 @@ class TestExecutor:
                     test_variables['app.' + var_name] = None
             
             # Émettre le log de démarrage
-            self.socketio.emit('test_log', {
-                'test_id': test_id,
-                'log': f"[{datetime.now().strftime('%H:%M:%S')}] 🚀 Démarrage du test"
-            }, room=f'test_{test_id}')
+            self._emit_log(test_id, f"[{datetime.now().strftime('%H:%M:%S')}] 🚀 Démarrage du test", secrets)
             
             print(f"[TestExecutor] Émission de test_log (Démarrage) pour test {test_id}")
             
-            self.socketio.emit('test_log', {
-                'test_id': test_id,
-                'log': f"[{datetime.now().strftime('%H:%M:%S')}] 📂 Environnement: {filiere}"
-            }, room=f'test_{test_id}')
+            self._emit_log(test_id, f"[{datetime.now().strftime('%H:%M:%S')}] 📂 Environnement: {filiere}", secrets)
             
             print(f"[TestExecutor] Émission de test_log (Environnement) pour test {test_id}")
             
@@ -125,15 +134,9 @@ class TestExecutor:
                 action_type = action_data.get('type')
                 action_value = action_data.get('value', {})
                 
-                self.socketio.emit('test_log', {
-                    'test_id': test_id,
-                    'log': "--------------------------------"
-                }, room=f'test_{test_id}')
+                self._emit_log(test_id, "--------------------------------", secrets)
                 
-                self.socketio.emit('test_log', {
-                    'test_id': test_id,
-                    'log': f"[{datetime.now().strftime('%H:%M:%S')}] 🔧 Exécution de l'action {action_index + 1}/{len(actions)}: {action_type}"
-                }, room=f'test_{test_id}')
+                self._emit_log(test_id, f"[{datetime.now().strftime('%H:%M:%S')}] 🔧 Exécution de l'action {action_index + 1}/{len(actions)}: {action_type}", secrets)
                 
                 # Remplacer les variables dans les valeurs de l'action
                 resolved_value = self._resolve_variables(action_value, variables_dict, test_variables)
@@ -144,10 +147,7 @@ class TestExecutor:
                 # Charger le plugin d'action
                 action_plugin = self.plugin_manager.get_plugin(action_type)
                 if not action_plugin:
-                    self.socketio.emit('test_log', {
-                        'test_id': test_id,
-                        'log': f"[{datetime.now().strftime('%H:%M:%S')}] ❌ Plugin d'action '{action_type}' non trouvé"
-                    }, room=f'test_{test_id}')
+                    self._emit_log(test_id, f"[{datetime.now().strftime('%H:%M:%S')}] ❌ Plugin d'action '{action_type}' non trouvé", secrets)
                     status = 'failed'
                     break
                 
@@ -156,18 +156,12 @@ class TestExecutor:
                     result = action_plugin.execute(resolved_value,test_variables)
                     
                     if result.get('result'):
-                        self.socketio.emit('test_log', {
-                            'test_id': test_id,
-                            'log': f"[{datetime.now().strftime('%H:%M:%S')}] ✅ Action réussie"
-                        }, room=f'test_{test_id}')
+                        self._emit_log(test_id, f"[{datetime.now().strftime('%H:%M:%S')}] ✅ Action réussie", secrets)
                         
                         # Ajouter les traces de l'action si présentes
                         if result.get('traces'):
                             for trace in result['traces']:
-                                self.socketio.emit('test_log', {
-                                    'test_id': test_id,
-                                    'log': f"[{datetime.now().strftime('%H:%M:%S')}] 📋 {trace}"
-                                }, room=f'test_{test_id}')
+                                self._emit_log(test_id, f"[{datetime.now().strftime('%H:%M:%S')}] 📋 {trace}", secrets)
 
                         # Récupérer les variables de sortie si output_mapping est défini
                         output_mapping = action_value.get('output_mapping', {})
@@ -180,51 +174,30 @@ class TestExecutor:
                                     # Stocker la variable de sortie avec le préfixe app.
                                     full_var_name = f"app.{test_var_name}"
                                     test_variables[full_var_name] = output_values[plugin_var_name]
-                                    self.socketio.emit('test_log', {
-                                        'test_id': test_id,
-                                        'log': f"[{datetime.now().strftime('%H:%M:%S')}] 📝 Variable '{test_var_name}' = {output_values[plugin_var_name]}"
-                                    }, room=f'test_{test_id}')
+                                    self._emit_log(test_id, f"[{datetime.now().strftime('%H:%M:%S')}] 📝 Variable '{test_var_name}' = {output_values[plugin_var_name]}", secrets)
                     else:
-                        self.socketio.emit('test_log', {
-                            'test_id': test_id,
-                            'log': f"[{datetime.now().strftime('%H:%M:%S')}] ❌ Action échouée: {result.get('message', 'Erreur inconnue')}"
-                        }, room=f'test_{test_id}')
+                        self._emit_log(test_id, f"[{datetime.now().strftime('%H:%M:%S')}] ❌ Action échouée: {result.get('message', 'Erreur inconnue')}", secrets)
                         
                         # Ajouter les traces même en cas d'échec
                         if result.get('traces'):
                             for trace in result['traces']:
-                                self.socketio.emit('test_log', {
-                                    'test_id': test_id,
-                                    'log': f"[{datetime.now().strftime('%H:%M:%S')}] 📋 {trace}"
-                                }, room=f'test_{test_id}')
+                                self._emit_log(test_id, f"[{datetime.now().strftime('%H:%M:%S')}] 📋 {trace}", secrets)
                         status = 'failed'
                         break
                 
                 except Exception as e:
                     error_trace = traceback.format_exc()
-                    self.socketio.emit('test_log', {
-                        'test_id': test_id,
-                        'log': f"[{datetime.now().strftime('%H:%M:%S')}] ❌ Erreur lors de l'exécution: {str(e)}"
-                    }, room=f'test_{test_id}')
+                    self._emit_log(test_id, f"[{datetime.now().strftime('%H:%M:%S')}] ❌ Erreur lors de l'exécution: {str(e)}", secrets)
                     
-                    self.socketio.emit('test_log', {
-                        'test_id': test_id,
-                        'log': f"[{datetime.now().strftime('%H:%M:%S')}] 📋 Trace:\n{error_trace}"
-                    }, room=f'test_{test_id}')
+                    self._emit_log(test_id, f"[{datetime.now().strftime('%H:%M:%S')}] 📋 Trace:\n{error_trace}", secrets)
                     status = 'failed'
                     break
             
             # Émettre le log de fin
             if status == 'passed':
-                self.socketio.emit('test_log', {
-                    'test_id': test_id,
-                    'log': f"[{datetime.now().strftime('%H:%M:%S')}] ✅ Test terminé avec succès"
-                }, room=f'test_{test_id}')
+                self._emit_log(test_id, f"[{datetime.now().strftime('%H:%M:%S')}] ✅ Test terminé avec succès", secrets)
             else:
-                self.socketio.emit('test_log', {
-                    'test_id': test_id,
-                    'log': f"[{datetime.now().strftime('%H:%M:%S')}] ❌ Test échoué"
-                }, room=f'test_{test_id}')
+                self._emit_log(test_id, f"[{datetime.now().strftime('%H:%M:%S')}] ❌ Test échoué", secrets)
             
             # Émettre l'événement de fin
             self.socketio.emit('test_completed', {
@@ -236,10 +209,7 @@ class TestExecutor:
             # En cas d'erreur
             error_msg = f"[{datetime.now().strftime('%H:%M:%S')}] ❌ Erreur critique: {str(e)}\n{traceback.format_exc()}"
             
-            self.socketio.emit('test_log', {
-                'test_id': test_id,
-                'log': error_msg
-            }, room=f'test_{test_id}')
+            self._emit_log(test_id, error_msg, secrets)
             
             self.socketio.emit('test_completed', {
                 'test_id': test_id,

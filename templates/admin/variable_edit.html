@@ -57,6 +57,16 @@
                         </div>
                         
                         <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="isObfuscated">
+                            <label class="form-check-label" for="isObfuscated">
+                                {{ _('Obfusquer la valeur') }}
+                            </label>
+                            <small class="form-text text-muted d-block">
+                                {{ _('Masquer la valeur dans l\'interface et les logs') }}
+                            </small>
+                        </div>
+
+                        <div class="mb-3 form-check">
                             <input type="checkbox" class="form-check-input" id="isRoot">
                             <label class="form-check-label" for="isRoot">
                                 {{ _('Variable racine (privilèges élevés)') }}
@@ -89,6 +99,7 @@
     const filiereInput = document.getElementById('filiere');
     const valueInput = document.getElementById('value');
     const isRootCheckbox = document.getElementById('isRoot');
+    const isObfuscatedCheckbox = document.getElementById('isObfuscated');
     
     // Gérer le changement de la checkbox "Variable racine"
     isRootCheckbox.addEventListener('change', function() {
@@ -114,11 +125,12 @@
             
             // Remplir le formulaire avec les données existantes
             document.getElementById('key').value = variable.key || '';
-            document.getElementById('value').value = variable.value || '';
             document.getElementById('filiere').value = variable.filiere || '';
             document.getElementById('description').value = variable.description || '';
             document.getElementById('isRoot').checked = variable.isRoot || false;
+            document.getElementById('isObfuscated').checked = variable.isObfuscated || false;
             
+            // Si la variable est "root", cocher la case et griser/vider les champs
             // Si la variable est "root", cocher la case et griser/vider les champs
             if (variable.key === 'root') {
                 isRootCheckbox.checked = true;
@@ -152,14 +164,14 @@
     // Soumettre le formulaire de modification
     document.getElementById('variableForm').addEventListener('submit', async (e) => {
         e.preventDefault();
-        
         const data = {
             key: document.getElementById('key').value.trim(),
             value: document.getElementById('value').value,
             filiere: document.getElementById('filiere').value,
             description: document.getElementById('description').value.trim(),
-            isRoot: document.getElementById('isRoot').checked
-        };
+            isRoot: document.getElementById('isRoot').checked,
+            isObfuscated: document.getElementById('isObfuscated').checked
+        };  isRoot: document.getElementById('isRoot').checked
         
         // Validation de base
         if (!data.key || (!data.filiere && !data.value && !data.isRoot)) {

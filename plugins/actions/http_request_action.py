@@ -130,7 +130,6 @@ class HTTPRequestAction(ActionBase):
             
             # Parser les headers si c'est une string JSON
             if isinstance(headers, str):
-                import json
                 headers = json.loads(headers) if headers else {}
             
             # Parser le body si c'est une string JSON

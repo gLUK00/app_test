@@ -4,12 +4,13 @@ import logging
 from models.variable import Variable
 from utils.db import get_collection
 
-def initialize_variables_from_json(json_path):
+def initialize_variables_from_json(json_path, force_obfuscate=False):
     """
     Initialise les variables à partir d'un fichier JSON.
     
     Args:
         json_path (str): Chemin vers le fichier JSON contenant les variables.
+        force_obfuscate (bool): Si True, force l'obfuscation pour toutes les variables importées.
     """
     if not os.path.exists(json_path):
         logging.warning(f"Fichier d'initialisation des variables introuvable : {json_path}")
@@ -41,6 +42,10 @@ def initialize_variables_from_json(json_path):
         value = var_data.get('value')
         filiere = var_data.get('filiere')
         description = var_data.get('description', '')
+        is_obfuscated = var_data.get('isObfuscated', False)
+        
+        if force_obfuscate:
+            is_obfuscated = True
 
         if not key:
             logging.warning("Variable ignorée car la clé est manquante.")
@@ -57,7 +62,7 @@ def initialize_variables_from_json(json_path):
                 # On vérifie s'il existe une variable avec cette clé (même non root) pour éviter les doublons bizarres
                 # Mais la consigne dit "Si elle n'existe pas : Une variable Root sera créée"
                 # On force la création de la Root si elle manque
-                Variable.create(key=key, value="", filiere="", description=description, is_root=True)
+                Variable.create(key=key, value="", filiere="", description=description, is_root=True, is_obfuscated=is_obfuscated)
                 logging.info(f"Variable Root créée : {key}")
                 count_created += 1
                 # On la récupère pour confirmer son existence pour la suite
@@ -75,7 +80,8 @@ def initialize_variables_from_json(json_path):
                     Variable.update(existing_var['_id'], {
                         'value': value,
                         'filiere': filiere,
-                        'description': description
+                        'description': description,
+                        'isObfuscated': is_obfuscated
                     })
                     logging.info(f"Variable mise à jour : {key} ({filiere})")
                     count_updated += 1
@@ -85,7 +91,7 @@ def initialize_variables_from_json(json_path):
                 # Si elle n'existe pas dans la filiere mais existe en Root (ce qui est le cas ici car on l'a assurée au point 1)
                 # Créer une nouvelle variable dans la filiere
                 try:
-                    Variable.create(key=key, value=value, filiere=filiere, description=description, is_root=False)
+                    Variable.create(key=key, value=value, filiere=filiere, description=description, is_root=False, is_obfuscated=is_obfuscated)
                     logging.info(f"Variable créée : {key} ({filiere})")
                     count_created += 1
                 except Exception as e:

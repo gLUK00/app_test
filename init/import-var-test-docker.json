@@ -21,7 +21,8 @@
         "key": "FTP_USER_PASS",
         "value": "testpass",
         "filiere": "D01",
-        "description": ""
+        "description": "",
+        "isObfuscated": true
     },
     {
         "key": "SFTP_HOST",
@@ -33,7 +34,8 @@
         "key": "SFTP_PASSWORD",
         "value": "testpass",
         "filiere": "D01",
-        "description": ""
+        "description": "",
+        "isObfuscated": true
     },
     {
         "key": "SFTP_PORT",
@@ -57,7 +59,8 @@
         "key": "SSH_PASSWORD",
         "value": "testpass",
         "filiere": "D01",
-        "description": ""
+        "description": "",
+        "isObfuscated": true
     },
     {
         "key": "SSH_PORT",
@@ -75,7 +78,8 @@
         "key": "WEBDAV_PASSWORD",
         "value": "testpass",
         "filiere": "D01",
-        "description": ""
+        "description": "",
+        "isObfuscated": true
     },
     {
         "key": "WEBDAV_URL",
@@ -111,7 +115,8 @@
         "key": "FTP_PASSWORD",
         "value": "testpass",
         "filiere": "D01",
-        "description": "Valeur auto (fullcamp_20251118_095532)"
+        "description": "Valeur auto (fullcamp_20251118_095532)",
+        "isObfuscated": true
     },
     {
         "key": "FTP_SAMPLE_TEXT",
@@ -189,6 +194,7 @@
         "key": "S3_SECRET_KEY",
         "value": "testpass",
         "filiere": "D01",
-        "description": ""
+        "description": "",
+        "isObfuscated": true
     }
 ]

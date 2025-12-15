@@ -236,7 +236,7 @@ class TestActionsManager {
                             renameInput.type = 'text';
                             renameInput.className = 'form-control form-control-sm file-rename-input';
                             renameInput.placeholder = 'Nom du champ';
-                            renameInput.value = 'file'; // Default value
+                            renameInput.value = '';
                             tdRename.appendChild(renameInput);
                             tr.appendChild(tdRename);
                             

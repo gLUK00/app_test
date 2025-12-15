@@ -46,3 +46,17 @@ graph TD
 Allez dans **Admin > Variables** pour gérer votre configuration.
 *   **Créer Racine** : Ajoute une nouvelle clé de variable.
 *   **Ajouter Valeur Environnement** : Définit une valeur pour une clé existante dans un environnement spécifique.
+
+## Obfuscation des Variables
+
+Pour des raisons de sécurité, il est possible de masquer la valeur de certaines variables sensibles (mots de passe, clés d'API, tokens, etc.).
+
+### Fonctionnement
+*   Lors de la création ou de la modification d'une variable, cochez la case **"Obfusquer la valeur"**.
+*   La valeur sera masquée dans l'interface d'administration (affichée comme `*****`).
+*   Lors de l'exécution des tests, la valeur réelle sera utilisée, mais elle sera remplacée par `*****` dans les logs d'exécution.
+
+### Précautions
+*   L'obfuscation empêche l'affichage accidentel dans l'interface et les logs standards.
+*   Cependant, si un test est conçu pour explicitement exporter ou afficher la valeur (par exemple, écrire la variable dans un fichier texte non sécurisé), la valeur pourrait être exposée.
+*   Assurez-vous que vos scripts de test ne tentent pas de contourner cette protection.

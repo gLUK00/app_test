@@ -46,3 +46,17 @@ graph TD
 Ve a **Admin > Variables**.
 *   **Create Root**: Añade una clave.
 *   **Add Environment Value**: Define un valor para una clave en un entorno.
+
+## Ofuscación de Variables
+
+Por razones de seguridad, es posible ocultar el valor de ciertas variables sensibles (contraseñas, claves API, tokens, etc.).
+
+### Funcionamiento
+*   Al crear o editar una variable, marque la casilla **"Ofuscar valor"**.
+*   El valor se ocultará en la interfaz de administración (se mostrará como `*****`).
+*   Durante la ejecución de las pruebas, se utilizará el valor real, pero será reemplazado por `*****` en los registros de ejecución.
+
+### Precauciones
+*   La ofuscación evita la visualización accidental en la interfaz y los registros estándar.
+*   Sin embargo, si una prueba está diseñada para exportar o mostrar explícitamente el valor (por ejemplo, escribiendo la variable en un archivo de texto no seguro), el valor podría quedar expuesto.
+*   Asegúrese de que sus scripts de prueba no intenten eludir esta protección.

@@ -46,3 +46,17 @@ graph TD
 Go to **Admin > Variables** to manage your configuration.
 *   **Create Root**: Adds a new variable key.
 *   **Add Environment Value**: Defines a value for an existing key in a specific environment.
+
+## Variable Obfuscation
+
+For security reasons, it is possible to mask the value of certain sensitive variables (passwords, API keys, tokens, etc.).
+
+### How it works
+*   When creating or editing a variable, check the **"Obfuscate value"** box.
+*   The value will be masked in the administration interface (displayed as `*****`).
+*   During test execution, the real value will be used, but it will be replaced by `*****` in the execution logs.
+
+### Precautions
+*   Obfuscation prevents accidental display in the interface and standard logs.
+*   However, if a test is designed to explicitly export or display the value (e.g., writing the variable to an unsecured text file), the value could be exposed.
+*   Ensure that your test scripts do not attempt to bypass this protection.

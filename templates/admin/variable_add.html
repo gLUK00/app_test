@@ -51,6 +51,16 @@
                         </div>
                         
                         <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="isObfuscated">
+                            <label class="form-check-label" for="isObfuscated">
+                                {{ _('Obfusquer la valeur') }}
+                            </label>
+                            <small class="form-text text-muted d-block">
+                                {{ _('Masquer la valeur dans l\'interface et les logs') }}
+                            </small>
+                        </div>
+
+                        <div class="mb-3 form-check">
                             <input type="checkbox" class="form-check-input" id="isRoot">
                             <label class="form-check-label" for="isRoot">
                                 {{ _('Variable racine (privilèges élevés)') }}
@@ -78,6 +88,7 @@
     const filiereInput = document.getElementById('filiere');
     const valueInput = document.getElementById('value');
     const isRootCheckbox = document.getElementById('isRoot');
+    const isObfuscatedCheckbox = document.getElementById('isObfuscated');
     const keyInput = document.getElementById('key');
     
     // Récupérer le paramètre parent_key de l'URL si présent
@@ -110,14 +121,14 @@
 
     document.getElementById('variableForm').addEventListener('submit', async (e) => {
         e.preventDefault();
-        
         const data = {
             key: document.getElementById('key').value.trim(),
             value: document.getElementById('value').value,
             filiere: document.getElementById('filiere').value,
             description: document.getElementById('description').value.trim(),
-            isRoot: document.getElementById('isRoot').checked
-        };
+            isRoot: document.getElementById('isRoot').checked,
+            isObfuscated: document.getElementById('isObfuscated').checked
+        };  isRoot: document.getElementById('isRoot').checked
         
         // Validation de base
         if (!data.key || (!data.filiere && !data.value && !data.isRoot)) {

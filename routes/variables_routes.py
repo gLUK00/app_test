@@ -19,6 +19,11 @@ def get_variables():
         
         if grouped:
             variables = Variable.get_grouped_by_filiere()
+            # Masquer les valeurs obfusquées
+            for filiere_vars in variables.values():
+                for var in filiere_vars:
+                    if var.get('isObfuscated'):
+                        var['value'] = '*****'
             return jsonify(variables), 200
         elif filiere:
             variables = Variable.get_by_filiere(filiere)
@@ -30,6 +35,11 @@ def get_variables():
             variables = [v for v in variables if v.get('isRoot') is True]
         elif is_root == 'false':
             variables = [v for v in variables if v.get('isRoot') is not True]
+            
+        # Masquer les valeurs obfusquées
+        for var in variables:
+            if var.get('isObfuscated'):
+                var['value'] = '*****'
         
         page, page_size = get_pagination_params(request)
         result = paginate_results(variables, page, page_size)
@@ -65,7 +75,8 @@ def create_variable():
             value=data.get('value', ''),
             filiere=data.get('filiere', ''),
             description=data.get('description', ''),
-            is_root=data.get('isRoot', False)
+            is_root=data.get('isRoot', False),
+            is_obfuscated=data.get('isObfuscated', False)
         )
         
         return jsonify({
@@ -78,7 +89,6 @@ def create_variable():
     
     except Exception as e:
         return jsonify({'message': f'Erreur serveur: {str(e)}'}), 500
-
 @variables_bp.route('/<variable_id>', methods=['GET'])
 @token_required
 @admin_required
@@ -89,6 +99,10 @@ def get_variable(variable_id):
         
         if not variable:
             return jsonify({'message': 'Variable non trouvée'}), 404
+            
+        # Masquer la valeur si obfusquée
+        if variable.get('isObfuscated'):
+            variable['value'] = '*****'
         
         return jsonify(variable), 200
     
@@ -115,6 +129,15 @@ def update_variable(variable_id):
             root_variable = Variable.find_by_key_and_root(data['key'], is_root=True)
             if not root_variable:
                 return jsonify({'message': f'La variable racine {data["key"]} doit être préalablement créée'}), 400
+        
+        # Gestion de l'obfuscation lors de la mise à jour
+        # Si la variable est obfusquée et que la valeur est '*****', on ne met pas à jour la valeur
+        # On doit récupérer la variable actuelle pour vérifier son état
+        current_variable = Variable.find_by_id(variable_id)
+        if current_variable and current_variable.get('isObfuscated') and data.get('value') == '*****':
+            # On supprime la valeur des données à mettre à jour pour conserver l'ancienne
+            if 'value' in data:
+                del data['value']
         
         Variable.update(variable_id, data)
         

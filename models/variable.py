@@ -8,7 +8,7 @@ class Variable:
     collection_name = 'variables'
     
     @staticmethod
-    def create(key, value, filiere, description='', is_root=False):
+    def create(key, value, filiere, description='', is_root=False, is_obfuscated=False):
         """Crée une nouvelle variable."""
         collection = get_collection(Variable.collection_name)
         
@@ -22,7 +22,8 @@ class Variable:
             'value': value,
             'filiere': filiere,
             'description': description,
-            'isRoot': is_root
+            'isRoot': is_root,
+            'isObfuscated': is_obfuscated
         }
         
         result = collection.insert_one(variable_data)
@@ -104,6 +105,9 @@ class Variable:
         
         if 'isRoot' in data:
             update_data['isRoot'] = bool(data['isRoot'])
+
+        if 'isObfuscated' in data:
+            update_data['isObfuscated'] = bool(data['isObfuscated'])
         
         if update_data:
             collection.update_one({'_id': ObjectId(variable_id)}, {'$set': update_data})
