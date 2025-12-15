@@ -20,6 +20,22 @@ def get_all_masks():
     except Exception as e:
         return jsonify({'message': f'Erreur serveur: {str(e)}'}), 500
 
+@actions_bp.route('/colors', methods=['GET'])
+def get_all_colors():
+    """Récupère les couleurs associées à chaque type d'action."""
+    try:
+        actions = get_all_actions()
+        colors = {}
+        
+        for action_type, action_info in actions.items():
+            # La couleur est dans les métadonnées
+            metadata = action_info.get('metadata', {})
+            colors[action_type] = metadata.get('color', '#6c757d')  # Gris par défaut
+            
+        return jsonify(colors), 200
+    except Exception as e:
+        return jsonify({'message': f'Erreur serveur: {str(e)}'}), 500
+
 @actions_bp.route('/masks/<action_type>', methods=['GET'])
 def get_mask(action_type):
     """Récupère le masque de saisie pour un type d'action spécifique."""

@@ -39,3 +39,11 @@ Les actions sont exécutées dans l'ordre où elles apparaissent. Vous pouvez le
 
 ## Exécution
 Vous pouvez lancer un test unique directement depuis la page de Détails du Test pour vérifier son comportement avant de lancer la campagne complète.
+
+## Plugins d'Action Disponibles
+
+### Pause
+Permet d'effectuer une pause dans l'exécution du test.
+*   **Durée (ms)** : Durée de la pause en millisecondes (obligatoire, défaut: 20ms).
+*   **Message** : Message optionnel à afficher dans les logs avant la pause.
+

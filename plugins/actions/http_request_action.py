@@ -14,6 +14,7 @@ class HTTPRequestAction(ActionBase):
     label = "HTTP Request"
     version = "1.0.0"
     author = "TestGyver Team"
+    color = "#0d6efd"
     
     def get_metadata(self):
         """Retourne les métadonnées de l'action."""
@@ -21,7 +22,8 @@ class HTTPRequestAction(ActionBase):
             "name": self.plugin_name,
             "version": self.version,
             "author": self.author,
-            "description": "Effectue des requêtes HTTP (GET, POST, PUT, DELETE)"
+            "description": "Effectue des requêtes HTTP (GET, POST, PUT, DELETE)",
+            "color": self.color
         }
     
     def validate_config(self, config):

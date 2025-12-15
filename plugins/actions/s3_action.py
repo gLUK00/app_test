@@ -14,6 +14,7 @@ class S3Action(ActionBase):
     label = "S3 (Simple Storage Service)"
     version = "1.0.0"
     author = "TestGyver Team"
+    color = "#dc3545"
     
     def get_metadata(self):
         """Retourne les métadonnées de l'action."""
@@ -21,7 +22,8 @@ class S3Action(ActionBase):
             "name": self.plugin_name,
             "version": self.version,
             "author": self.author,
-            "description": "Interagit avec un service de stockage compatible S3 (AWS, MinIO, etc.)"
+            "description": "Interagit avec un service de stockage compatible S3 (AWS, MinIO, etc.)",
+            "color": self.color
         }
     
     def validate_config(self, config):

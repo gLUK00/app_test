@@ -98,6 +98,7 @@ Image: `gluk46546546/testgyver:0.0.2`
 | **SSH** | Executes remote shell commands | Command execution, Output capture |
 | **S3** | Interacts with S3-compatible storage | List Buckets, Upload, Download, Delete |
 | **WebDAV** | Manages files via WebDAV | Upload, Download, List, Delete, Mkdir |
+| **Pause** | Pauses test execution | Configurable duration (ms), Optional message |
 | **I/O (Files)** | Local file system operations | Read, Write, Copy, Move, Delete, Exists check |
 | **Variables** | Variable manipulation | Type conversion (int, float, json), Value assignment |
 

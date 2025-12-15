@@ -13,6 +13,7 @@ class FTPAction(ActionBase):
     label = "FTP"
     version = "1.0.0"
     author = "TestGyver Team"
+    color = "#fd7e14"
     
     def get_metadata(self):
         """Retourne les métadonnées de l'action."""
@@ -20,7 +21,8 @@ class FTPAction(ActionBase):
             "name": self.plugin_name,
             "version": self.version,
             "author": self.author,
-            "description": "Effectue des opérations FTP sur un serveur distant"
+            "description": "Effectue des opérations FTP sur un serveur distant",
+            "color": self.color
         }
     
     def validate_config(self, config):

@@ -11,6 +11,7 @@ class SSHAction(ActionBase):
     label = "SSH"
     version = "1.0.0"
     author = "TestGyver Team"
+    color = "#212529"
     
     def get_metadata(self):
         """Retourne les métadonnées de l'action."""
@@ -18,7 +19,8 @@ class SSHAction(ActionBase):
             "name": self.plugin_name,
             "version": self.version,
             "author": self.author,
-            "description": "Exécute des commandes SSH sur un serveur distant"
+            "description": "Exécute des commandes SSH sur un serveur distant",
+            "color": self.color
         }
     
     def validate_config(self, config):

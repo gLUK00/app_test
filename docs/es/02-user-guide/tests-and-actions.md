@@ -39,3 +39,11 @@ Se ejecutan en el orden mostrado. Reordena con drag-and-drop o flechas.
 
 ## Ejecución
 Puedes ejecutar un test individual desde su detalle para validarlo antes de lanzar la campaña completa.
+
+## Plugins de Acción Disponibles
+
+### Pause
+Permite pausar la ejecución del test.
+*   **Duración (ms)**: Duración de la pausa en milisegundos (obligatorio, defecto: 20ms).
+*   **Mensaje**: Mensaje opcional para mostrar en los registros antes de la pausa.
+

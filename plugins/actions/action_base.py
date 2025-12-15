@@ -12,6 +12,7 @@ class ActionBase(PluginBase):
     # Métadonnées du plugin (à surcharger dans les sous-classes)
     plugin_name = None  # Nom unique de l'action (ex: 'http', 'ssh', etc.)
     label = None  # Label d'affichage (ex: 'HTTP Request', 'I/O (Fichiers)', etc.)
+    color = "#6c757d"  # Couleur par défaut (Gris Bootstrap 'secondary')
     
     def __init__(self):
         """Initialise l'action."""
@@ -30,7 +31,8 @@ class ActionBase(PluginBase):
             "name": self.plugin_name or self.__class__.__name__,
             "version": self.version,
             "author": self.author,
-            "description": self.__doc__.strip() if self.__doc__ else ""
+            "description": self.__doc__.strip() if self.__doc__ else "",
+            "color": self.color
         }
     
     @abstractmethod

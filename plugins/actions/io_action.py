@@ -13,6 +13,7 @@ class IoAction(ActionBase):
     label = "I/O (Fichiers)"
     version = "1.0.0"
     author = "TestGyver Team"
+    color = "#198754"
     
     def get_metadata(self):
         """Retourne les métadonnées de l'action."""
@@ -20,7 +21,8 @@ class IoAction(ActionBase):
             "name": self.plugin_name,
             "version": self.version,
             "author": self.author,
-            "description": "Effectue des opérations d'entrée/sortie sur le système de fichiers"
+            "description": "Effectue des opérations d'entrée/sortie sur le système de fichiers",
+            "color": self.color
         }
     
     def validate_config(self, config):

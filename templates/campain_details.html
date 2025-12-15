@@ -351,9 +351,28 @@ async function loadCampainDetails() {
     }
 }
 
+// Couleurs des actions
+let actionColors = {};
+
+// Chargement des couleurs des actions
+async function loadActionColors() {
+    try {
+        const colors = await API.get('/api/actions/colors');
+        actionColors = colors;
+    } catch (error) {
+        console.error('Erreur lors du chargement des couleurs:', error);
+        // Pas de fallback critique, on utilisera une couleur par défaut
+    }
+}
+
 // Chargement des tests de la campagne
 async function loadTests() {
     try {
+        // S'assurer que les couleurs sont chargées
+        if (Object.keys(actionColors).length === 0) {
+            await loadActionColors();
+        }
+
         const data = await API.get(`/api/tests?campain_id=${campainId}`);
         
         document.getElementById('testsLoading').style.display = 'none';
@@ -365,13 +384,18 @@ async function loadTests() {
             const tbody = document.getElementById('testsTableBody');
             tbody.innerHTML = data.data.map((test, index) => {
                 const actionsCount = test.actions ? test.actions.length : 0;
-                const actionTypes = test.actions ? [...new Set(test.actions.map(a => a.type))].join(', ') : '-';
+                const actionTypes = test.actions ? [...new Set(test.actions.map(a => a.type))] : [];
                 const testName = test.name || `Test #${test._id.substring(test._id.length - 6)}`;
                 
                 // Déterminer si les boutons up/down doivent être désactivés
                 const isFirst = index === 0;
                 const isLast = index === data.data.length - 1;
                 
+                const actionBadges = actionTypes.map(type => {
+                    const color = actionColors[type] || '#6c757d';
+                    return `<span class="badge me-1" style="background-color: ${color}">${escapeHtml(type.toUpperCase())}</span>`;
+                }).join('');
+
                 return `
                 <tr>
                     <td>
@@ -379,7 +403,7 @@ async function loadTests() {
                         ${test.description ? `<br><small class="text-muted">${escapeHtml(test.description)}</small>` : ''}
                         <br><small class="text-muted">${actionsCount} action(s)</small>
                     </td>
-                    <td>${actionTypes.split(', ').map(type => `<span class="badge bg-info me-1">${escapeHtml(type.toUpperCase())}</span>`).join('')}</td>
+                    <td>${actionBadges}</td>
                     <td>${new Date(test.dateCreated).toLocaleString('fr-FR')}</td>
                     <td>
                         <div class="btn-group">

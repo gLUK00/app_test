@@ -8,6 +8,7 @@ class TestActionsManager {
         this.actionMasks = {};
         this.actionOutputVariables = {};
         this.actionLabels = {};
+        this.actionColors = {}; // Nouveau: stocker les couleurs des plugins
         this.actionJavaScriptFunctions = {}; // Nouveau: stocker les fonctions JavaScript des plugins
         this.actions = [];
         this.variables = [];
@@ -26,6 +27,9 @@ class TestActionsManager {
             
             // Charger les labels depuis l'API
             await this.loadActionLabels();
+            
+            // Charger les couleurs depuis l'API
+            await this.loadActionColors();
             
             // Charger les fonctions JavaScript des plugins
             await this.loadActionJavaScriptFunctions();
@@ -65,6 +69,19 @@ class TestActionsManager {
             console.error('Erreur lors du chargement des labels:', error);
             // Fallback : générer les labels automatiquement
             this.generateActionLabels();
+        }
+    }
+
+    /**
+     * Charge les couleurs des actions depuis l'API
+     */
+    async loadActionColors() {
+        try {
+            const colors = await API.get('/api/actions/colors');
+            this.actionColors = colors;
+        } catch (error) {
+            console.error('Erreur lors du chargement des couleurs:', error);
+            // Pas de fallback critique, on utilisera une couleur par défaut
         }
     }
 
@@ -595,9 +612,10 @@ class TestActionsManager {
             }
             
             const actionLabel = this.actionLabels[action.type] || action.type.toUpperCase();
+            const actionColor = this.actionColors[action.type] || '#6c757d';
             
             return `
-            <div class="card mb-2 action-item" data-index="${index}">
+            <div class="card mb-2 action-item" data-index="${index}" style="border-left: 5px solid ${actionColor};">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-start">
                         <div class="flex-grow-1">
@@ -605,7 +623,7 @@ class TestActionsManager {
                                 <div class="d-flex align-items-center">
                                     <span class="badge bg-secondary me-2">#${index + 1}</span>
                                     <h6 class="mb-0">Action ${actionLabel}</h6>
-                                    <span class="badge bg-primary ms-2">${actionLabel}</span>
+                                    <span class="badge ms-2" style="background-color: ${actionColor};">${actionLabel}</span>
                                 </div>
                                 ${outputBadges ? `<div class="d-flex align-items-center flex-wrap">${outputBadges}</div>` : ''}
                             </div>

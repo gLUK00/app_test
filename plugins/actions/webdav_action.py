@@ -11,6 +11,7 @@ class WebdavAction(ActionBase):
     label = "WebDAV"
     version = "1.0.0"
     author = "TestGyver Team"
+    color = "#6610f2"
     
     def _is_directory(self, client, path):
         """
@@ -31,7 +32,8 @@ class WebdavAction(ActionBase):
             "name": self.plugin_name,
             "version": self.version,
             "author": self.author,
-            "description": "Effectue des opérations WebDAV sur un serveur distant"
+            "description": "Effectue des opérations WebDAV sur un serveur distant",
+            "color": self.color
         }
     
     def validate_config(self, config):

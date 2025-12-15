@@ -11,6 +11,7 @@ class VarAction(ActionBase):
     label = "Variables (Conversion/Valorisation)"
     version = "1.0.0"
     author = "TestGyver Team"
+    color = "#ffc107"
     
     def get_metadata(self):
         """Retourne les métadonnées de l'action."""
@@ -18,7 +19,8 @@ class VarAction(ActionBase):
             "name": self.plugin_name,
             "version": self.version,
             "author": self.author,
-            "description": "Convertit des variables en différents types (int, float, bool, list, dict, json)"
+            "description": "Convertit des variables en différents types (int, float, bool, list, dict, json)",
+            "color": self.color
         }
     
     def validate_config(self, config):

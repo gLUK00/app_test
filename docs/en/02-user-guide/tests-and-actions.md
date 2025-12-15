@@ -37,3 +37,11 @@ Actions are executed in the order they appear. You can reorder them using the dr
 
 ## Execution
 You can run a single test directly from the Test Details page to verify its behavior before running the full campaign.
+
+## Available Action Plugins
+
+### Pause
+Allows pausing the test execution.
+*   **Duration (ms)**: Duration of the pause in milliseconds (required, default: 20ms).
+*   **Message**: Optional message to display in the logs before the pause.
+
