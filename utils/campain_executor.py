@@ -314,6 +314,9 @@ class CampainExecutor:
                 # Remplacer les variables dans les valeurs de l'action
                 resolved_value = self._resolve_variables(action_value, variables_dict, test_variables)
                 
+                # Injecter l'ID de la campagne pour les actions qui en ont besoin (ex: fichiers)
+                resolved_value['_campain_id'] = variables_dict.get('test.campain_id')
+                
                 # Merge les variables de retour de l'action
                 
                 # Charger le plugin d'action
