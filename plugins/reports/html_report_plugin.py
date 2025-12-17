@@ -79,6 +79,15 @@ class HTMLReportPlugin(ReportBase):
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
             filename = f"rapport_{timestamp}.html"
             
+            # Sauvegarder le fichier si un chemin de sortie est fourni
+            output_path = config.get('output_path')
+            if output_path:
+                with open(output_path, 'w', encoding='utf-8') as f:
+                    f.write(html_content)
+                # Utiliser le nom de fichier du chemin de sortie
+                import os
+                filename = os.path.basename(output_path)
+            
             return {
                 "success": True,
                 "message": "Rapport HTML généré avec succès",

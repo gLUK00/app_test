@@ -30,3 +30,13 @@ Une liste de tous les tests exécutés dans la campagne.
 
 ## Mises à jour Temps Réel
 Les rapports utilisent les WebSockets pour se mettre à jour en temps réel. Vous n'avez pas besoin de rafraîchir la page pour voir la progression d'une campagne en cours.
+
+## Génération de Rapports
+
+Vous pouvez générer des rapports exportables (PDF, HTML, etc.) à partir des résultats d'exécution.
+
+1.  Dans la section **Informations générales**, cliquez sur le bouton **Generate report**.
+2.  Une fenêtre modale s'ouvre. Sélectionnez le **Type de rapport** souhaité (par exemple, HTML, PDF).
+3.  Remplissez les champs de configuration spécifiques au rapport choisi (titre, options d'affichage, etc.).
+4.  Cliquez sur **Générer**.
+5.  Une fois le rapport généré, un lien de téléchargement apparaîtra.

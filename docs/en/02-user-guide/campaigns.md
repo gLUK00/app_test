@@ -30,7 +30,14 @@ This section allows you to manage files associated with the campaign (e.g., data
 
 These files are accessible in your tests using the `{{test.files_dir}}` variable.
 
-### 3. Tests List
+### 3. Generated Reports
+This section lists all reports (HTML, PDF, etc.) that have been generated from this campaign's executions.
+*   **View**: See the type, date, and size of each report.
+*   **Download**: Retrieve the report file.
+*   **Delete**: Remove old reports.
+*   **Refresh**: Update the list of available reports.
+
+### 4. Tests List
 Shows all tests in the campaign.
 *   **Reorder**: Use the Up/Down arrows to change the execution order.
 *   **Add Test**: Create a new test case.

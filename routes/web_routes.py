@@ -62,6 +62,13 @@ def campain_details(campain_id):
     user = get_current_user()
     return render_template('campain_details.html', user=user, campain_id=campain_id)
 
+@web_bp.route('/campains/<campain_id>/files')
+@token_required
+def campain_files(campain_id):
+    """Page de gestion des fichiers d'une campagne."""
+    user = get_current_user()
+    return render_template('campain_files.html', user=user, campain_id=campain_id)
+
 @web_bp.route('/campains/<campain_id>/add/test')
 @token_required
 def add_test(campain_id):

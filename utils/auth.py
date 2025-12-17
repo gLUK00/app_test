@@ -52,6 +52,10 @@ def token_required(f):
         # Vérifier le cookie
         if not token and 'token' in request.cookies:
             token = request.cookies.get('token')
+            
+        # Vérifier les paramètres d'URL (pour les téléchargements)
+        if not token and 'token' in request.args:
+            token = request.args.get('token')
         
         if not token:
             if is_api_request:

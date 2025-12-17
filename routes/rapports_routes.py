@@ -1,5 +1,8 @@
 """Routes API pour la gestion des rapports."""
-from flask import Blueprint, request, jsonify, current_app
+import os
+from flask import Blueprint, request, jsonify, current_app, send_file
+from flask_babel import gettext as _
+from werkzeug.utils import secure_filename
 from datetime import datetime
 from models.rapport import Rapport
 from models.campain import Campain
@@ -8,6 +11,8 @@ from models.variable import Variable
 from utils.auth import token_required
 from utils.pagination import get_pagination_params, paginate_results
 from utils.validation import validate_required_fields
+from plugins.reports import get_all_reports, get_report
+from utils.workdir import get_campain_workdir
 
 rapports_bp = Blueprint('rapports_api', __name__, url_prefix='/api/rapports')
 
@@ -193,3 +198,100 @@ def delete_rapport(rapport_id):
     
     except Exception as e:
         return jsonify({'message': f'Erreur serveur: {str(e)}'}), 500
+
+@rapports_bp.route('/plugins', methods=['GET'])
+@token_required
+def get_report_plugins():
+    """Récupère la liste des plugins de rapport disponibles."""
+    try:
+        plugins = get_all_reports()
+        # On ne renvoie que les métadonnées et le schéma
+        result = []
+        for p_type, p_data in plugins.items():
+            result.append({
+                "type": p_type,
+                "metadata": p_data["metadata"],
+                "schema": p_data["configuration_schema"]
+            })
+        return jsonify(result), 200
+    except Exception as e:
+        return jsonify({'message': str(e)}), 500
+
+@rapports_bp.route('/<rapport_id>/generate', methods=['POST'])
+@token_required
+def generate_report(rapport_id):
+    """Génère un rapport pour une exécution donnée."""
+    try:
+        data = request.get_json()
+        report_type = data.get('report_type')
+        config = data.get('config', {})
+        
+        if not report_type:
+            return jsonify({'message': _('Type de rapport manquant')}), 400
+            
+        # Récupérer le rapport d'exécution
+        rapport = Rapport.find_by_id(rapport_id)
+        if not rapport:
+            return jsonify({'message': _('Rapport introuvable')}), 404
+            
+        # Récupérer le plugin
+        plugin = get_report(report_type)
+        if not plugin:
+            return jsonify({'message': _('Plugin de rapport {} introuvable').format(report_type)}), 404
+            
+        # Valider la config
+        is_valid, error_msg = plugin.validate_config(config)
+        if not is_valid:
+            return jsonify({'message': _('Configuration invalide: {}').format(error_msg)}), 400
+            
+        # Définir le chemin de sortie
+        campain_id = rapport.get('campainId')
+        workdir = get_campain_workdir(campain_id)
+        reports_dir = os.path.join(workdir, 'reports')
+        os.makedirs(reports_dir, exist_ok=True)
+        
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        ext = plugin.get_output_format()
+        filename = f"report_{report_type}_{timestamp}.{ext}"
+        output_path = os.path.join(reports_dir, filename)
+        
+        config['output_path'] = output_path
+        
+        # Générer
+        result = plugin.generate(rapport, config)
+        
+        if result.get('success'):
+            return jsonify({
+                'message': _('Rapport généré avec succès'),
+                'file_path': result.get('file_path'),
+                'download_url': f"/api/rapports/download/{campain_id}/{filename}"
+            }), 200
+        else:
+            return jsonify({'message': _('Erreur lors de la génération: {}').format(result.get('message'))}), 500
+            
+    except Exception as e:
+        current_app.logger.error(f"Erreur génération rapport: {str(e)}")
+        return jsonify({'message': str(e)}), 500
+
+@rapports_bp.route('/download/<campain_id>/<filename>', methods=['GET'])
+@token_required
+def download_report(campain_id, filename):
+    """Télécharge un rapport généré."""
+    try:
+        # Vérifier que la campagne existe (optionnel mais recommandé)
+        # campain = Campain.find_by_id(campain_id)
+        
+        workdir = get_campain_workdir(campain_id)
+        reports_dir = os.path.join(workdir, 'reports')
+        file_path = os.path.join(reports_dir, secure_filename(filename))
+        
+        if not os.path.exists(file_path) or not os.path.isfile(file_path):
+            return jsonify({'message': _('Fichier non trouvé')}), 404
+            
+        return send_file(
+            file_path,
+            as_attachment=True,
+            download_name=filename
+        )
+    except Exception as e:
+        return jsonify({'message': str(e)}), 500

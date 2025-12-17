@@ -165,26 +165,52 @@ def list_files(campain_id):
         if not campain:
             return jsonify({'message': 'Campagne non trouvée'}), 404
         
-        # Récupérer le répertoire files de la campagne
-        campain_dir = Path(get_campain_workdir(campain_id)) / "files"
+        # Récupérer le chemin relatif demandé
+        rel_path = request.args.get('path', '').strip('/')
         
-        if not campain_dir.exists():
-            return jsonify({'files': []}), 200
+        # Récupérer le répertoire work de la campagne
+        base_dir = Path(get_campain_workdir(campain_id)) / "work"
+        target_dir = base_dir / rel_path
+        
+        # Sécurité : vérifier que le chemin cible est bien dans le répertoire work
+        try:
+            target_dir = target_dir.resolve()
+            if not str(target_dir).startswith(str(base_dir.resolve())):
+                return jsonify({'message': 'Accès non autorisé'}), 403
+        except Exception:
+            return jsonify({'message': 'Chemin invalide'}), 400
+        
+        if not target_dir.exists():
+            return jsonify({'files': [], 'directories': []}), 200
         
         files = []
-        for file_path in campain_dir.iterdir():
-            if file_path.is_file():
-                stat = file_path.stat()
-                files.append({
-                    'name': file_path.name,
-                    'size': round(stat.st_size / 1024, 2),  # Taille en Ko
-                    'modified': datetime.fromtimestamp(stat.st_mtime).isoformat()
-                })
+        directories = []
+        
+        for item in target_dir.iterdir():
+            stat = item.stat()
+            item_info = {
+                'name': item.name,
+                'modified': datetime.fromtimestamp(stat.st_mtime).isoformat(),
+                'path': str(item.relative_to(base_dir))
+            }
+            
+            if item.is_file():
+                item_info['size'] = round(stat.st_size / 1024, 2)  # Taille en Ko
+                item_info['type'] = 'file'
+                files.append(item_info)
+            elif item.is_dir():
+                item_info['type'] = 'directory'
+                directories.append(item_info)
         
         # Trier par nom
         files.sort(key=lambda x: x['name'])
+        directories.sort(key=lambda x: x['name'])
         
-        return jsonify({'files': files}), 200
+        return jsonify({
+            'files': files, 
+            'directories': directories,
+            'current_path': rel_path
+        }), 200
     
     except Exception as e:
         return jsonify({'message': f'Erreur serveur: {str(e)}'}), 500
@@ -218,8 +244,8 @@ def upload_file(campain_id):
         else:
             filename = secure_filename(file.filename)
         
-        # Récupérer le répertoire files de la campagne
-        campain_dir = Path(get_campain_workdir(campain_id)) / "files"
+        # Récupérer le répertoire work de la campagne
+        campain_dir = Path(get_campain_workdir(campain_id)) / "work"
         campain_dir.mkdir(parents=True, exist_ok=True)
         
         # Sauvegarder le fichier
@@ -266,8 +292,8 @@ def rename_file(campain_id, filename):
         if not new_filename:
             return jsonify({'message': 'Nom de fichier invalide'}), 400
             
-        # Récupérer le répertoire files de la campagne
-        campain_dir = Path(get_campain_workdir(campain_id)) / "files"
+        # Récupérer le répertoire work de la campagne
+        campain_dir = Path(get_campain_workdir(campain_id)) / "work"
         old_file_path = campain_dir / secure_filename(filename)
         new_file_path = campain_dir / new_filename
         
@@ -289,7 +315,7 @@ def rename_file(campain_id, filename):
         return jsonify({'message': f'Erreur serveur: {str(e)}'}), 500
 
 
-@campains_bp.route('/<campain_id>/files/<filename>', methods=['GET'])
+@campains_bp.route('/<campain_id>/files/<path:filename>', methods=['GET'])
 @token_required
 def download_file(campain_id, filename):
     """Télécharge un fichier du répertoire de travail de la campagne."""
@@ -300,8 +326,12 @@ def download_file(campain_id, filename):
             return jsonify({'message': 'Campagne non trouvée'}), 404
         
         # Récupérer le chemin du fichier
-        campain_dir = Path(get_campain_workdir(campain_id)) / "files"
-        file_path = campain_dir / secure_filename(filename)
+        base_dir = Path(get_campain_workdir(campain_id)) / "work"
+        file_path = (base_dir / filename).resolve()
+        
+        # Sécurité
+        if not str(file_path).startswith(str(base_dir.resolve())):
+            return jsonify({'message': 'Accès non autorisé'}), 403
         
         if not file_path.exists() or not file_path.is_file():
             return jsonify({'message': 'Fichier non trouvé'}), 404
@@ -309,14 +339,14 @@ def download_file(campain_id, filename):
         return send_file(
             str(file_path),
             as_attachment=True,
-            download_name=filename
+            download_name=file_path.name
         )
     
     except Exception as e:
         return jsonify({'message': f'Erreur serveur: {str(e)}'}), 500
 
 
-@campains_bp.route('/<campain_id>/files/<filename>', methods=['DELETE'])
+@campains_bp.route('/<campain_id>/files/<path:filename>', methods=['DELETE'])
 @token_required
 def delete_file(campain_id, filename):
     """Supprime un fichier du répertoire de travail de la campagne."""
@@ -327,8 +357,12 @@ def delete_file(campain_id, filename):
             return jsonify({'message': 'Campagne non trouvée'}), 404
         
         # Récupérer le chemin du fichier
-        campain_dir = Path(get_campain_workdir(campain_id)) / "files"
-        file_path = campain_dir / secure_filename(filename)
+        base_dir = Path(get_campain_workdir(campain_id)) / "work"
+        file_path = (base_dir / filename).resolve()
+        
+        # Sécurité
+        if not str(file_path).startswith(str(base_dir.resolve())):
+            return jsonify({'message': 'Accès non autorisé'}), 403
         
         if not file_path.exists() or not file_path.is_file():
             return jsonify({'message': 'Fichier non trouvé'}), 404
@@ -341,6 +375,43 @@ def delete_file(campain_id, filename):
         
         return jsonify({'message': 'Fichier supprimé avec succès'}), 200
     
+    except Exception as e:
+        return jsonify({'message': f'Erreur serveur: {str(e)}'}), 500
+
+@campains_bp.route('/<campain_id>/directories', methods=['DELETE'])
+@token_required
+def delete_directory(campain_id):
+    """Supprime un répertoire vide."""
+    try:
+        path = request.args.get('path')
+        if not path:
+            return jsonify({'message': 'Chemin manquant'}), 400
+            
+        # Vérifier que la campagne existe
+        campain = Campain.find_by_id(campain_id)
+        if not campain:
+            return jsonify({'message': 'Campagne non trouvée'}), 404
+            
+        base_dir = Path(get_campain_workdir(campain_id)) / "work"
+        dir_path = (base_dir / path).resolve()
+        
+        # Sécurité
+        if not str(dir_path).startswith(str(base_dir.resolve())):
+            return jsonify({'message': 'Accès non autorisé'}), 403
+            
+        if not dir_path.exists() or not dir_path.is_dir():
+            return jsonify({'message': 'Répertoire non trouvé'}), 404
+            
+        try:
+            os.rmdir(str(dir_path))
+        except OSError:
+            return jsonify({'message': 'Le répertoire n\'est pas vide'}), 400
+            
+        # Émettre un événement WebSocket
+        emit_files_updated(campain_id)
+        
+        return jsonify({'message': 'Répertoire supprimé avec succès'}), 200
+        
     except Exception as e:
         return jsonify({'message': f'Erreur serveur: {str(e)}'}), 500
 
@@ -491,3 +562,56 @@ def import_campain():
         
     except Exception as e:
         return jsonify({'message': f'Erreur lors de l\'import: {str(e)}'}), 500
+
+@campains_bp.route('/<campain_id>/reports', methods=['GET'])
+@token_required
+def list_reports(campain_id):
+    """Liste les rapports générés pour une campagne."""
+    try:
+        workdir = get_campain_workdir(campain_id)
+        reports_dir = os.path.join(workdir, 'reports')
+        
+        if not os.path.exists(reports_dir):
+            return jsonify([]), 200
+            
+        reports = []
+        for filename in os.listdir(reports_dir):
+            file_path = os.path.join(reports_dir, filename)
+            if os.path.isfile(file_path):
+                stat = os.stat(file_path)
+                # Essayer de déduire le type de rapport depuis le nom
+                # Format attendu: report_<type>_<timestamp>.<ext>
+                parts = filename.split('_')
+                report_type = parts[1] if len(parts) > 2 else 'unknown'
+                
+                reports.append({
+                    'name': filename,
+                    'type': report_type,
+                    'size': stat.st_size,
+                    'date': datetime.fromtimestamp(stat.st_mtime).isoformat(),
+                    'download_url': f"/api/rapports/download/{campain_id}/{filename}"
+                })
+        
+        # Trier par date décroissante
+        reports.sort(key=lambda x: x['date'], reverse=True)
+        
+        return jsonify(reports), 200
+    except Exception as e:
+        return jsonify({'message': str(e)}), 500
+
+@campains_bp.route('/<campain_id>/reports/<filename>', methods=['DELETE'])
+@token_required
+def delete_report(campain_id, filename):
+    """Supprime un rapport généré."""
+    try:
+        workdir = get_campain_workdir(campain_id)
+        reports_dir = os.path.join(workdir, 'reports')
+        file_path = os.path.join(reports_dir, secure_filename(filename))
+        
+        if not os.path.exists(file_path):
+            return jsonify({'message': _('Fichier non trouvé')}), 404
+            
+        os.remove(file_path)
+        return jsonify({'message': _('Rapport supprimé avec succès')}), 200
+    except Exception as e:
+        return jsonify({'message': str(e)}), 500

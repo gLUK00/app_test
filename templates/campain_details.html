@@ -51,7 +51,12 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header campain-files-header d-flex justify-content-between align-items-center">
-                    <span><i class="fas fa-folder-open"></i> {{ _('Fichiers') }}</span>
+                    <div class="d-flex align-items-center">
+                        <span class="me-3"><i class="fas fa-folder-open"></i> {{ _('Fichiers') }}</span>
+                        <a href="{{ url_for('web.campain_files', campain_id=campain_id) }}" id="viewWorkdirFilesBtn" class="btn btn-sm btn-warning" style="display: none;">
+                            <i class="fas fa-external-link-alt"></i> {{ _('View workdir files') }}
+                        </a>
+                    </div>
                     <button class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#uploadFileModal">
                         <i class="fas fa-upload"></i> {{ _('Ajouter un fichier') }}
                     </button>
@@ -82,6 +87,38 @@
                     <div id="noFiles" style="display: none;" class="text-center text-muted py-4">
                         <i class="fas fa-inbox fa-3x mb-3"></i>
                         <p>{{ _('Aucun fichier dans cette campagne') }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section Rapports -->
+    <div class="row mb-4" id="reportsSection" style="display: none;">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <span><i class="fas fa-file-alt"></i> {{ _('Rapports générés') }}</span>
+                    <button class="btn btn-sm btn-secondary" onclick="loadReports()">
+                        <i class="fas fa-sync-alt"></i> {{ _('Refresh') }}
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>{{ _('Nom') }}</th>
+                                    <th>{{ _('Type') }}</th>
+                                    <th>{{ _('Date') }}</th>
+                                    <th>{{ _('Taille') }}</th>
+                                    <th class="text-end">{{ _('Actions') }}</th>
+                                </tr>
+                            </thead>
+                            <tbody id="reportsTableBody">
+                                <!-- Les rapports seront chargés ici -->
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
@@ -708,6 +745,13 @@ async function loadFiles() {
         
         document.getElementById('filesLoading').style.display = 'none';
         
+        // Gestion du bouton "View workdir files"
+        const hasContent = (data.files && data.files.length > 0) || (data.directories && data.directories.length > 0);
+        const viewBtn = document.getElementById('viewWorkdirFilesBtn');
+        if (viewBtn) {
+            viewBtn.style.display = hasContent ? 'inline-block' : 'none';
+        }
+        
         if (data.files && data.files.length > 0) {
             document.getElementById('filesContainer').style.display = 'block';
             document.getElementById('noFiles').style.display = 'none';
@@ -1191,10 +1235,73 @@ document.addEventListener('DOMContentLoaded', () => {
         campainNameInput.style.visibility = 'hidden';
     }
 
+    // Gestion des rapports
+    window.loadReports = async function() {
+        try {
+            const reports = await API.get(`/api/campains/${campainId}/reports`);
+            const tbody = document.getElementById('reportsTableBody');
+            const section = document.getElementById('reportsSection');
+            
+            tbody.innerHTML = '';
+            
+            if (reports.length > 0) {
+                section.style.display = ''; 
+                
+                reports.forEach(report => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>
+                            <i class="fas fa-file-alt text-primary me-2"></i>
+                            ${report.name}
+                        </td>
+                        <td><span class="badge bg-info">${report.type}</span></td>
+                        <td>${new Date(report.date).toLocaleString()}</td>
+                        <td>${formatFileSize(report.size)}</td>
+                        <td class="text-end">
+                            <a href="${report.download_url}?token=${localStorage.getItem('token')}" class="btn btn-sm btn-primary me-1" target="_blank" title="{{ _('Télécharger') }}">
+                                <i class="fas fa-download"></i>
+                            </a>
+                            <button class="btn btn-sm btn-danger" onclick="deleteReport('${report.name}')" title="{{ _('Supprimer') }}">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            } else {
+                section.style.display = 'none';
+            }
+        } catch (error) {
+            console.error('Erreur chargement rapports:', error);
+        }
+    };
+
+    window.deleteReport = async function(filename) {
+        if (!confirm("{{ _('Êtes-vous sûr de vouloir supprimer ce rapport ?') }}")) return;
+        
+        try {
+            await API.delete(`/api/campains/${campainId}/reports/${encodeURIComponent(filename)}`);
+            Notification.success("{{ _('Rapport supprimé avec succès') }}");
+            loadReports();
+        } catch (error) {
+            console.error('Erreur suppression rapport:', error);
+            Notification.error("{{ _('Erreur lors de la suppression du rapport') }}");
+        }
+    };
+
+    function formatFileSize(bytes) {
+        if (bytes === 0) return '0 B';
+        const k = 1024;
+        const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+
     loadCampainDetails();
     loadFiles();
     loadTests();
-    loadRapports();
+    loadRapports(); // Charge les rapports d'exécution (historique)
+    loadReports(); // Charge les fichiers de rapports générés
 });
 </script>
 {% endblock %}

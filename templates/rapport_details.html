@@ -120,8 +120,11 @@
     <div class="row mb-4">
         <div class="col-12">
             <div class="card">
-                <div class="card-header">
-                    <i class="fas fa-info-circle"></i> {{ _('Informations générales') }}
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <span><i class="fas fa-info-circle"></i> {{ _('Informations générales') }}</span>
+                    <button class="btn btn-sm btn-primary" id="btnGenerateReport" onclick="openReportModal()">
+                        <i class="fas fa-file-download"></i> {{ _('Generate report') }}
+                    </button>
                 </div>
                 <div class="card-body">
                     <div class="row">
@@ -183,6 +186,38 @@
                         <p>{{ _('Aucun test dans ce rapport') }}</p>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Génération Rapport -->
+<div class="modal fade" id="reportModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">{{ _('Générer un rapport') }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="reportType" class="form-label">{{ _('Type de rapport') }}</label>
+                    <select class="form-select" id="reportType" onchange="loadReportConfig()">
+                        <option value="">{{ _('Choisir un type de rapport...') }}</option>
+                    </select>
+                    <div id="reportDescription" class="form-text mt-2"></div>
+                </div>
+                
+                <div id="reportConfigForm" class="border p-3 rounded d-none">
+                    <h6>{{ _('Configuration du rapport') }}</h6>
+                    <div id="dynamicFormFields"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ _('Annuler') }}</button>
+                <button type="button" class="btn btn-primary" id="btnConfirmGenerate" onclick="generateReport()" disabled>
+                    {{ _('Générer') }}
+                </button>
             </div>
         </div>
     </div>
@@ -521,6 +556,206 @@ function formatExecutionTime(milliseconds) {
         const minutes = Math.floor(milliseconds / 60000);
         const seconds = ((milliseconds % 60000) / 1000).toFixed(0);
         return `${minutes} min ${seconds} s`;
+    }
+}
+
+// Gestion de la génération de rapport
+let reportPlugins = {};
+
+async function openReportModal() {
+    try {
+        const response = await fetch('/api/rapports/plugins', {
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+        });
+        
+        if (!response.ok) throw new Error('Erreur chargement plugins');
+        
+        const plugins = await response.json();
+        reportPlugins = {};
+        
+        const select = document.getElementById('reportType');
+        select.innerHTML = `<option value="">{{ _('Choisir un type de rapport...') }}</option>`;
+        
+        plugins.forEach(p => {
+            reportPlugins[p.type] = p;
+            const option = document.createElement('option');
+            option.value = p.type;
+            option.textContent = p.metadata.name;
+            select.appendChild(option);
+        });
+        
+        // Reset form
+        document.getElementById('reportDescription').textContent = '';
+        document.getElementById('reportConfigForm').classList.add('d-none');
+        document.getElementById('btnConfirmGenerate').disabled = true;
+        
+        const modal = new bootstrap.Modal(document.getElementById('reportModal'));
+        modal.show();
+        
+    } catch (error) {
+        console.error(error);
+        alert("{{ _('Impossible de charger les plugins de rapport') }}");
+    }
+}
+
+function loadReportConfig() {
+    const type = document.getElementById('reportType').value;
+    const descDiv = document.getElementById('reportDescription');
+    const formDiv = document.getElementById('reportConfigForm');
+    const fieldsDiv = document.getElementById('dynamicFormFields');
+    const btn = document.getElementById('btnConfirmGenerate');
+    
+    if (!type) {
+        descDiv.textContent = '';
+        formDiv.classList.add('d-none');
+        btn.disabled = true;
+        return;
+    }
+    
+    const plugin = reportPlugins[type];
+    descDiv.textContent = plugin.metadata.description;
+    
+    // Générer le formulaire
+    fieldsDiv.innerHTML = '';
+    if (plugin.schema && plugin.schema.length > 0) {
+        plugin.schema.forEach(field => {
+            fieldsDiv.appendChild(renderDynamicField(field));
+        });
+        formDiv.classList.remove('d-none');
+    } else {
+        formDiv.classList.add('d-none');
+    }
+    
+    btn.disabled = false;
+}
+
+function renderDynamicField(field) {
+    const div = document.createElement('div');
+    div.className = 'mb-3';
+    
+    const label = document.createElement('label');
+    label.className = 'form-label';
+    label.textContent = field.label || field.name;
+    div.appendChild(label);
+    
+    let input;
+    if (field.type === 'select') {
+        input = document.createElement('select');
+        input.className = 'form-select';
+        if (field.options) {
+            field.options.forEach(opt => {
+                const option = document.createElement('option');
+                option.value = opt.value;
+                option.textContent = opt.label;
+                input.appendChild(option);
+            });
+        }
+    } else if (field.type === 'checkbox') {
+        div.className = 'form-check mb-3';
+        input = document.createElement('input');
+        input.type = 'checkbox';
+        input.className = 'form-check-input';
+        label.className = 'form-check-label';
+        div.innerHTML = ''; // Clear div to reorder for checkbox
+        div.appendChild(input);
+        div.appendChild(label);
+    } else {
+        input = document.createElement('input');
+        input.type = field.type || 'text';
+        input.className = 'form-control';
+        if (field.placeholder) input.placeholder = field.placeholder;
+    }
+    
+    input.name = field.name;
+    input.id = `field_${field.name}`;
+    if (field.required) input.required = true;
+    if (field.default) input.value = field.default;
+    
+    if (field.type !== 'checkbox') div.appendChild(input);
+    
+    return div;
+}
+
+async function generateReport() {
+    const type = document.getElementById('reportType').value;
+    if (!type) return;
+    
+    const plugin = reportPlugins[type];
+    const config = {};
+    
+    // Récupérer les valeurs du formulaire
+    if (plugin.schema) {
+        plugin.schema.forEach(field => {
+            const input = document.getElementById(`field_${field.name}`);
+            if (input) {
+                config[field.name] = input.type === 'checkbox' ? input.checked : input.value;
+            }
+        });
+    }
+    
+    const btn = document.getElementById('btnConfirmGenerate');
+    const originalText = btn.textContent;
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ' + "{{ _('Génération...') }}";
+    
+    try {
+        const response = await fetch(`/api/rapports/${rapportId}/generate`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            },
+            body: JSON.stringify({
+                report_type: type,
+                config: config
+            })
+        });
+        
+        const result = await response.json();
+        
+        if (response.ok) {
+            const modal = bootstrap.Modal.getInstance(document.getElementById('reportModal'));
+            modal.hide();
+            
+            // Téléchargement automatique
+            if (result.download_url) {
+                const token = localStorage.getItem('token');
+                const downloadUrl = `${result.download_url}?token=${token}`;
+                
+                // Créer un lien invisible et cliquer dessus
+                const link = document.createElement('a');
+                link.href = downloadUrl;
+                link.download = ''; // Laisser le navigateur gérer le nom
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                // Notification temporaire
+                const alertDiv = document.createElement('div');
+                alertDiv.className = 'alert alert-success alert-dismissible fade show';
+                alertDiv.innerHTML = `
+                    {{ _('Rapport généré avec succès. Le téléchargement va commencer...') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                `;
+                document.querySelector('.container').prepend(alertDiv);
+                
+                // Disparition auto après 5s
+                setTimeout(() => {
+                    alertDiv.remove();
+                }, 5000);
+            }
+            
+        } else {
+            throw new Error(result.message);
+        }
+        
+    } catch (error) {
+        alert("{{ _('Erreur : ') }}" + error.message);
+    } finally {
+        btn.disabled = false;
+        btn.textContent = originalText;
     }
 }
 

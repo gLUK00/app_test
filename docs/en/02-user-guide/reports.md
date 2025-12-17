@@ -29,3 +29,13 @@ A list of all tests executed in the campaign.
 
 ## Real-time Updates
 Reports use WebSockets to update in real-time. You don't need to refresh the page to see the progress of a running campaign.
+
+## Generating Reports
+
+You can generate exportable reports (PDF, HTML, etc.) from execution results.
+
+1.  In the **General information** section, click the **Generate report** button.
+2.  A modal window opens. Select the desired **Report Type** (e.g., HTML, PDF).
+3.  Fill in the configuration fields specific to the chosen report (title, display options, etc.).
+4.  Click **Generate**.
+5.  Once the report is generated, a download link will appear.

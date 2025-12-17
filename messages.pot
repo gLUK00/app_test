@@ -1,18 +1,17 @@
-# English translations for PROJECT.
+# Translations template for PROJECT.
 # Copyright (C) 2025 ORGANIZATION
 # This file is distributed under the same license as the PROJECT project.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
 #
+#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2025-12-17 16:53+0100\n"
-"PO-Revision-Date: 2025-12-04 21:37+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language: en\n"
-"Language-Team: en <LL@li.org>\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -20,55 +19,53 @@ msgstr ""
 
 #: models/user.py:18 models/user.py:104
 msgid "Format d'email invalide"
-msgstr "Invalid email format"
+msgstr ""
 
 #: models/user.py:25
 msgid "Rôle invalide. Doit être 'admin' ou 'user'"
-msgstr "Invalid role. Must be 'admin' or 'user'"
+msgstr ""
 
 #: models/user.py:30
 msgid "Cet email est déjà utilisé"
-msgstr "This email is already in use"
+msgstr ""
 
 #: models/user.py:115
 msgid "Rôle invalide"
-msgstr "Invalid role"
+msgstr ""
 
 #: routes/auth_routes.py:30
 msgid "Email ou mot de passe incorrect"
-msgstr "Incorrect email or password"
+msgstr ""
 
 #: routes/auth_routes.py:39
 msgid "Authentification réussie"
-msgstr "Authentication successful"
+msgstr ""
 
 #: routes/campains_routes.py:43 routes/campains_routes.py:75
 #: routes/campains_routes.py:90 routes/users_routes.py:26
 #, python-brace-format
 msgid "Erreur serveur: {}"
-msgstr "Server error: {}"
+msgstr ""
 
 #: routes/campains_routes.py:70 templates/campain_add.html:61
 msgid "Campagne créée avec succès"
-msgstr "Campaign created successfully"
+msgstr ""
 
 #: routes/campains_routes.py:85
 msgid "Campagne non trouvée"
-msgstr "Campaign not found"
+msgstr ""
 
 #: routes/campains_routes.py:101
 msgid "Campagne mise à jour avec succès"
-msgstr "Campaign updated successfully"
+msgstr ""
 
 #: routes/campains_routes.py:612 routes/rapports_routes.py:289
-#, fuzzy
 msgid "Fichier non trouvé"
-msgstr "Test not found"
+msgstr ""
 
 #: routes/campains_routes.py:615 templates/campain_details.html:1284
-#, fuzzy
 msgid "Rapport supprimé avec succès"
-msgstr "Test deleted successfully"
+msgstr ""
 
 #: routes/rapports_routes.py:230
 msgid "Type de rapport manquant"
@@ -84,19 +81,18 @@ msgid "Plugin de rapport {} introuvable"
 msgstr ""
 
 #: routes/rapports_routes.py:245
-#, fuzzy, python-brace-format
+#, python-brace-format
 msgid "Configuration invalide: {}"
-msgstr "Execution configuration"
+msgstr ""
 
 #: routes/rapports_routes.py:265
-#, fuzzy
 msgid "Rapport généré avec succès"
-msgstr "Campaign created successfully"
+msgstr ""
 
 #: routes/rapports_routes.py:270
-#, fuzzy, python-brace-format
+#, python-brace-format
 msgid "Erreur lors de la génération: {}"
-msgstr "Error during restoration"
+msgstr ""
 
 #: routes/tests_routes.py:38 routes/tests_routes.py:67
 #: routes/tests_routes.py:82 routes/tests_routes.py:104
@@ -105,94 +101,94 @@ msgstr "Error during restoration"
 #: routes/tests_routes.py:199 routes/tests_routes.py:214
 #, python-format
 msgid "Erreur serveur: %(error)s"
-msgstr "Server error: %(error)s"
+msgstr ""
 
 #: routes/tests_routes.py:62 templates/test_add.html:184
 #: templates/test_add.html:195
 msgid "Test créé avec succès"
-msgstr "Test created successfully"
+msgstr ""
 
 #: routes/tests_routes.py:77 routes/tests_routes.py:114
 #: routes/tests_routes.py:168
 msgid "Test non trouvé"
-msgstr "Test not found"
+msgstr ""
 
 #: routes/tests_routes.py:100 templates/test_edit.html:227
 #: templates/test_edit.html:238
 msgid "Test mis à jour avec succès"
-msgstr "Test updated successfully"
+msgstr ""
 
 #: routes/tests_routes.py:116
 msgid "Test supprimé avec succès"
-msgstr "Test deleted successfully"
+msgstr ""
 
 #: routes/tests_routes.py:135
 msgid "Action ajoutée avec succès"
-msgstr "Action added successfully"
+msgstr ""
 
 #: routes/tests_routes.py:173
 msgid "Exécuteur de test non disponible"
-msgstr "Test executor not available"
+msgstr ""
 
 #: routes/tests_routes.py:179
 msgid "Exécution du test lancée"
-msgstr "Test execution started"
+msgstr ""
 
 #: routes/tests_routes.py:194
 msgid ""
 "Impossible de déplacer le test (déjà en première position ou test "
 "introuvable)"
-msgstr "Cannot move test (already in first position or test not found)"
+msgstr ""
 
 #: routes/tests_routes.py:196
 msgid "Test déplacé vers le haut avec succès"
-msgstr "Test moved up successfully"
+msgstr ""
 
 #: routes/tests_routes.py:209
 msgid ""
 "Impossible de déplacer le test (déjà en dernière position ou test "
 "introuvable)"
-msgstr "Cannot move test (already in last position or test not found)"
+msgstr ""
 
 #: routes/tests_routes.py:211
 msgid "Test déplacé vers le bas avec succès"
-msgstr "Test moved down successfully"
+msgstr ""
 
 #: routes/users_routes.py:51 templates/admin/user_add.html:112
 msgid "Utilisateur créé avec succès"
-msgstr "User created successfully"
+msgstr ""
 
 #: templates/base.html:40 templates/dashboard.html:3 templates/dashboard.html:9
 msgid "Tableau de bord"
-msgstr "Dashboard"
+msgstr ""
 
 #: templates/base.html:46
 msgid "Administration"
-msgstr "Administration"
+msgstr ""
 
 #: templates/base.html:50
 msgid "Utilisateurs"
-msgstr "Users"
+msgstr ""
 
 #: templates/base.html:53
 msgid "Variables"
-msgstr "Variables"
+msgstr ""
 
 #: templates/admin/deleted.html:3 templates/base.html:57
 msgid "Éléments supprimés"
-msgstr "Deleted Items"
+msgstr ""
 
 #: templates/base.html:79
 msgid "Déconnexion"
-msgstr "Logout"
+msgstr ""
 
 #: templates/campain_add.html:3
 msgid "Gestion des campagnes"
-msgstr "Campaign Management"
+msgstr ""
 
 #: templates/campain_add.html:9 templates/dashboard.html:20
 msgid "Nouvelle campagne"
-msgstr "New Campaign"
+msgstr ""
 
 #: templates/admin/deleted.html:10 templates/admin/user_add.html:13
 #: templates/admin/user_edit.html:13 templates/admin/variable_add.html:13
@@ -202,15 +198,15 @@ msgstr "New Campaign"
 #: templates/test_add.html:17 templates/test_edit.html:17
 #: templates/test_execute.html:13
 msgid "Retour"
-msgstr "Back"
+msgstr ""
 
 #: templates/campain_add.html:22
 msgid "Informations de la campagne"
-msgstr "Campaign Information"
+msgstr ""
 
 #: templates/campain_add.html:27 templates/dashboard.html:64
 msgid "Nom de la campagne"
-msgstr "Campaign Name"
+msgstr ""
 
 #: templates/admin/deleted.html:206 templates/admin/deleted.html:239
 #: templates/admin/variable_add.html:48 templates/admin/variable_edit.html:54
@@ -218,20 +214,19 @@ msgstr "Campaign Name"
 #: templates/campain_add.html:32 templates/dashboard.html:102
 #: templates/test_add.html:35 templates/test_edit.html:35
 msgid "Description"
-msgstr "Description"
+msgstr ""
 
 #: templates/campain_add.html:38
 msgid "Créer la campagne"
-msgstr "Create Campaign"
+msgstr ""
 
 #: templates/campain_add.html:66
-#, fuzzy
 msgid "Erreur lors de la création de la campagne"
-msgstr "Campaign Information"
+msgstr ""
 
 #: templates/campain_details.html:3
 msgid "Détails de la campagne"
-msgstr "Campaign Details"
+msgstr ""
 
 #: templates/admin/deleted.html:50 templates/admin/deleted.html:72
 #: templates/admin/deleted.html:94 templates/admin/user_edit.html:27
@@ -242,60 +237,60 @@ msgstr "Campaign Details"
 #: templates/rapport_details.html:176 templates/test_edit.html:62
 #: templates/test_execute.html:28 templates/test_execute.html:60
 msgid "Chargement..."
-msgstr "Loading..."
+msgstr ""
 
 #: templates/campain_details.html:12
 msgid "Renommer la campagne"
-msgstr "Rename Campaign"
+msgstr ""
 
 #: templates/campain_details.html:18
 msgid "Exporter la campagne"
-msgstr "Export Campaign"
+msgstr ""
 
 #: templates/campain_details.html:31
 msgid "Informations"
-msgstr "Information"
+msgstr ""
 
 #: templates/campain_details.html:36 templates/rapport_details.html:132
 #: templates/test_execute.html:34
 msgid "Nom :"
-msgstr "Name:"
+msgstr ""
 
 #: templates/campain_details.html:37 templates/test_execute.html:35
 msgid "Description :"
-msgstr "Description:"
+msgstr ""
 
 #: templates/campain_details.html:40
 msgid "Créée le :"
-msgstr "Created on:"
+msgstr ""
 
 #: templates/campain_details.html:41
 msgid "Créée par :"
-msgstr "Created by:"
+msgstr ""
 
 #: templates/campain_details.html:55
 msgid "Fichiers"
-msgstr "Files"
+msgstr ""
 
 #: templates/campain_details.html:57
 msgid "View workdir files"
-msgstr "View workdir files"
+msgstr ""
 
 #: templates/campain_details.html:61
 msgid "Ajouter un fichier"
-msgstr "Add File"
+msgstr ""
 
 #: templates/campain_details.html:75
 msgid "Nom du fichier"
-msgstr "Filename"
+msgstr ""
 
 #: templates/campain_details.html:76
 msgid "Taille (Ko)"
-msgstr "Size (KB)"
+msgstr ""
 
 #: templates/campain_details.html:77 templates/campain_files.html:54
 msgid "Date de modification"
-msgstr "Modification Date"
+msgstr ""
 
 #: templates/admin/deleted.html:206 templates/admin/deleted.html:239
 #: templates/admin/deleted.html:272 templates/admin/users.html:69
@@ -303,16 +298,15 @@ msgstr "Modification Date"
 #: templates/campain_details.html:78 templates/campain_details.html:115
 #: templates/campain_files.html:55 templates/dashboard.html:104
 msgid "Actions"
-msgstr "Actions"
+msgstr ""
 
 #: templates/campain_details.html:89
 msgid "Aucun fichier dans cette campagne"
-msgstr "No files in this campaign"
+msgstr ""
 
 #: templates/campain_details.html:101
-#, fuzzy
 msgid "Rapports générés"
-msgstr "Deleted Reports"
+msgstr ""
 
 #: templates/campain_details.html:103
 msgid "Refresh"
@@ -323,7 +317,7 @@ msgstr ""
 #: templates/campain_details.html:111 templates/campain_files.html:52
 #: templates/dashboard.html:101
 msgid "Nom"
-msgstr "Name"
+msgstr ""
 
 #: templates/campain_details.html:112
 msgid "Type"
@@ -334,46 +328,41 @@ msgid "Date"
 msgstr ""
 
 #: templates/campain_details.html:114 templates/campain_files.html:53
-#, fuzzy
 msgid "Taille"
-msgstr "Size (KB)"
+msgstr ""
 
 #: templates/campain_details.html:133
 msgid "Tests de la campagne"
-msgstr "Campaign Tests"
+msgstr ""
 
 #: templates/campain_details.html:135 templates/test_add.html:3
 #: templates/test_add.html:9
 msgid "Ajouter un test"
-msgstr "Add Test"
+msgstr ""
 
 #: templates/campain_details.html:1086 templates/rapport_details.html:292
 msgid "Erreur lors de l'exécution de la campagne"
-msgstr "Error executing campaign"
+msgstr ""
 
 #: templates/campain_details.html:1109
-#, fuzzy
 msgid "Export en cours..."
-msgstr "In Progress"
+msgstr ""
 
 #: templates/campain_details.html:1145
-#, fuzzy
 msgid "Export réussi"
-msgstr "Passed"
+msgstr ""
 
 #: templates/campain_details.html:1193
 msgid "Le nom de la campagne ne peut pas être vide"
-msgstr "Campaign name cannot be empty"
+msgstr ""
 
 #: templates/campain_details.html:1208
-#, fuzzy
 msgid "Campagne renommée avec succès"
-msgstr "Campaign created successfully"
+msgstr ""
 
 #: templates/campain_details.html:1212
-#, fuzzy
 msgid "Erreur lors du renommage de la campagne"
-msgstr "Rename Campaign"
+msgstr ""
 
 #: templates/campain_details.html:1261 templates/campain_files.html:158
 msgid "Télécharger"
@@ -381,23 +370,20 @@ msgstr ""
 
 #: templates/campain_details.html:1264 templates/campain_files.html:140
 #: templates/campain_files.html:161
-#, fuzzy
 msgid "Supprimer"
-msgstr "Delete test"
+msgstr ""
 
 #: templates/campain_details.html:1280
-#, fuzzy
 msgid "Êtes-vous sûr de vouloir supprimer ce rapport ?"
-msgstr "Are you sure you want to delete this variable?"
+msgstr ""
 
 #: templates/campain_details.html:1288
-#, fuzzy
 msgid "Erreur lors de la suppression du rapport"
-msgstr "Error during deletion"
+msgstr ""
 
 #: templates/campain_files.html:3 templates/campain_files.html:10
 msgid "Fichiers de travail"
-msgstr "Work files"
+msgstr ""
 
 #: templates/campain_files.html:35
 msgid "Rafraîchir"
@@ -405,168 +391,158 @@ msgstr ""
 
 #: templates/campain_files.html:66
 msgid "Ce dossier est vide"
-msgstr "This folder is empty"
+msgstr ""
 
 #: templates/campain_files.html:109
 msgid "Impossible de charger les fichiers"
-msgstr "Unable to load files"
+msgstr ""
 
 #: templates/campain_files.html:216
-#, fuzzy
 msgid "Êtes-vous sûr de vouloir supprimer ce fichier ?"
-msgstr "Are you sure you want to delete this user?"
+msgstr ""
 
 #: templates/campain_files.html:220
-#, fuzzy
 msgid "Fichier supprimé avec succès"
-msgstr "User created successfully"
+msgstr ""
 
 #: templates/admin/deleted.html:431 templates/campain_files.html:224
 #: templates/campain_files.html:241
 msgid "Erreur lors de la suppression"
-msgstr "Error during deletion"
+msgstr ""
 
 #: templates/campain_files.html:229
 msgid "Êtes-vous sûr de vouloir supprimer ce dossier ?"
-msgstr "Are you sure you want to delete this folder?"
+msgstr ""
 
 #: templates/campain_files.html:233
 msgid "Dossier supprimé avec succès"
-msgstr "Folder deleted successfully"
+msgstr ""
 
 #: templates/campain_files.html:239
 msgid "Le dossier n'est pas vide"
-msgstr "The folder is not empty"
+msgstr ""
 
 #: templates/dashboard.html:10
 msgid "Bienvenue sur votre espace de gestion des campagnes de tests"
-msgstr "Welcome to your test campaign management area"
+msgstr ""
 
 #: templates/dashboard.html:17 templates/dashboard.html:52
 msgid "Importer une campagne"
-msgstr "Import Campaign"
+msgstr ""
 
 #: templates/dashboard.html:29
 msgid "Campagnes de tests"
-msgstr "Test Campaigns"
+msgstr ""
 
 #: templates/dashboard.html:59
 msgid "Fichier JSON"
-msgstr "JSON File"
+msgstr ""
 
 #: templates/dashboard.html:61
 msgid "Sélectionnez un fichier exporté précédemment (.json)"
-msgstr "Select a previously exported file (.json)"
+msgstr ""
 
 #: templates/dashboard.html:65
 msgid "Laisser vide pour utiliser le nom par défaut"
-msgstr "Leave empty to use default name"
+msgstr ""
 
 #: templates/dashboard.html:66
 msgid "Par défaut : \"Import de [Nom original]\""
-msgstr "Default: \"Import of [Original Name]\""
+msgstr ""
 
 #: templates/dashboard.html:73 templates/rapport_details.html:217
 #: templates/test_add.html:106 templates/test_add.html:134
 #: templates/test_edit.html:113 templates/test_edit.html:141
 msgid "Annuler"
-msgstr "Cancel"
+msgstr ""
 
 #: templates/dashboard.html:76 templates/dashboard.html:230
 msgid "Importer"
-msgstr "Import"
+msgstr ""
 
 #: templates/dashboard.html:103
-#, fuzzy
 msgid "Date de création"
-msgstr "Modification Date"
+msgstr ""
 
 #: templates/dashboard.html:136
-#, fuzzy
 msgid "Aucune campagne trouvée."
-msgstr "Campaign not found"
+msgstr ""
 
 #: templates/dashboard.html:137
-#, fuzzy
 msgid "Créez votre première campagne"
-msgstr "Create Campaign"
+msgstr ""
 
 #: templates/dashboard.html:144
 msgid "Erreur lors du chargement des campagnes"
-msgstr "Error loading campaigns"
+msgstr ""
 
 #: templates/dashboard.html:151
 msgid "Êtes-vous sûr de vouloir supprimer cette campagne ?"
-msgstr "Are you sure you want to delete this campaign?"
+msgstr ""
 
 #: templates/dashboard.html:157
-#, fuzzy
 msgid "Campagne supprimée avec succès"
-msgstr "Campaign created successfully"
+msgstr ""
 
 #: templates/dashboard.html:160
 msgid "Erreur lors de la suppression de la campagne"
-msgstr "Error deleting campaign"
+msgstr ""
 
 #: templates/dashboard.html:181
-#, fuzzy
 msgid "Veuillez sélectionner un fichier JSON."
-msgstr "Select a previously exported file (.json)"
+msgstr ""
 
 #: templates/dashboard.html:197
-#, fuzzy
 msgid "Import..."
-msgstr "Import"
+msgstr ""
 
 #: templates/dashboard.html:216
-#, fuzzy
 msgid "Campagne importée avec succès"
-msgstr "Campaign created successfully"
+msgstr ""
 
 #: templates/login.html:6
 msgid "Connexion"
-msgstr "Login"
+msgstr ""
 
 #: templates/login.html:30
 msgid "Really! Are you serious?"
-msgstr "Really! Are you serious?"
+msgstr ""
 
 #: templates/login.html:40
 msgid "Plateforme de test multi-environnements"
-msgstr "Multi-environment test platform"
+msgstr ""
 
 #: templates/admin/users.html:67 templates/login.html:59
 msgid "Email"
-msgstr "Email"
+msgstr ""
 
 #: templates/login.html:66
 msgid "Mot de passe"
-msgstr "Password"
+msgstr ""
 
 #: templates/login.html:73
 msgid "Se connecter"
-msgstr "Login"
+msgstr ""
 
 #: templates/login.html:111
 msgid "Votre session a expiré. Veuillez vous reconnecter."
-msgstr "Your session has expired. Please log in again."
+msgstr ""
 
 #: templates/login.html:140
-#, fuzzy
 msgid "Erreur de connexion"
-msgstr "Logout"
+msgstr ""
 
 #: templates/login.html:144
 msgid "Erreur de connexion au serveur"
-msgstr "Server connection error"
+msgstr ""
 
 #: templates/rapport_details.html:3 templates/rapport_details.html:104
 msgid "Détails du rapport"
-msgstr "Report details"
+msgstr ""
 
 #: templates/rapport_details.html:124
 msgid "Informations générales"
-msgstr "General information"
+msgstr ""
 
 #: templates/rapport_details.html:126
 msgid "Generate report"
@@ -574,55 +550,51 @@ msgstr ""
 
 #: templates/rapport_details.html:133 templates/test_execute.html:58
 msgid "Environnement :"
-msgstr "Environment:"
+msgstr ""
 
 #: templates/rapport_details.html:136
 msgid "Date de création :"
-msgstr "Creation date:"
+msgstr ""
 
 #: templates/rapport_details.html:137
 msgid "Statut :"
-msgstr "Status:"
+msgstr ""
 
 #: templates/rapport_details.html:140
 msgid "Temps d'exécution :"
-msgstr "Execution time:"
+msgstr ""
 
 #: templates/rapport_details.html:146
 msgid "Progression :"
-msgstr "Progress:"
+msgstr ""
 
 #: templates/rapport_details.html:166
 msgid "Tests exécutés"
-msgstr "Tests executed"
+msgstr ""
 
 #: templates/rapport_details.html:170
 msgid "En cours..."
-msgstr "In progress..."
+msgstr ""
 
 #: templates/rapport_details.html:186
 msgid "Aucun test dans ce rapport"
-msgstr "No tests in this report"
+msgstr ""
 
 #: templates/rapport_details.html:199
-#, fuzzy
 msgid "Générer un rapport"
-msgstr "Report details"
+msgstr ""
 
 #: templates/rapport_details.html:204
-#, fuzzy
 msgid "Type de rapport"
-msgstr "Report details"
+msgstr ""
 
 #: templates/rapport_details.html:206 templates/rapport_details.html:579
-#, fuzzy
 msgid "Choisir un type de rapport..."
-msgstr "No tests in this report"
+msgstr ""
 
 #: templates/rapport_details.html:212
-#, fuzzy
 msgid "Configuration du rapport"
-msgstr "Execution configuration"
+msgstr ""
 
 #: templates/rapport_details.html:219
 msgid "Générer"
@@ -630,51 +602,51 @@ msgstr ""
 
 #: templates/rapport_details.html:280
 msgid "Exécution de la campagne terminée"
-msgstr "Campaign execution completed"
+msgstr ""
 
 #: templates/rapport_details.html:331
 msgid "Erreur lors du chargement du rapport"
-msgstr "Error loading report"
+msgstr ""
 
 #: templates/rapport_details.html:349
 msgid "Aucun log disponible"
-msgstr "No logs available"
+msgstr ""
 
 #: templates/rapport_details.html:360 templates/rapport_details.html:434
 #: templates/rapport_details.html:505 templates/test_execute.html:86
 msgid "En attente"
-msgstr "Pending"
+msgstr ""
 
 #: templates/rapport_details.html:365 templates/rapport_details.html:439
 #: templates/rapport_details.html:509 templates/test_execute.html:201
 msgid "En cours"
-msgstr "In Progress"
+msgstr ""
 
 #: templates/rapport_details.html:370 templates/rapport_details.html:444
 #: templates/test_execute.html:217
 msgid "Réussi"
-msgstr "Passed"
+msgstr ""
 
 #: templates/rapport_details.html:375 templates/rapport_details.html:449
 #: templates/rapport_details.html:517 templates/test_execute.html:217
 msgid "Échoué"
-msgstr "Failed"
+msgstr ""
 
 #: templates/rapport_details.html:380 templates/rapport_details.html:454
 msgid "Ignoré"
-msgstr "Skipped"
+msgstr ""
 
 #: templates/rapport_details.html:409
 msgid "Temps d'exécution:"
-msgstr "Execution time:"
+msgstr ""
 
 #: templates/rapport_details.html:411
 msgid "Logs d'exécution:"
-msgstr "Execution logs:"
+msgstr ""
 
 #: templates/rapport_details.html:513
 msgid "Terminé"
-msgstr "Completed"
+msgstr ""
 
 #: templates/rapport_details.html:599
 msgid "Impossible de charger les plugins de rapport"
@@ -689,511 +661,491 @@ msgid "Rapport généré avec succès. Le téléchargement va commencer..."
 msgstr ""
 
 #: templates/rapport_details.html:755
-#, fuzzy
 msgid "Erreur : "
-msgstr "Error"
+msgstr ""
 
 #: templates/test_add.html:14 templates/test_edit.html:14
 msgid "Enregistrer et lancer le test"
-msgstr "Save and run test"
+msgstr ""
 
 #: templates/test_add.html:26 templates/test_edit.html:26
 #: templates/test_execute.html:23
 msgid "Informations du test"
-msgstr "Test information"
+msgstr ""
 
 #: templates/test_add.html:30 templates/test_edit.html:30
 msgid "Nom du test *"
-msgstr "Test name *"
+msgstr ""
 
 #: templates/test_add.html:44 templates/test_edit.html:44
 msgid "Actions du test"
-msgstr "Test actions"
+msgstr ""
 
 #: templates/test_add.html:47 templates/test_add.html:118
 #: templates/test_edit.html:47 templates/test_edit.html:125
 msgid "Ajouter une variable"
-msgstr "Add a variable"
+msgstr ""
 
 #: templates/test_add.html:50 templates/test_add.html:80
 #: templates/test_edit.html:50 templates/test_edit.html:87
 msgid "Ajouter une action"
-msgstr "Add an action"
+msgstr ""
 
 #: templates/test_add.html:60
 msgid "Aucune action ajoutée. Cliquez sur \"Ajouter une action\" pour commencer."
-msgstr "No actions added. Click 'Add an action' to start."
+msgstr ""
 
 #: templates/test_add.html:68
 msgid "Créer le test"
-msgstr "Create test"
+msgstr ""
 
 #: templates/test_add.html:86 templates/test_edit.html:93
 msgid "Type d'action *"
-msgstr "Action type *"
+msgstr ""
 
 #: templates/test_add.html:88 templates/test_edit.html:95
 msgid "-- Sélectionner un type --"
-msgstr "-- Select a type --"
+msgstr ""
 
 #: templates/test_add.html:99 templates/test_edit.html:106
 msgid "Variables de sortie"
-msgstr "Output variables"
+msgstr ""
 
 #: templates/test_add.html:100 templates/test_edit.html:107
 msgid ""
 "Sélectionnez les variables de sortie que vous souhaitez rendre "
 "disponibles pour les actions suivantes."
 msgstr ""
-"Select the output variables you want to make available for subsequent "
-"actions."
 
 #: templates/test_add.html:107 templates/test_edit.html:114
 msgid "Enregistrer"
-msgstr "Save"
+msgstr ""
 
 #: templates/test_add.html:124 templates/test_edit.html:131
 msgid "Nom de la variable *"
-msgstr "Variable name *"
+msgstr ""
 
 #: templates/test_add.html:127 templates/test_edit.html:134
-#, fuzzy
 msgid "Ex: ma_variable"
-msgstr "Variables"
+msgstr ""
 
 #: templates/test_add.html:129 templates/test_edit.html:136
 msgid "Caractères alphanumériques et underscore uniquement"
-msgstr "Alphanumeric characters and underscore only"
+msgstr ""
 
 #: templates/test_add.html:135 templates/test_edit.html:142
 msgid "Ajouter"
-msgstr "Add"
+msgstr ""
 
 #: templates/test_add.html:154 templates/test_edit.html:188
 msgid "Veuillez saisir un nom pour le test"
-msgstr "Please enter a name for the test"
+msgstr ""
 
 #: templates/test_add.html:159 templates/test_edit.html:193
 msgid "Veuillez ajouter au moins une action au test"
-msgstr "Please add at least one action to the test"
+msgstr ""
 
 #: templates/test_add.html:175
 msgid "Erreur lors de la création du test: "
-msgstr "Error creating test: "
+msgstr ""
 
 #: templates/test_edit.html:3 templates/test_edit.html:9
 msgid "Modifier un test"
-msgstr "Edit test"
+msgstr ""
 
 #: templates/admin/user_edit.html:92 templates/test_edit.html:72
 msgid "Enregistrer les modifications"
-msgstr "Save Changes"
+msgstr ""
 
 #: templates/test_edit.html:75
 msgid "Supprimer le test"
-msgstr "Delete test"
+msgstr ""
 
 #: templates/test_edit.html:173 templates/test_execute.html:153
 msgid "Erreur lors du chargement du test"
-msgstr "Error loading test"
+msgstr ""
 
 #: templates/test_edit.html:218
 msgid "Erreur lors de la mise à jour du test: "
-msgstr "Error updating test: "
+msgstr ""
 
 #: templates/test_execute.html:3 templates/test_execute.html:9
 msgid "Exécution du test"
-msgstr "Test execution"
+msgstr ""
 
 #: templates/test_execute.html:38
 msgid "Nombre d'actions :"
-msgstr "Number of actions:"
+msgstr ""
 
 #: templates/test_execute.html:39
 msgid "Variables du test :"
-msgstr "Test variables:"
+msgstr ""
 
 #: templates/test_execute.html:53
 msgid "Configuration d'exécution"
-msgstr "Execution configuration"
+msgstr ""
 
 #: templates/test_execute.html:65
 msgid "Lancer le test"
-msgstr "Run test"
+msgstr ""
 
 #: templates/test_execute.html:79
 msgid "Statut d'exécution"
-msgstr "Execution status"
+msgstr ""
 
 #: templates/test_execute.html:91
 msgid "Re-exécuter le test"
-msgstr "Rerun test"
+msgstr ""
 
 #: templates/test_execute.html:106
 msgid "Logs d'exécution"
-msgstr "Execution logs"
+msgstr ""
 
 #: templates/test_execute.html:108
 msgid "Effacer"
-msgstr "Clear"
+msgstr ""
 
 #: templates/admin/deleted.html:211 templates/admin/deleted.html:277
 #: templates/test_execute.html:129
 msgid "Sans nom"
-msgstr "Unnamed"
+msgstr ""
 
 #: templates/test_execute.html:130
 msgid "Aucune description"
-msgstr "No description"
+msgstr ""
 
 #: templates/test_execute.html:138
 msgid "Aucune"
-msgstr "None"
+msgstr ""
 
 #: templates/test_execute.html:163
 msgid "Sélectionnez un environnement"
-msgstr "Select an environment"
+msgstr ""
 
 #: templates/test_execute.html:179
 msgid "Erreur lors du chargement des environnements"
-msgstr "Error loading environments"
+msgstr ""
 
 #: templates/test_execute.html:264
 msgid "Veuillez sélectionner un environnement"
-msgstr "Please select an environment"
+msgstr ""
 
 #: templates/test_execute.html:269
 msgid "Lancement..."
-msgstr "Starting..."
+msgstr ""
 
 #: templates/test_execute.html:277
 msgid "Erreur lors du lancement du test: "
-msgstr "Error starting test: "
+msgstr ""
 
 #: templates/test_execute.html:278
 msgid "Erreur"
-msgstr "Error"
+msgstr ""
 
 #: templates/test_execute.html:301
 msgid "Sélectionnez un environnement pour relancer le test"
-msgstr "Select an environment to rerun the test"
+msgstr ""
 
 #: templates/admin/deleted.html:8
 msgid "Gestion des éléments supprimés"
-msgstr "Deleted Items Management"
+msgstr ""
 
 #: templates/admin/deleted.html:18
 msgid "Tests"
-msgstr "Tests"
+msgstr ""
 
 #: templates/admin/deleted.html:23
 msgid "Campagnes"
-msgstr "Campaigns"
+msgstr ""
 
 #: templates/admin/deleted.html:28
 msgid "Rapports"
-msgstr "Reports"
+msgstr ""
 
 #: templates/admin/deleted.html:38
 msgid "Tests supprimés"
-msgstr "Deleted Tests"
+msgstr ""
 
 #: templates/admin/deleted.html:41 templates/admin/deleted.html:63
 #: templates/admin/deleted.html:85
 msgid "Restaurer sélection"
-msgstr "Restore Selection"
+msgstr ""
 
 #: templates/admin/deleted.html:44 templates/admin/deleted.html:66
 #: templates/admin/deleted.html:88
 msgid "Supprimer définitivement"
-msgstr "Permanently Delete"
+msgstr ""
 
 #: templates/admin/deleted.html:60
 msgid "Campagnes supprimées"
-msgstr "Deleted Campaigns"
+msgstr ""
 
 #: templates/admin/deleted.html:82
 msgid "Rapports supprimés"
-msgstr "Deleted Reports"
+msgstr ""
 
 #: templates/admin/deleted.html:200
-#, fuzzy
 msgid "Aucun test supprimé"
-msgstr "Deleted Tests"
+msgstr ""
 
 #: templates/admin/deleted.html:206 templates/admin/deleted.html:239
 #: templates/admin/deleted.html:272
 msgid "Date de suppression"
-msgstr "Deletion date"
+msgstr ""
 
 #: templates/admin/deleted.html:233
-#, fuzzy
 msgid "Aucune campagne supprimée"
-msgstr "Deleted Campaigns"
+msgstr ""
 
 #: templates/admin/deleted.html:266
-#, fuzzy
 msgid "Aucun rapport supprimé"
-msgstr "Deleted Reports"
+msgstr ""
 
 #: templates/admin/deleted.html:272 templates/admin/variables.html:77
 msgid "Filière"
-msgstr "Branch"
+msgstr ""
 
 #: templates/admin/deleted.html:375 templates/admin/deleted.html:413
 msgid "Accès refusé : vous devez être administrateur."
-msgstr "Access denied: you must be an administrator."
+msgstr ""
 
 #: templates/admin/deleted.html:385
-#, fuzzy
 msgid "élément(s) restauré(s) avec succès"
-msgstr "Test created successfully"
+msgstr ""
 
 #: templates/admin/deleted.html:388
 msgid "Restauration partielle."
-msgstr "Partial restoration."
+msgstr ""
 
 #: templates/admin/deleted.html:388 templates/admin/deleted.html:426
-#, fuzzy
 msgid "erreur(s)"
-msgstr "Error"
+msgstr ""
 
 #: templates/admin/deleted.html:393
 msgid "Erreur lors de la restauration"
-msgstr "Error during restoration"
+msgstr ""
 
 #: templates/admin/deleted.html:423
-#, fuzzy
 msgid "élément(s) supprimé(s) définitivement"
-msgstr "Permanently Delete"
+msgstr ""
 
 #: templates/admin/deleted.html:426
 msgid "Suppression partielle."
-msgstr "Partial deletion."
+msgstr ""
 
 #: templates/admin/user_add.html:3 templates/admin/user_add.html:9
 #: templates/admin/users.html:13
 msgid "Nouvel utilisateur"
-msgstr "New User"
+msgstr ""
 
 #: templates/admin/user_add.html:22 templates/admin/user_edit.html:22
 msgid "Informations de l'utilisateur"
-msgstr "User Information"
+msgstr ""
 
 #: templates/admin/user_add.html:27 templates/admin/user_edit.html:34
 msgid "Nom complet *"
-msgstr "Full Name *"
+msgstr ""
 
 #: templates/admin/user_add.html:29 templates/admin/user_edit.html:36
 msgid "Ex: Jean Dupont"
-msgstr "Ex: John Doe"
+msgstr ""
 
 #: templates/admin/user_add.html:33 templates/admin/user_edit.html:40
 msgid "Email *"
-msgstr "Email *"
+msgstr ""
 
 #: templates/admin/user_add.html:35 templates/admin/user_edit.html:42
 msgid "Ex: jean.dupont@example.com"
-msgstr "Ex: john.doe@example.com"
+msgstr ""
 
 #: templates/admin/user_add.html:37
 msgid "L'adresse email servira d'identifiant de connexion"
-msgstr "The email address will be used as the login ID"
+msgstr ""
 
 #: templates/admin/user_add.html:42
 msgid "Mot de passe *"
-msgstr "Password *"
+msgstr ""
 
 #: templates/admin/user_add.html:44 templates/admin/user_edit.html:77
 msgid "Minimum 8 caractères"
-msgstr "Minimum 8 characters"
+msgstr ""
 
 #: templates/admin/user_add.html:46 templates/admin/user_edit.html:79
 #: templates/admin/user_edit.html:168
 msgid "Le mot de passe doit contenir au moins 8 caractères"
-msgstr "The password must contain at least 8 characters"
+msgstr ""
 
 #: templates/admin/user_add.html:51
 msgid "Confirmer le mot de passe *"
-msgstr "Confirm Password *"
+msgstr ""
 
 #: templates/admin/user_add.html:53 templates/admin/user_edit.html:86
 msgid "Ressaisir le mot de passe"
-msgstr "Re-enter password"
+msgstr ""
 
 #: templates/admin/user_add.html:57 templates/admin/user_edit.html:49
 msgid "Rôle *"
-msgstr "Role *"
+msgstr ""
 
 #: templates/admin/user_add.html:59 templates/admin/user_edit.html:51
 #: templates/admin/users.html:79
 msgid "Utilisateur"
-msgstr "User"
+msgstr ""
 
 #: templates/admin/user_add.html:60 templates/admin/user_edit.html:52
 #: templates/admin/users.html:79
 msgid "Administrateur"
-msgstr "Administrator"
+msgstr ""
 
 #: templates/admin/user_add.html:63 templates/admin/user_edit.html:55
 msgid "Les administrateurs ont accès à toutes les fonctionnalités"
-msgstr "Administrators have access to all features"
+msgstr ""
 
 #: templates/admin/user_add.html:69
 msgid "Créer l'utilisateur"
-msgstr "Create User"
+msgstr ""
 
 #: templates/admin/user_add.html:93 templates/admin/user_edit.html:163
 msgid "Les mots de passe ne correspondent pas"
-msgstr "Passwords do not match"
+msgstr ""
 
 #: templates/admin/user_add.html:106 templates/admin/user_edit.html:186
 #: templates/admin/variable_add.html:135 templates/admin/variable_edit.html:178
 msgid "Veuillez remplir tous les champs obligatoires"
-msgstr "Please fill in all required fields"
+msgstr ""
 
 #: templates/admin/user_add.html:117
-#, fuzzy
 msgid "Erreur lors de la création de l'utilisateur"
-msgstr "User Information"
+msgstr ""
 
 #: templates/admin/user_edit.html:3
 msgid "Modifier utilisateur"
-msgstr "Edit user"
+msgstr ""
 
 #: templates/admin/user_edit.html:9
 msgid "Modifier l'utilisateur"
-msgstr "Edit User"
+msgstr ""
 
 #: templates/admin/user_edit.html:29
 msgid "Chargement des données..."
-msgstr "Loading data..."
+msgstr ""
 
 #: templates/admin/user_edit.html:44
 msgid "L'adresse email sert d'identifiant de connexion"
-msgstr "The email address serves as the login ID"
+msgstr ""
 
 #: templates/admin/user_edit.html:65
 msgid "Modifier le mot de passe de l'utilisateur"
-msgstr "Change user password"
+msgstr ""
 
 #: templates/admin/user_edit.html:71
 msgid "Nouveau mot de passe"
-msgstr "New Password"
+msgstr ""
 
 #: templates/admin/user_edit.html:72
 msgid "Saisissez le nouveau mot de passe pour cet utilisateur"
-msgstr "Enter the new password for this user"
+msgstr ""
 
 #: templates/admin/user_edit.html:75
 msgid "Nouveau mot de passe *"
-msgstr "New Password *"
+msgstr ""
 
 #: templates/admin/user_edit.html:84
 msgid "Confirmer le nouveau mot de passe *"
-msgstr "Confirm New Password *"
+msgstr ""
 
 #: templates/admin/user_edit.html:140
-#, fuzzy
 msgid "Erreur lors du chargement des données de l'utilisateur"
-msgstr "Change user password"
+msgstr ""
 
 #: templates/admin/user_edit.html:158
 msgid "Veuillez remplir les deux champs de mot de passe"
-msgstr "Please fill in both password fields"
+msgstr ""
 
 #: templates/admin/user_edit.html:192
-#, fuzzy
 msgid "Utilisateur modifié avec succès"
-msgstr "User created successfully"
+msgstr ""
 
 #: templates/admin/user_edit.html:197
-#, fuzzy
 msgid "Erreur lors de la modification de l'utilisateur"
-msgstr "User Information"
+msgstr ""
 
 #: templates/admin/users.html:3 templates/admin/users.html:9
 msgid "Gestion des utilisateurs"
-msgstr "User Management"
+msgstr ""
 
 #: templates/admin/users.html:22
 msgid "Liste des utilisateurs"
-msgstr "User List"
+msgstr ""
 
 #: templates/admin/users.html:68
 msgid "Rôle"
-msgstr "Role"
+msgstr ""
 
 #: templates/admin/users.html:106
-#, fuzzy
 msgid "Aucun utilisateur trouvé"
-msgstr "New User"
+msgstr ""
 
 #: templates/admin/users.html:113
-#, fuzzy
 msgid "Erreur lors du chargement des utilisateurs"
-msgstr "User List"
+msgstr ""
 
 #: templates/admin/users.html:120
 msgid "Êtes-vous sûr de vouloir supprimer cet utilisateur ?"
-msgstr "Are you sure you want to delete this user?"
+msgstr ""
 
 #: templates/admin/users.html:126
-#, fuzzy
 msgid "Utilisateur supprimé avec succès"
-msgstr "User created successfully"
+msgstr ""
 
 #: templates/admin/users.html:129
-#, fuzzy
 msgid "Erreur lors de la suppression de l'utilisateur"
-msgstr "Change user password"
+msgstr ""
 
 #: templates/admin/variable_add.html:3 templates/admin/variable_add.html:9
 #: templates/admin/variables.html:13
-#, fuzzy
 msgid "Nouvelle variable"
-msgstr "New Campaign"
+msgstr ""
 
 #: templates/admin/variable_add.html:22 templates/admin/variable_edit.html:22
 msgid "Informations de la variable"
-msgstr "Variable Information"
+msgstr ""
 
 #: templates/admin/variable_add.html:27 templates/admin/variable_edit.html:33
 msgid "Clé de la variable *"
-msgstr "Variable Key *"
+msgstr ""
 
 #: templates/admin/variable_add.html:29 templates/admin/variable_edit.html:35
 msgid "Ex: API_URL, DATABASE_HOST"
-msgstr "Ex: API_URL, DATABASE_HOST"
+msgstr ""
 
 #: templates/admin/variable_add.html:31 templates/admin/variable_edit.html:37
 msgid "Le nom unique de la variable (généralement en MAJUSCULES)"
-msgstr "The unique name of the variable (usually in UPPERCASE)"
+msgstr ""
 
 #: templates/admin/variable_add.html:36 templates/admin/variable_edit.html:42
 msgid "Valeur *"
-msgstr "Value *"
+msgstr ""
 
 #: templates/admin/variable_add.html:38 templates/admin/variable_edit.html:44
 msgid "Ex: https://api.example.com"
-msgstr "Ex: https://api.example.com"
+msgstr ""
 
 #: templates/admin/variable_add.html:42 templates/admin/variable_edit.html:48
 msgid "Environnement (filière) *"
-msgstr "Environment (Branch) *"
+msgstr ""
 
 #: templates/admin/variable_add.html:44 templates/admin/variable_edit.html:50
 msgid "Ex: DEV, TEST, STAGING, PROD"
-msgstr "Ex: DEV, TEST, STAGING, PROD"
+msgstr ""
 
 #: templates/admin/variable_add.html:50 templates/admin/variable_edit.html:56
 msgid "Description de la variable et son utilisation"
-msgstr "Description of the variable and its usage"
+msgstr ""
 
 #: templates/admin/variable_add.html:56 templates/admin/variable_edit.html:62
-#, fuzzy
 msgid "Obfusquer la valeur"
-msgstr "Edit Variable"
+msgstr ""
 
 #: templates/admin/variable_add.html:59 templates/admin/variable_edit.html:65
 msgid "Masquer la valeur dans l'interface et les logs"
@@ -1201,127 +1153,115 @@ msgstr ""
 
 #: templates/admin/variable_add.html:66 templates/admin/variable_edit.html:72
 msgid "Variable racine (privilèges élevés)"
-msgstr "Root Variable (Elevated Privileges)"
+msgstr ""
 
 #: templates/admin/variable_add.html:69 templates/admin/variable_edit.html:75
 msgid "Cochez cette option si la variable nécessite des privilèges administrateur"
-msgstr "Check this option if the variable requires administrator privileges"
+msgstr ""
 
 #: templates/admin/variable_add.html:75
-#, fuzzy
 msgid "Créer la variable"
-msgstr "Variable Key *"
+msgstr ""
 
 #: templates/admin/variable_add.html:141
-#, fuzzy
 msgid "Variable créée avec succès"
-msgstr "Campaign created successfully"
+msgstr ""
 
 #: templates/admin/variable_add.html:146
-#, fuzzy
 msgid "Erreur lors de la création de la variable"
-msgstr "Variable Information"
+msgstr ""
 
 #: templates/admin/variable_edit.html:3 templates/admin/variable_edit.html:9
 msgid "Modifier la variable"
-msgstr "Edit Variable"
+msgstr ""
 
 #: templates/admin/variable_edit.html:81
 msgid "Mettre à jour la variable"
-msgstr "Update Variable"
+msgstr ""
 
 #: templates/admin/variable_edit.html:84
 msgid "Supprimer la variable"
-msgstr "Delete Variable"
+msgstr ""
 
 #: templates/admin/variable_edit.html:157
 msgid "Erreur lors du chargement de la variable"
-msgstr "Error loading variable"
+msgstr ""
 
 #: templates/admin/variable_edit.html:184
-#, fuzzy
 msgid "Variable mise à jour avec succès"
-msgstr "Campaign updated successfully"
+msgstr ""
 
 #: templates/admin/variable_edit.html:189
-#, fuzzy
 msgid "Erreur lors de la mise à jour de la variable"
-msgstr "Update Variable"
+msgstr ""
 
 #: templates/admin/variable_edit.html:195 templates/admin/variables.html:211
 msgid "Êtes-vous sûr de vouloir supprimer cette variable ?"
-msgstr "Are you sure you want to delete this variable?"
+msgstr ""
 
 #: templates/admin/variable_edit.html:201 templates/admin/variables.html:217
-#, fuzzy
 msgid "Variable supprimée avec succès"
-msgstr "Test deleted successfully"
+msgstr ""
 
 #: templates/admin/variable_edit.html:206 templates/admin/variables.html:220
 msgid "Erreur lors de la suppression de la variable"
-msgstr "Error deleting variable"
+msgstr ""
 
 #: templates/admin/variables.html:3 templates/admin/variables.html:9
-#, fuzzy
 msgid "Gestion des variables"
-msgstr "Campaign Management"
+msgstr ""
 
 #: templates/admin/variables.html:22
-#, fuzzy
 msgid "Toutes"
-msgstr "Add"
+msgstr ""
 
 #: templates/admin/variables.html:25
-#, fuzzy
 msgid "Par environnement"
-msgstr "Environment (Branch) *"
+msgstr ""
 
 #: templates/admin/variables.html:35
-#, fuzzy
 msgid "Liste des variables"
-msgstr "Variable Key *"
+msgstr ""
 
 #: templates/admin/variables.html:75 templates/admin/variables.html:159
 msgid "Clé"
-msgstr "Key"
+msgstr ""
 
 #: templates/admin/variables.html:76 templates/admin/variables.html:160
-#, fuzzy
 msgid "Valeur"
-msgstr "Value *"
+msgstr ""
 
 #: templates/admin/variables.html:79
 msgid "Root"
-msgstr "Root"
+msgstr ""
 
 #: templates/admin/variables.html:95 templates/admin/variables.html:176
-#, fuzzy
 msgid "Créer une variable enfant"
-msgstr "Variable Key *"
+msgstr ""
 
 #: templates/admin/variables.html:120 templates/admin/variables.html:198
 msgid "Aucune variable trouvée"
-msgstr "No variable found"
+msgstr ""
 
 #: templates/admin/variables.html:127 templates/admin/variables.html:204
 msgid "Erreur lors du chargement des variables"
-msgstr "Error loading variables"
+msgstr ""
 
 #: utils/validation.py:17
 #, python-brace-format
 msgid "Le mot de passe doit contenir au moins {} caractères"
-msgstr "Password must contain at least {} characters"
+msgstr ""
 
 #: utils/validation.py:19
 msgid "Mot de passe valide"
-msgstr "Valid password"
+msgstr ""
 
 #: utils/validation.py:26
 #, python-brace-format
 msgid "Champs manquants : {}"
-msgstr "Missing fields: {}"
+msgstr ""
 
 #: utils/validation.py:28
 msgid "Tous les champs requis sont présents"
-msgstr "All required fields are present"
+msgstr ""
 

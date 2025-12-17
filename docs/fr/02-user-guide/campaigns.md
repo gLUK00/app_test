@@ -31,7 +31,14 @@ Cette section vous permet de gérer les fichiers associés à la campagne (ex: f
 
 Ces fichiers sont accessibles dans vos tests via la variable `{{test.files_dir}}`.
 
-### 3. Liste des Tests
+### 3. Rapports Générés
+Cette section liste tous les rapports (HTML, PDF, etc.) qui ont été générés à partir des exécutions de cette campagne.
+*   **Visualiser** : Voir le type, la date et la taille de chaque rapport.
+*   **Télécharger** : Récupérer le fichier du rapport.
+*   **Supprimer** : Effacer les anciens rapports.
+*   **Rafraîchir** : Mettre à jour la liste des rapports disponibles.
+
+### 4. Liste des Tests
 Affiche tous les tests de la campagne.
 *   **Réorganiser** : Utilisez les flèches Haut/Bas pour changer l'ordre d'exécution.
 *   **Ajouter un Test** : Créer un nouveau cas de test.

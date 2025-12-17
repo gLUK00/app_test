@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-12-04 22:20+0100\n"
+"POT-Creation-Date: 2025-12-17 16:53+0100\n"
 "PO-Revision-Date: 2025-12-04 17:49+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: zh\n"
@@ -60,6 +60,44 @@ msgstr "未找到活动"
 msgid "Campagne mise à jour avec succès"
 msgstr "活动更新成功"
 
+#: routes/campains_routes.py:612 routes/rapports_routes.py:289
+#, fuzzy
+msgid "Fichier non trouvé"
+msgstr "未找到测试"
+
+#: routes/campains_routes.py:615 templates/campain_details.html:1284
+#, fuzzy
+msgid "Rapport supprimé avec succès"
+msgstr "测试删除成功"
+
+#: routes/rapports_routes.py:230
+msgid "Type de rapport manquant"
+msgstr ""
+
+#: routes/rapports_routes.py:235
+msgid "Rapport introuvable"
+msgstr ""
+
+#: routes/rapports_routes.py:240
+#, python-brace-format
+msgid "Plugin de rapport {} introuvable"
+msgstr ""
+
+#: routes/rapports_routes.py:245
+#, fuzzy, python-brace-format
+msgid "Configuration invalide: {}"
+msgstr "执行配置"
+
+#: routes/rapports_routes.py:265
+#, fuzzy
+msgid "Rapport généré avec succès"
+msgstr "活动创建成功"
+
+#: routes/rapports_routes.py:270
+#, fuzzy, python-brace-format
+msgid "Erreur lors de la génération: {}"
+msgstr "恢复时出错"
+
 #: routes/tests_routes.py:38 routes/tests_routes.py:67
 #: routes/tests_routes.py:82 routes/tests_routes.py:104
 #: routes/tests_routes.py:119 routes/tests_routes.py:138
@@ -69,8 +107,8 @@ msgstr "活动更新成功"
 msgid "Erreur serveur: %(error)s"
 msgstr "服务器错误：%(error)s"
 
-#: routes/tests_routes.py:62 templates/test_add.html:183
-#: templates/test_add.html:194
+#: routes/tests_routes.py:62 templates/test_add.html:184
+#: templates/test_add.html:195
 msgid "Test créé avec succès"
 msgstr "测试创建成功"
 
@@ -79,8 +117,8 @@ msgstr "测试创建成功"
 msgid "Test non trouvé"
 msgstr "未找到测试"
 
-#: routes/tests_routes.py:100 templates/test_edit.html:226
-#: templates/test_edit.html:237
+#: routes/tests_routes.py:100 templates/test_edit.html:227
+#: templates/test_edit.html:238
 msgid "Test mis à jour avec succès"
 msgstr "测试更新成功"
 
@@ -120,7 +158,7 @@ msgstr "无法移动测试（已在最后一个位置或未找到测试）"
 msgid "Test déplacé vers le bas avec succès"
 msgstr "测试成功下移"
 
-#: routes/users_routes.py:51 templates/admin/user_add.html:111
+#: routes/users_routes.py:51 templates/admin/user_add.html:112
 msgid "Utilisateur créé avec succès"
 msgstr "用户创建成功"
 
@@ -159,9 +197,10 @@ msgstr "新活动"
 #: templates/admin/deleted.html:10 templates/admin/user_add.html:13
 #: templates/admin/user_edit.html:13 templates/admin/variable_add.html:13
 #: templates/admin/variable_edit.html:13 templates/campain_add.html:13
-#: templates/campain_details.html:21 templates/rapport_details.html:109
-#: templates/rapport_details.html:113 templates/test_add.html:16
-#: templates/test_edit.html:16 templates/test_execute.html:13
+#: templates/campain_details.html:21 templates/campain_files.html:16
+#: templates/rapport_details.html:109 templates/rapport_details.html:113
+#: templates/test_add.html:17 templates/test_edit.html:17
+#: templates/test_execute.html:13
 msgid "Retour"
 msgstr "返回"
 
@@ -177,7 +216,7 @@ msgstr "活动名称"
 #: templates/admin/variable_add.html:48 templates/admin/variable_edit.html:54
 #: templates/admin/variables.html:78 templates/admin/variables.html:161
 #: templates/campain_add.html:32 templates/dashboard.html:102
-#: templates/test_add.html:34 templates/test_edit.html:34
+#: templates/test_add.html:35 templates/test_edit.html:35
 msgid "Description"
 msgstr "描述"
 
@@ -198,8 +237,9 @@ msgstr "活动详情"
 #: templates/admin/deleted.html:94 templates/admin/user_edit.html:27
 #: templates/admin/users.html:28 templates/admin/variable_edit.html:27
 #: templates/admin/variables.html:41 templates/campain_details.html:11
-#: templates/campain_details.html:62 templates/dashboard.html:35
-#: templates/rapport_details.html:173 templates/test_edit.html:61
+#: templates/campain_details.html:67 templates/campain_files.html:12
+#: templates/campain_files.html:42 templates/dashboard.html:35
+#: templates/rapport_details.html:176 templates/test_edit.html:62
 #: templates/test_execute.html:28 templates/test_execute.html:60
 msgid "Chargement..."
 msgstr "正在加载..."
@@ -216,7 +256,7 @@ msgstr "导出活动"
 msgid "Informations"
 msgstr "信息"
 
-#: templates/campain_details.html:36 templates/rapport_details.html:129
+#: templates/campain_details.html:36 templates/rapport_details.html:132
 #: templates/test_execute.html:34
 msgid "Nom :"
 msgstr "名称："
@@ -233,73 +273,170 @@ msgstr "创建于："
 msgid "Créée par :"
 msgstr "创建者："
 
-#: templates/campain_details.html:54
+#: templates/campain_details.html:55
 msgid "Fichiers"
 msgstr "文件"
 
-#: templates/campain_details.html:56
+#: templates/campain_details.html:57
+msgid "View workdir files"
+msgstr "查看工作目录文件"
+
+#: templates/campain_details.html:61
 msgid "Ajouter un fichier"
 msgstr "添加文件"
 
-#: templates/campain_details.html:70
+#: templates/campain_details.html:75
 msgid "Nom du fichier"
 msgstr "文件名"
 
-#: templates/campain_details.html:71
+#: templates/campain_details.html:76
 msgid "Taille (Ko)"
 msgstr "大小 (KB)"
 
-#: templates/campain_details.html:72
+#: templates/campain_details.html:77 templates/campain_files.html:54
 msgid "Date de modification"
 msgstr "修改日期"
 
 #: templates/admin/deleted.html:206 templates/admin/deleted.html:239
 #: templates/admin/deleted.html:272 templates/admin/users.html:69
 #: templates/admin/variables.html:80 templates/admin/variables.html:162
-#: templates/campain_details.html:73 templates/dashboard.html:104
+#: templates/campain_details.html:78 templates/campain_details.html:115
+#: templates/campain_files.html:55 templates/dashboard.html:104
 msgid "Actions"
 msgstr "操作"
 
-#: templates/campain_details.html:84
+#: templates/campain_details.html:89
 msgid "Aucun fichier dans cette campagne"
 msgstr "此活动中没有文件"
 
-#: templates/campain_details.html:96
+#: templates/campain_details.html:101
+#, fuzzy
+msgid "Rapports générés"
+msgstr "已删除的报告"
+
+#: templates/campain_details.html:103
+msgid "Refresh"
+msgstr ""
+
+#: templates/admin/deleted.html:206 templates/admin/deleted.html:239
+#: templates/admin/deleted.html:272 templates/admin/users.html:66
+#: templates/campain_details.html:111 templates/campain_files.html:52
+#: templates/dashboard.html:101
+msgid "Nom"
+msgstr "名称"
+
+#: templates/campain_details.html:112
+msgid "Type"
+msgstr ""
+
+#: templates/campain_details.html:113
+msgid "Date"
+msgstr ""
+
+#: templates/campain_details.html:114 templates/campain_files.html:53
+#, fuzzy
+msgid "Taille"
+msgstr "大小 (KB)"
+
+#: templates/campain_details.html:133
 msgid "Tests de la campagne"
 msgstr "活动测试"
 
-#: templates/campain_details.html:98 templates/test_add.html:3
+#: templates/campain_details.html:135 templates/test_add.html:3
 #: templates/test_add.html:9
 msgid "Ajouter un test"
 msgstr "添加测试"
 
-#: templates/campain_details.html:1018 templates/rapport_details.html:257
+#: templates/campain_details.html:1086 templates/rapport_details.html:292
 msgid "Erreur lors de l'exécution de la campagne"
 msgstr "执行活动时出错"
 
-#: templates/campain_details.html:1041
+#: templates/campain_details.html:1109
 #, fuzzy
 msgid "Export en cours..."
 msgstr "进行中"
 
-#: templates/campain_details.html:1077
+#: templates/campain_details.html:1145
 #, fuzzy
 msgid "Export réussi"
 msgstr "通过"
 
-#: templates/campain_details.html:1125
+#: templates/campain_details.html:1193
 msgid "Le nom de la campagne ne peut pas être vide"
 msgstr "活动名称不能为空"
 
-#: templates/campain_details.html:1140
+#: templates/campain_details.html:1208
 #, fuzzy
 msgid "Campagne renommée avec succès"
 msgstr "活动创建成功"
 
-#: templates/campain_details.html:1144
+#: templates/campain_details.html:1212
 #, fuzzy
 msgid "Erreur lors du renommage de la campagne"
 msgstr "重命名活动"
+
+#: templates/campain_details.html:1261 templates/campain_files.html:158
+msgid "Télécharger"
+msgstr ""
+
+#: templates/campain_details.html:1264 templates/campain_files.html:140
+#: templates/campain_files.html:161
+#, fuzzy
+msgid "Supprimer"
+msgstr "删除测试"
+
+#: templates/campain_details.html:1280
+#, fuzzy
+msgid "Êtes-vous sûr de vouloir supprimer ce rapport ?"
+msgstr "您确定要删除此变量吗？"
+
+#: templates/campain_details.html:1288
+#, fuzzy
+msgid "Erreur lors de la suppression du rapport"
+msgstr "删除时出错"
+
+#: templates/campain_files.html:3 templates/campain_files.html:10
+msgid "Fichiers de travail"
+msgstr "工作文件"
+
+#: templates/campain_files.html:35
+msgid "Rafraîchir"
+msgstr ""
+
+#: templates/campain_files.html:66
+msgid "Ce dossier est vide"
+msgstr "此文件夹为空"
+
+#: templates/campain_files.html:109
+msgid "Impossible de charger les fichiers"
+msgstr "无法加载文件"
+
+#: templates/campain_files.html:216
+#, fuzzy
+msgid "Êtes-vous sûr de vouloir supprimer ce fichier ?"
+msgstr "您确定要删除此用户吗？"
+
+#: templates/campain_files.html:220
+#, fuzzy
+msgid "Fichier supprimé avec succès"
+msgstr "用户创建成功"
+
+#: templates/admin/deleted.html:431 templates/campain_files.html:224
+#: templates/campain_files.html:241
+msgid "Erreur lors de la suppression"
+msgstr "删除时出错"
+
+#: templates/campain_files.html:229
+msgid "Êtes-vous sûr de vouloir supprimer ce dossier ?"
+msgstr "您确定要删除此文件夹吗？"
+
+#: templates/campain_files.html:233
+msgid "Dossier supprimé avec succès"
+msgstr "文件夹已成功删除"
+
+#: templates/campain_files.html:239
+msgid "Le dossier n'est pas vide"
+msgstr "文件夹不为空"
 
 #: templates/dashboard.html:10
 msgid "Bienvenue sur votre espace de gestion des campagnes de tests"
@@ -329,21 +466,15 @@ msgstr "留空以使用默认名称"
 msgid "Par défaut : \"Import de [Nom original]\""
 msgstr "默认：“[原始名称] 的导入”"
 
-#: templates/dashboard.html:73 templates/test_add.html:105
-#: templates/test_add.html:133 templates/test_edit.html:112
-#: templates/test_edit.html:140
+#: templates/dashboard.html:73 templates/rapport_details.html:217
+#: templates/test_add.html:106 templates/test_add.html:134
+#: templates/test_edit.html:113 templates/test_edit.html:141
 msgid "Annuler"
 msgstr "取消"
 
 #: templates/dashboard.html:76 templates/dashboard.html:230
 msgid "Importer"
 msgstr "导入"
-
-#: templates/admin/deleted.html:206 templates/admin/deleted.html:239
-#: templates/admin/deleted.html:272 templates/admin/users.html:66
-#: templates/dashboard.html:101
-msgid "Nom"
-msgstr "名称"
 
 #: templates/dashboard.html:103
 #, fuzzy
@@ -437,169 +568,214 @@ msgstr "报告详情"
 msgid "Informations générales"
 msgstr "一般信息"
 
-#: templates/rapport_details.html:130 templates/test_execute.html:58
+#: templates/rapport_details.html:126
+msgid "Generate report"
+msgstr ""
+
+#: templates/rapport_details.html:133 templates/test_execute.html:58
 msgid "Environnement :"
 msgstr "环境："
 
-#: templates/rapport_details.html:133
+#: templates/rapport_details.html:136
 msgid "Date de création :"
 msgstr "创建日期："
 
-#: templates/rapport_details.html:134
+#: templates/rapport_details.html:137
 msgid "Statut :"
 msgstr "状态："
 
-#: templates/rapport_details.html:137
+#: templates/rapport_details.html:140
 msgid "Temps d'exécution :"
 msgstr "执行时间："
 
-#: templates/rapport_details.html:143
+#: templates/rapport_details.html:146
 msgid "Progression :"
 msgstr "进度："
 
-#: templates/rapport_details.html:163
+#: templates/rapport_details.html:166
 msgid "Tests exécutés"
 msgstr "已执行的测试"
 
-#: templates/rapport_details.html:167
+#: templates/rapport_details.html:170
 msgid "En cours..."
 msgstr "进行中..."
 
-#: templates/rapport_details.html:183
+#: templates/rapport_details.html:186
 msgid "Aucun test dans ce rapport"
 msgstr "此报告中没有测试"
 
-#: templates/rapport_details.html:245
+#: templates/rapport_details.html:199
+#, fuzzy
+msgid "Générer un rapport"
+msgstr "报告详情"
+
+#: templates/rapport_details.html:204
+#, fuzzy
+msgid "Type de rapport"
+msgstr "报告详情"
+
+#: templates/rapport_details.html:206 templates/rapport_details.html:579
+#, fuzzy
+msgid "Choisir un type de rapport..."
+msgstr "此报告中没有测试"
+
+#: templates/rapport_details.html:212
+#, fuzzy
+msgid "Configuration du rapport"
+msgstr "执行配置"
+
+#: templates/rapport_details.html:219
+msgid "Générer"
+msgstr ""
+
+#: templates/rapport_details.html:280
 msgid "Exécution de la campagne terminée"
 msgstr "活动执行完成"
 
-#: templates/rapport_details.html:296
+#: templates/rapport_details.html:331
 msgid "Erreur lors du chargement du rapport"
 msgstr "加载报告时出错"
 
-#: templates/rapport_details.html:314
+#: templates/rapport_details.html:349
 msgid "Aucun log disponible"
 msgstr "无可用日志"
 
-#: templates/rapport_details.html:325 templates/rapport_details.html:399
-#: templates/rapport_details.html:470 templates/test_execute.html:86
+#: templates/rapport_details.html:360 templates/rapport_details.html:434
+#: templates/rapport_details.html:505 templates/test_execute.html:86
 msgid "En attente"
 msgstr "待定"
 
-#: templates/rapport_details.html:330 templates/rapport_details.html:404
-#: templates/rapport_details.html:474 templates/test_execute.html:201
+#: templates/rapport_details.html:365 templates/rapport_details.html:439
+#: templates/rapport_details.html:509 templates/test_execute.html:201
 msgid "En cours"
 msgstr "进行中"
 
-#: templates/rapport_details.html:335 templates/rapport_details.html:409
+#: templates/rapport_details.html:370 templates/rapport_details.html:444
 #: templates/test_execute.html:217
 msgid "Réussi"
 msgstr "通过"
 
-#: templates/rapport_details.html:340 templates/rapport_details.html:414
-#: templates/rapport_details.html:482 templates/test_execute.html:217
+#: templates/rapport_details.html:375 templates/rapport_details.html:449
+#: templates/rapport_details.html:517 templates/test_execute.html:217
 msgid "Échoué"
 msgstr "失败"
 
-#: templates/rapport_details.html:345 templates/rapport_details.html:419
+#: templates/rapport_details.html:380 templates/rapport_details.html:454
 msgid "Ignoré"
 msgstr "跳过"
 
-#: templates/rapport_details.html:374
+#: templates/rapport_details.html:409
 msgid "Temps d'exécution:"
 msgstr "执行时间："
 
-#: templates/rapport_details.html:376
+#: templates/rapport_details.html:411
 msgid "Logs d'exécution:"
 msgstr "执行日志："
 
-#: templates/rapport_details.html:478
+#: templates/rapport_details.html:513
 msgid "Terminé"
 msgstr "已完成"
 
-#: templates/test_add.html:13 templates/test_edit.html:13
+#: templates/rapport_details.html:599
+msgid "Impossible de charger les plugins de rapport"
+msgstr ""
+
+#: templates/rapport_details.html:701
+msgid "Génération..."
+msgstr ""
+
+#: templates/rapport_details.html:739
+msgid "Rapport généré avec succès. Le téléchargement va commencer..."
+msgstr ""
+
+#: templates/rapport_details.html:755
+#, fuzzy
+msgid "Erreur : "
+msgstr "错误"
+
+#: templates/test_add.html:14 templates/test_edit.html:14
 msgid "Enregistrer et lancer le test"
 msgstr "保存并运行测试"
 
-#: templates/test_add.html:25 templates/test_edit.html:25
+#: templates/test_add.html:26 templates/test_edit.html:26
 #: templates/test_execute.html:23
 msgid "Informations du test"
 msgstr "测试信息"
 
-#: templates/test_add.html:29 templates/test_edit.html:29
+#: templates/test_add.html:30 templates/test_edit.html:30
 msgid "Nom du test *"
 msgstr "测试名称 *"
 
-#: templates/test_add.html:43 templates/test_edit.html:43
+#: templates/test_add.html:44 templates/test_edit.html:44
 msgid "Actions du test"
 msgstr "测试操作"
 
-#: templates/test_add.html:46 templates/test_add.html:117
-#: templates/test_edit.html:46 templates/test_edit.html:124
+#: templates/test_add.html:47 templates/test_add.html:118
+#: templates/test_edit.html:47 templates/test_edit.html:125
 msgid "Ajouter une variable"
 msgstr "添加变量"
 
-#: templates/test_add.html:49 templates/test_add.html:79
-#: templates/test_edit.html:49 templates/test_edit.html:86
+#: templates/test_add.html:50 templates/test_add.html:80
+#: templates/test_edit.html:50 templates/test_edit.html:87
 msgid "Ajouter une action"
 msgstr "添加操作"
 
-#: templates/test_add.html:59
+#: templates/test_add.html:60
 msgid "Aucune action ajoutée. Cliquez sur \"Ajouter une action\" pour commencer."
 msgstr "未添加操作。点击“添加操作”开始。"
 
-#: templates/test_add.html:67
+#: templates/test_add.html:68
 msgid "Créer le test"
 msgstr "创建测试"
 
-#: templates/test_add.html:85 templates/test_edit.html:92
+#: templates/test_add.html:86 templates/test_edit.html:93
 msgid "Type d'action *"
 msgstr "操作类型 *"
 
-#: templates/test_add.html:87 templates/test_edit.html:94
+#: templates/test_add.html:88 templates/test_edit.html:95
 msgid "-- Sélectionner un type --"
 msgstr "-- 选择类型 --"
 
-#: templates/test_add.html:98 templates/test_edit.html:105
+#: templates/test_add.html:99 templates/test_edit.html:106
 msgid "Variables de sortie"
 msgstr "输出变量"
 
-#: templates/test_add.html:99 templates/test_edit.html:106
+#: templates/test_add.html:100 templates/test_edit.html:107
 msgid ""
 "Sélectionnez les variables de sortie que vous souhaitez rendre "
 "disponibles pour les actions suivantes."
 msgstr "选择您希望在后续操作中可用的输出变量。"
 
-#: templates/test_add.html:106 templates/test_edit.html:113
+#: templates/test_add.html:107 templates/test_edit.html:114
 msgid "Enregistrer"
 msgstr "保存"
 
-#: templates/test_add.html:123 templates/test_edit.html:130
+#: templates/test_add.html:124 templates/test_edit.html:131
 msgid "Nom de la variable *"
 msgstr "变量名称 *"
 
-#: templates/test_add.html:126 templates/test_edit.html:133
+#: templates/test_add.html:127 templates/test_edit.html:134
 #, fuzzy
 msgid "Ex: ma_variable"
 msgstr "变量"
 
-#: templates/test_add.html:128 templates/test_edit.html:135
+#: templates/test_add.html:129 templates/test_edit.html:136
 msgid "Caractères alphanumériques et underscore uniquement"
 msgstr "仅限字母数字字符和下划线"
 
-#: templates/test_add.html:134 templates/test_edit.html:141
+#: templates/test_add.html:135 templates/test_edit.html:142
 msgid "Ajouter"
 msgstr "添加"
 
-#: templates/test_add.html:153 templates/test_edit.html:187
+#: templates/test_add.html:154 templates/test_edit.html:188
 msgid "Veuillez saisir un nom pour le test"
 msgstr "请输入测试名称"
 
-#: templates/test_add.html:158 templates/test_edit.html:192
+#: templates/test_add.html:159 templates/test_edit.html:193
 msgid "Veuillez ajouter au moins une action au test"
 msgstr "请至少向测试添加一个操作"
 
-#: templates/test_add.html:174
+#: templates/test_add.html:175
 msgid "Erreur lors de la création du test: "
 msgstr "创建测试时出错："
 
@@ -607,19 +783,19 @@ msgstr "创建测试时出错："
 msgid "Modifier un test"
 msgstr "编辑测试"
 
-#: templates/admin/user_edit.html:92 templates/test_edit.html:71
+#: templates/admin/user_edit.html:92 templates/test_edit.html:72
 msgid "Enregistrer les modifications"
 msgstr "保存更改"
 
-#: templates/test_edit.html:74
+#: templates/test_edit.html:75
 msgid "Supprimer le test"
 msgstr "删除测试"
 
-#: templates/test_edit.html:172 templates/test_execute.html:153
+#: templates/test_edit.html:173 templates/test_execute.html:153
 msgid "Erreur lors du chargement du test"
 msgstr "加载测试时出错"
 
-#: templates/test_edit.html:217
+#: templates/test_edit.html:218
 msgid "Erreur lors de la mise à jour du test: "
 msgstr "更新测试时出错："
 
@@ -793,10 +969,6 @@ msgstr "永久删除"
 msgid "Suppression partielle."
 msgstr "部分删除。"
 
-#: templates/admin/deleted.html:431
-msgid "Erreur lors de la suppression"
-msgstr "删除时出错"
-
 #: templates/admin/user_add.html:3 templates/admin/user_add.html:9
 #: templates/admin/users.html:13
 msgid "Nouvel utilisateur"
@@ -869,16 +1041,16 @@ msgstr "管理员可以访问所有功能"
 msgid "Créer l'utilisateur"
 msgstr "创建用户"
 
-#: templates/admin/user_add.html:90 templates/admin/user_edit.html:163
+#: templates/admin/user_add.html:93 templates/admin/user_edit.html:163
 msgid "Les mots de passe ne correspondent pas"
 msgstr "密码不匹配"
 
-#: templates/admin/user_add.html:105 templates/admin/user_edit.html:186
-#: templates/admin/variable_add.html:124 templates/admin/variable_edit.html:166
+#: templates/admin/user_add.html:106 templates/admin/user_edit.html:186
+#: templates/admin/variable_add.html:135 templates/admin/variable_edit.html:178
 msgid "Veuillez remplir tous les champs obligatoires"
 msgstr "请填写所有必填字段"
 
-#: templates/admin/user_add.html:116
+#: templates/admin/user_add.html:117
 #, fuzzy
 msgid "Erreur lors de la création de l'utilisateur"
 msgstr "用户信息"
@@ -1017,24 +1189,33 @@ msgid "Description de la variable et son utilisation"
 msgstr "变量及其用法的描述"
 
 #: templates/admin/variable_add.html:56 templates/admin/variable_edit.html:62
+#, fuzzy
+msgid "Obfusquer la valeur"
+msgstr "编辑变量"
+
+#: templates/admin/variable_add.html:59 templates/admin/variable_edit.html:65
+msgid "Masquer la valeur dans l'interface et les logs"
+msgstr ""
+
+#: templates/admin/variable_add.html:66 templates/admin/variable_edit.html:72
 msgid "Variable racine (privilèges élevés)"
 msgstr "根变量（提升的权限）"
 
-#: templates/admin/variable_add.html:59 templates/admin/variable_edit.html:65
+#: templates/admin/variable_add.html:69 templates/admin/variable_edit.html:75
 msgid "Cochez cette option si la variable nécessite des privilèges administrateur"
 msgstr "如果变量需要管理员权限，请选中此选项"
 
-#: templates/admin/variable_add.html:65
+#: templates/admin/variable_add.html:75
 #, fuzzy
 msgid "Créer la variable"
 msgstr "变量键 *"
 
-#: templates/admin/variable_add.html:130
+#: templates/admin/variable_add.html:141
 #, fuzzy
 msgid "Variable créée avec succès"
 msgstr "活动创建成功"
 
-#: templates/admin/variable_add.html:135
+#: templates/admin/variable_add.html:146
 #, fuzzy
 msgid "Erreur lors de la création de la variable"
 msgstr "变量信息"
@@ -1043,38 +1224,38 @@ msgstr "变量信息"
 msgid "Modifier la variable"
 msgstr "编辑变量"
 
-#: templates/admin/variable_edit.html:71
+#: templates/admin/variable_edit.html:81
 msgid "Mettre à jour la variable"
 msgstr "更新变量"
 
-#: templates/admin/variable_edit.html:74
+#: templates/admin/variable_edit.html:84
 msgid "Supprimer la variable"
 msgstr "删除变量"
 
-#: templates/admin/variable_edit.html:145
+#: templates/admin/variable_edit.html:157
 msgid "Erreur lors du chargement de la variable"
 msgstr "加载变量时出错"
 
-#: templates/admin/variable_edit.html:172
+#: templates/admin/variable_edit.html:184
 #, fuzzy
 msgid "Variable mise à jour avec succès"
 msgstr "活动更新成功"
 
-#: templates/admin/variable_edit.html:177
+#: templates/admin/variable_edit.html:189
 #, fuzzy
 msgid "Erreur lors de la mise à jour de la variable"
 msgstr "更新变量"
 
-#: templates/admin/variable_edit.html:183 templates/admin/variables.html:211
+#: templates/admin/variable_edit.html:195 templates/admin/variables.html:211
 msgid "Êtes-vous sûr de vouloir supprimer cette variable ?"
 msgstr "您确定要删除此变量吗？"
 
-#: templates/admin/variable_edit.html:189 templates/admin/variables.html:217
+#: templates/admin/variable_edit.html:201 templates/admin/variables.html:217
 #, fuzzy
 msgid "Variable supprimée avec succès"
 msgstr "测试删除成功"
 
-#: templates/admin/variable_edit.html:194 templates/admin/variables.html:220
+#: templates/admin/variable_edit.html:206 templates/admin/variables.html:220
 msgid "Erreur lors de la suppression de la variable"
 msgstr "删除变量时出错"
 

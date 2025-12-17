@@ -152,3 +152,16 @@ def get_campain_workdir(campain_id):
     workdir = get_workdir()
     campain_dir = Path(workdir) / str(campain_id)
     return str(campain_dir.absolute())
+
+def get_campain_workdir(campain_id):
+    """
+    Récupère le chemin absolu du répertoire de travail d'une campagne.
+    
+    Args:
+        campain_id (str): ID de la campagne
+        
+    Returns:
+        str: Chemin absolu du répertoire de travail de la campagne
+    """
+    workdir = get_workdir()
+    return os.path.abspath(os.path.join(workdir, str(campain_id)))

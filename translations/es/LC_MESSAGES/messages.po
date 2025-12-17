@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-12-04 22:20+0100\n"
+"POT-Creation-Date: 2025-12-17 16:53+0100\n"
 "PO-Revision-Date: 2025-12-04 17:49+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: es\n"
@@ -60,6 +60,44 @@ msgstr "Campaña no encontrada"
 msgid "Campagne mise à jour avec succès"
 msgstr "Campaña actualizada con éxito"
 
+#: routes/campains_routes.py:612 routes/rapports_routes.py:289
+#, fuzzy
+msgid "Fichier non trouvé"
+msgstr "Prueba no encontrada"
+
+#: routes/campains_routes.py:615 templates/campain_details.html:1284
+#, fuzzy
+msgid "Rapport supprimé avec succès"
+msgstr "Prueba eliminada con éxito"
+
+#: routes/rapports_routes.py:230
+msgid "Type de rapport manquant"
+msgstr ""
+
+#: routes/rapports_routes.py:235
+msgid "Rapport introuvable"
+msgstr ""
+
+#: routes/rapports_routes.py:240
+#, python-brace-format
+msgid "Plugin de rapport {} introuvable"
+msgstr ""
+
+#: routes/rapports_routes.py:245
+#, fuzzy, python-brace-format
+msgid "Configuration invalide: {}"
+msgstr "Configuración de ejecución"
+
+#: routes/rapports_routes.py:265
+#, fuzzy
+msgid "Rapport généré avec succès"
+msgstr "Campaña creada con éxito"
+
+#: routes/rapports_routes.py:270
+#, fuzzy, python-brace-format
+msgid "Erreur lors de la génération: {}"
+msgstr "Error durante la restauración"
+
 #: routes/tests_routes.py:38 routes/tests_routes.py:67
 #: routes/tests_routes.py:82 routes/tests_routes.py:104
 #: routes/tests_routes.py:119 routes/tests_routes.py:138
@@ -69,8 +107,8 @@ msgstr "Campaña actualizada con éxito"
 msgid "Erreur serveur: %(error)s"
 msgstr "Error del servidor: %(error)s"
 
-#: routes/tests_routes.py:62 templates/test_add.html:183
-#: templates/test_add.html:194
+#: routes/tests_routes.py:62 templates/test_add.html:184
+#: templates/test_add.html:195
 msgid "Test créé avec succès"
 msgstr "Prueba creada con éxito"
 
@@ -79,8 +117,8 @@ msgstr "Prueba creada con éxito"
 msgid "Test non trouvé"
 msgstr "Prueba no encontrada"
 
-#: routes/tests_routes.py:100 templates/test_edit.html:226
-#: templates/test_edit.html:237
+#: routes/tests_routes.py:100 templates/test_edit.html:227
+#: templates/test_edit.html:238
 msgid "Test mis à jour avec succès"
 msgstr "Prueba actualizada con éxito"
 
@@ -124,7 +162,7 @@ msgstr ""
 msgid "Test déplacé vers le bas avec succès"
 msgstr "Prueba movida hacia abajo con éxito"
 
-#: routes/users_routes.py:51 templates/admin/user_add.html:111
+#: routes/users_routes.py:51 templates/admin/user_add.html:112
 msgid "Utilisateur créé avec succès"
 msgstr "Usuario creado con éxito"
 
@@ -163,9 +201,10 @@ msgstr "Nueva campaña"
 #: templates/admin/deleted.html:10 templates/admin/user_add.html:13
 #: templates/admin/user_edit.html:13 templates/admin/variable_add.html:13
 #: templates/admin/variable_edit.html:13 templates/campain_add.html:13
-#: templates/campain_details.html:21 templates/rapport_details.html:109
-#: templates/rapport_details.html:113 templates/test_add.html:16
-#: templates/test_edit.html:16 templates/test_execute.html:13
+#: templates/campain_details.html:21 templates/campain_files.html:16
+#: templates/rapport_details.html:109 templates/rapport_details.html:113
+#: templates/test_add.html:17 templates/test_edit.html:17
+#: templates/test_execute.html:13
 msgid "Retour"
 msgstr "Volver"
 
@@ -181,7 +220,7 @@ msgstr "Nombre de la campaña"
 #: templates/admin/variable_add.html:48 templates/admin/variable_edit.html:54
 #: templates/admin/variables.html:78 templates/admin/variables.html:161
 #: templates/campain_add.html:32 templates/dashboard.html:102
-#: templates/test_add.html:34 templates/test_edit.html:34
+#: templates/test_add.html:35 templates/test_edit.html:35
 msgid "Description"
 msgstr "Descripción"
 
@@ -202,8 +241,9 @@ msgstr "Detalles de la campaña"
 #: templates/admin/deleted.html:94 templates/admin/user_edit.html:27
 #: templates/admin/users.html:28 templates/admin/variable_edit.html:27
 #: templates/admin/variables.html:41 templates/campain_details.html:11
-#: templates/campain_details.html:62 templates/dashboard.html:35
-#: templates/rapport_details.html:173 templates/test_edit.html:61
+#: templates/campain_details.html:67 templates/campain_files.html:12
+#: templates/campain_files.html:42 templates/dashboard.html:35
+#: templates/rapport_details.html:176 templates/test_edit.html:62
 #: templates/test_execute.html:28 templates/test_execute.html:60
 msgid "Chargement..."
 msgstr "Cargando..."
@@ -220,7 +260,7 @@ msgstr "Exportar campaña"
 msgid "Informations"
 msgstr "Información"
 
-#: templates/campain_details.html:36 templates/rapport_details.html:129
+#: templates/campain_details.html:36 templates/rapport_details.html:132
 #: templates/test_execute.html:34
 msgid "Nom :"
 msgstr "Nombre:"
@@ -237,73 +277,170 @@ msgstr "Creado el:"
 msgid "Créée par :"
 msgstr "Creado por:"
 
-#: templates/campain_details.html:54
+#: templates/campain_details.html:55
 msgid "Fichiers"
 msgstr "Archivos"
 
-#: templates/campain_details.html:56
+#: templates/campain_details.html:57
+msgid "View workdir files"
+msgstr "Ver archivos de trabajo"
+
+#: templates/campain_details.html:61
 msgid "Ajouter un fichier"
 msgstr "Añadir archivo"
 
-#: templates/campain_details.html:70
+#: templates/campain_details.html:75
 msgid "Nom du fichier"
 msgstr "Nombre del archivo"
 
-#: templates/campain_details.html:71
+#: templates/campain_details.html:76
 msgid "Taille (Ko)"
 msgstr "Tamaño (KB)"
 
-#: templates/campain_details.html:72
+#: templates/campain_details.html:77 templates/campain_files.html:54
 msgid "Date de modification"
 msgstr "Fecha de modificación"
 
 #: templates/admin/deleted.html:206 templates/admin/deleted.html:239
 #: templates/admin/deleted.html:272 templates/admin/users.html:69
 #: templates/admin/variables.html:80 templates/admin/variables.html:162
-#: templates/campain_details.html:73 templates/dashboard.html:104
+#: templates/campain_details.html:78 templates/campain_details.html:115
+#: templates/campain_files.html:55 templates/dashboard.html:104
 msgid "Actions"
 msgstr "Acciones"
 
-#: templates/campain_details.html:84
+#: templates/campain_details.html:89
 msgid "Aucun fichier dans cette campagne"
 msgstr "No hay archivos en esta campaña"
 
-#: templates/campain_details.html:96
+#: templates/campain_details.html:101
+#, fuzzy
+msgid "Rapports générés"
+msgstr "Informes eliminados"
+
+#: templates/campain_details.html:103
+msgid "Refresh"
+msgstr ""
+
+#: templates/admin/deleted.html:206 templates/admin/deleted.html:239
+#: templates/admin/deleted.html:272 templates/admin/users.html:66
+#: templates/campain_details.html:111 templates/campain_files.html:52
+#: templates/dashboard.html:101
+msgid "Nom"
+msgstr "Nombre"
+
+#: templates/campain_details.html:112
+msgid "Type"
+msgstr ""
+
+#: templates/campain_details.html:113
+msgid "Date"
+msgstr ""
+
+#: templates/campain_details.html:114 templates/campain_files.html:53
+#, fuzzy
+msgid "Taille"
+msgstr "Tamaño (KB)"
+
+#: templates/campain_details.html:133
 msgid "Tests de la campagne"
 msgstr "Pruebas de la campaña"
 
-#: templates/campain_details.html:98 templates/test_add.html:3
+#: templates/campain_details.html:135 templates/test_add.html:3
 #: templates/test_add.html:9
 msgid "Ajouter un test"
 msgstr "Añadir prueba"
 
-#: templates/campain_details.html:1018 templates/rapport_details.html:257
+#: templates/campain_details.html:1086 templates/rapport_details.html:292
 msgid "Erreur lors de l'exécution de la campagne"
 msgstr "Error al ejecutar la campaña"
 
-#: templates/campain_details.html:1041
+#: templates/campain_details.html:1109
 #, fuzzy
 msgid "Export en cours..."
 msgstr "En curso"
 
-#: templates/campain_details.html:1077
+#: templates/campain_details.html:1145
 #, fuzzy
 msgid "Export réussi"
 msgstr "Aprobado"
 
-#: templates/campain_details.html:1125
+#: templates/campain_details.html:1193
 msgid "Le nom de la campagne ne peut pas être vide"
 msgstr "El nombre de la campaña no puede estar vacío"
 
-#: templates/campain_details.html:1140
+#: templates/campain_details.html:1208
 #, fuzzy
 msgid "Campagne renommée avec succès"
 msgstr "Campaña creada con éxito"
 
-#: templates/campain_details.html:1144
+#: templates/campain_details.html:1212
 #, fuzzy
 msgid "Erreur lors du renommage de la campagne"
 msgstr "Renombrar campaña"
+
+#: templates/campain_details.html:1261 templates/campain_files.html:158
+msgid "Télécharger"
+msgstr ""
+
+#: templates/campain_details.html:1264 templates/campain_files.html:140
+#: templates/campain_files.html:161
+#, fuzzy
+msgid "Supprimer"
+msgstr "Eliminar prueba"
+
+#: templates/campain_details.html:1280
+#, fuzzy
+msgid "Êtes-vous sûr de vouloir supprimer ce rapport ?"
+msgstr "¿Está seguro de que desea eliminar esta variable?"
+
+#: templates/campain_details.html:1288
+#, fuzzy
+msgid "Erreur lors de la suppression du rapport"
+msgstr "Error durante la eliminación"
+
+#: templates/campain_files.html:3 templates/campain_files.html:10
+msgid "Fichiers de travail"
+msgstr "Archivos de trabajo"
+
+#: templates/campain_files.html:35
+msgid "Rafraîchir"
+msgstr ""
+
+#: templates/campain_files.html:66
+msgid "Ce dossier est vide"
+msgstr "Esta carpeta está vacía"
+
+#: templates/campain_files.html:109
+msgid "Impossible de charger les fichiers"
+msgstr "No se pueden cargar los archivos"
+
+#: templates/campain_files.html:216
+#, fuzzy
+msgid "Êtes-vous sûr de vouloir supprimer ce fichier ?"
+msgstr "¿Está seguro de que desea eliminar este usuario?"
+
+#: templates/campain_files.html:220
+#, fuzzy
+msgid "Fichier supprimé avec succès"
+msgstr "Usuario creado con éxito"
+
+#: templates/admin/deleted.html:431 templates/campain_files.html:224
+#: templates/campain_files.html:241
+msgid "Erreur lors de la suppression"
+msgstr "Error durante la eliminación"
+
+#: templates/campain_files.html:229
+msgid "Êtes-vous sûr de vouloir supprimer ce dossier ?"
+msgstr "¿Está seguro de que desea eliminar esta carpeta?"
+
+#: templates/campain_files.html:233
+msgid "Dossier supprimé avec succès"
+msgstr "Carpeta eliminada con éxito"
+
+#: templates/campain_files.html:239
+msgid "Le dossier n'est pas vide"
+msgstr "La carpeta no está vacía"
 
 #: templates/dashboard.html:10
 msgid "Bienvenue sur votre espace de gestion des campagnes de tests"
@@ -333,21 +470,15 @@ msgstr "Dejar vacío para usar el nombre predeterminado"
 msgid "Par défaut : \"Import de [Nom original]\""
 msgstr "Predeterminado: \"Importación de [Nombre original]\""
 
-#: templates/dashboard.html:73 templates/test_add.html:105
-#: templates/test_add.html:133 templates/test_edit.html:112
-#: templates/test_edit.html:140
+#: templates/dashboard.html:73 templates/rapport_details.html:217
+#: templates/test_add.html:106 templates/test_add.html:134
+#: templates/test_edit.html:113 templates/test_edit.html:141
 msgid "Annuler"
 msgstr "Cancelar"
 
 #: templates/dashboard.html:76 templates/dashboard.html:230
 msgid "Importer"
 msgstr "Importar"
-
-#: templates/admin/deleted.html:206 templates/admin/deleted.html:239
-#: templates/admin/deleted.html:272 templates/admin/users.html:66
-#: templates/dashboard.html:101
-msgid "Nom"
-msgstr "Nombre"
 
 #: templates/dashboard.html:103
 #, fuzzy
@@ -441,136 +572,181 @@ msgstr "Detalles del informe"
 msgid "Informations générales"
 msgstr "Información general"
 
-#: templates/rapport_details.html:130 templates/test_execute.html:58
+#: templates/rapport_details.html:126
+msgid "Generate report"
+msgstr ""
+
+#: templates/rapport_details.html:133 templates/test_execute.html:58
 msgid "Environnement :"
 msgstr "Entorno:"
 
-#: templates/rapport_details.html:133
+#: templates/rapport_details.html:136
 msgid "Date de création :"
 msgstr "Fecha de creación:"
 
-#: templates/rapport_details.html:134
+#: templates/rapport_details.html:137
 msgid "Statut :"
 msgstr "Estado:"
 
-#: templates/rapport_details.html:137
+#: templates/rapport_details.html:140
 msgid "Temps d'exécution :"
 msgstr "Tiempo de ejecución:"
 
-#: templates/rapport_details.html:143
+#: templates/rapport_details.html:146
 msgid "Progression :"
 msgstr "Progreso:"
 
-#: templates/rapport_details.html:163
+#: templates/rapport_details.html:166
 msgid "Tests exécutés"
 msgstr "Pruebas ejecutadas"
 
-#: templates/rapport_details.html:167
+#: templates/rapport_details.html:170
 msgid "En cours..."
 msgstr "En curso..."
 
-#: templates/rapport_details.html:183
+#: templates/rapport_details.html:186
 msgid "Aucun test dans ce rapport"
 msgstr "No hay pruebas en este informe"
 
-#: templates/rapport_details.html:245
+#: templates/rapport_details.html:199
+#, fuzzy
+msgid "Générer un rapport"
+msgstr "Detalles del informe"
+
+#: templates/rapport_details.html:204
+#, fuzzy
+msgid "Type de rapport"
+msgstr "Detalles del informe"
+
+#: templates/rapport_details.html:206 templates/rapport_details.html:579
+#, fuzzy
+msgid "Choisir un type de rapport..."
+msgstr "No hay pruebas en este informe"
+
+#: templates/rapport_details.html:212
+#, fuzzy
+msgid "Configuration du rapport"
+msgstr "Configuración de ejecución"
+
+#: templates/rapport_details.html:219
+msgid "Générer"
+msgstr ""
+
+#: templates/rapport_details.html:280
 msgid "Exécution de la campagne terminée"
 msgstr "Ejecución de la campaña completada"
 
-#: templates/rapport_details.html:296
+#: templates/rapport_details.html:331
 msgid "Erreur lors du chargement du rapport"
 msgstr "Error al cargar el informe"
 
-#: templates/rapport_details.html:314
+#: templates/rapport_details.html:349
 msgid "Aucun log disponible"
 msgstr "No hay registros disponibles"
 
-#: templates/rapport_details.html:325 templates/rapport_details.html:399
-#: templates/rapport_details.html:470 templates/test_execute.html:86
+#: templates/rapport_details.html:360 templates/rapport_details.html:434
+#: templates/rapport_details.html:505 templates/test_execute.html:86
 msgid "En attente"
 msgstr "Pendiente"
 
-#: templates/rapport_details.html:330 templates/rapport_details.html:404
-#: templates/rapport_details.html:474 templates/test_execute.html:201
+#: templates/rapport_details.html:365 templates/rapport_details.html:439
+#: templates/rapport_details.html:509 templates/test_execute.html:201
 msgid "En cours"
 msgstr "En curso"
 
-#: templates/rapport_details.html:335 templates/rapport_details.html:409
+#: templates/rapport_details.html:370 templates/rapport_details.html:444
 #: templates/test_execute.html:217
 msgid "Réussi"
 msgstr "Aprobado"
 
-#: templates/rapport_details.html:340 templates/rapport_details.html:414
-#: templates/rapport_details.html:482 templates/test_execute.html:217
+#: templates/rapport_details.html:375 templates/rapport_details.html:449
+#: templates/rapport_details.html:517 templates/test_execute.html:217
 msgid "Échoué"
 msgstr "Fallido"
 
-#: templates/rapport_details.html:345 templates/rapport_details.html:419
+#: templates/rapport_details.html:380 templates/rapport_details.html:454
 msgid "Ignoré"
 msgstr "Omitido"
 
-#: templates/rapport_details.html:374
+#: templates/rapport_details.html:409
 msgid "Temps d'exécution:"
 msgstr "Tiempo de ejecución:"
 
-#: templates/rapport_details.html:376
+#: templates/rapport_details.html:411
 msgid "Logs d'exécution:"
 msgstr "Registros de ejecución:"
 
-#: templates/rapport_details.html:478
+#: templates/rapport_details.html:513
 msgid "Terminé"
 msgstr "Completado"
 
-#: templates/test_add.html:13 templates/test_edit.html:13
+#: templates/rapport_details.html:599
+msgid "Impossible de charger les plugins de rapport"
+msgstr ""
+
+#: templates/rapport_details.html:701
+msgid "Génération..."
+msgstr ""
+
+#: templates/rapport_details.html:739
+msgid "Rapport généré avec succès. Le téléchargement va commencer..."
+msgstr ""
+
+#: templates/rapport_details.html:755
+#, fuzzy
+msgid "Erreur : "
+msgstr "Error"
+
+#: templates/test_add.html:14 templates/test_edit.html:14
 msgid "Enregistrer et lancer le test"
 msgstr "Guardar y ejecutar prueba"
 
-#: templates/test_add.html:25 templates/test_edit.html:25
+#: templates/test_add.html:26 templates/test_edit.html:26
 #: templates/test_execute.html:23
 msgid "Informations du test"
 msgstr "Información de la prueba"
 
-#: templates/test_add.html:29 templates/test_edit.html:29
+#: templates/test_add.html:30 templates/test_edit.html:30
 msgid "Nom du test *"
 msgstr "Nombre de la prueba *"
 
-#: templates/test_add.html:43 templates/test_edit.html:43
+#: templates/test_add.html:44 templates/test_edit.html:44
 msgid "Actions du test"
 msgstr "Acciones de prueba"
 
-#: templates/test_add.html:46 templates/test_add.html:117
-#: templates/test_edit.html:46 templates/test_edit.html:124
+#: templates/test_add.html:47 templates/test_add.html:118
+#: templates/test_edit.html:47 templates/test_edit.html:125
 msgid "Ajouter une variable"
 msgstr "Añadir una variable"
 
-#: templates/test_add.html:49 templates/test_add.html:79
-#: templates/test_edit.html:49 templates/test_edit.html:86
+#: templates/test_add.html:50 templates/test_add.html:80
+#: templates/test_edit.html:50 templates/test_edit.html:87
 msgid "Ajouter une action"
 msgstr "Añadir una acción"
 
-#: templates/test_add.html:59
+#: templates/test_add.html:60
 msgid "Aucune action ajoutée. Cliquez sur \"Ajouter une action\" pour commencer."
 msgstr ""
 "No se han añadido acciones. Haga clic en 'Añadir una acción' para "
 "comenzar."
 
-#: templates/test_add.html:67
+#: templates/test_add.html:68
 msgid "Créer le test"
 msgstr "Crear prueba"
 
-#: templates/test_add.html:85 templates/test_edit.html:92
+#: templates/test_add.html:86 templates/test_edit.html:93
 msgid "Type d'action *"
 msgstr "Tipo de acción *"
 
-#: templates/test_add.html:87 templates/test_edit.html:94
+#: templates/test_add.html:88 templates/test_edit.html:95
 msgid "-- Sélectionner un type --"
 msgstr "-- Seleccionar un tipo --"
 
-#: templates/test_add.html:98 templates/test_edit.html:105
+#: templates/test_add.html:99 templates/test_edit.html:106
 msgid "Variables de sortie"
 msgstr "Variables de salida"
 
-#: templates/test_add.html:99 templates/test_edit.html:106
+#: templates/test_add.html:100 templates/test_edit.html:107
 msgid ""
 "Sélectionnez les variables de sortie que vous souhaitez rendre "
 "disponibles pour les actions suivantes."
@@ -578,36 +754,36 @@ msgstr ""
 "Seleccione las variables de salida que desea que estén disponibles para "
 "las siguientes acciones."
 
-#: templates/test_add.html:106 templates/test_edit.html:113
+#: templates/test_add.html:107 templates/test_edit.html:114
 msgid "Enregistrer"
 msgstr "Guardar"
 
-#: templates/test_add.html:123 templates/test_edit.html:130
+#: templates/test_add.html:124 templates/test_edit.html:131
 msgid "Nom de la variable *"
 msgstr "Nombre de la variable *"
 
-#: templates/test_add.html:126 templates/test_edit.html:133
+#: templates/test_add.html:127 templates/test_edit.html:134
 #, fuzzy
 msgid "Ex: ma_variable"
 msgstr "Variables"
 
-#: templates/test_add.html:128 templates/test_edit.html:135
+#: templates/test_add.html:129 templates/test_edit.html:136
 msgid "Caractères alphanumériques et underscore uniquement"
 msgstr "Solo caracteres alfanuméricos y guión bajo"
 
-#: templates/test_add.html:134 templates/test_edit.html:141
+#: templates/test_add.html:135 templates/test_edit.html:142
 msgid "Ajouter"
 msgstr "Añadir"
 
-#: templates/test_add.html:153 templates/test_edit.html:187
+#: templates/test_add.html:154 templates/test_edit.html:188
 msgid "Veuillez saisir un nom pour le test"
 msgstr "Por favor, introduzca un nombre para la prueba"
 
-#: templates/test_add.html:158 templates/test_edit.html:192
+#: templates/test_add.html:159 templates/test_edit.html:193
 msgid "Veuillez ajouter au moins une action au test"
 msgstr "Por favor, añada al menos una acción a la prueba"
 
-#: templates/test_add.html:174
+#: templates/test_add.html:175
 msgid "Erreur lors de la création du test: "
 msgstr "Error al crear la prueba: "
 
@@ -615,19 +791,19 @@ msgstr "Error al crear la prueba: "
 msgid "Modifier un test"
 msgstr "Editar prueba"
 
-#: templates/admin/user_edit.html:92 templates/test_edit.html:71
+#: templates/admin/user_edit.html:92 templates/test_edit.html:72
 msgid "Enregistrer les modifications"
 msgstr "Guardar cambios"
 
-#: templates/test_edit.html:74
+#: templates/test_edit.html:75
 msgid "Supprimer le test"
 msgstr "Eliminar prueba"
 
-#: templates/test_edit.html:172 templates/test_execute.html:153
+#: templates/test_edit.html:173 templates/test_execute.html:153
 msgid "Erreur lors du chargement du test"
 msgstr "Error al cargar la prueba"
 
-#: templates/test_edit.html:217
+#: templates/test_edit.html:218
 msgid "Erreur lors de la mise à jour du test: "
 msgstr "Error al actualizar la prueba: "
 
@@ -801,10 +977,6 @@ msgstr "Eliminar permanentemente"
 msgid "Suppression partielle."
 msgstr "Eliminación parcial."
 
-#: templates/admin/deleted.html:431
-msgid "Erreur lors de la suppression"
-msgstr "Error durante la eliminación"
-
 #: templates/admin/user_add.html:3 templates/admin/user_add.html:9
 #: templates/admin/users.html:13
 msgid "Nouvel utilisateur"
@@ -879,16 +1051,16 @@ msgstr "Los administradores tienen acceso a todas las funciones"
 msgid "Créer l'utilisateur"
 msgstr "Crear usuario"
 
-#: templates/admin/user_add.html:90 templates/admin/user_edit.html:163
+#: templates/admin/user_add.html:93 templates/admin/user_edit.html:163
 msgid "Les mots de passe ne correspondent pas"
 msgstr "Las contraseñas no coinciden"
 
-#: templates/admin/user_add.html:105 templates/admin/user_edit.html:186
-#: templates/admin/variable_add.html:124 templates/admin/variable_edit.html:166
+#: templates/admin/user_add.html:106 templates/admin/user_edit.html:186
+#: templates/admin/variable_add.html:135 templates/admin/variable_edit.html:178
 msgid "Veuillez remplir tous les champs obligatoires"
 msgstr "Por favor complete todos los campos obligatorios"
 
-#: templates/admin/user_add.html:116
+#: templates/admin/user_add.html:117
 #, fuzzy
 msgid "Erreur lors de la création de l'utilisateur"
 msgstr "Información del usuario"
@@ -1027,24 +1199,33 @@ msgid "Description de la variable et son utilisation"
 msgstr "Descripción de la variable y su uso"
 
 #: templates/admin/variable_add.html:56 templates/admin/variable_edit.html:62
+#, fuzzy
+msgid "Obfusquer la valeur"
+msgstr "Editar variable"
+
+#: templates/admin/variable_add.html:59 templates/admin/variable_edit.html:65
+msgid "Masquer la valeur dans l'interface et les logs"
+msgstr ""
+
+#: templates/admin/variable_add.html:66 templates/admin/variable_edit.html:72
 msgid "Variable racine (privilèges élevés)"
 msgstr "Variable raíz (privilegios elevados)"
 
-#: templates/admin/variable_add.html:59 templates/admin/variable_edit.html:65
+#: templates/admin/variable_add.html:69 templates/admin/variable_edit.html:75
 msgid "Cochez cette option si la variable nécessite des privilèges administrateur"
 msgstr "Marque esta opción si la variable requiere privilegios de administrador"
 
-#: templates/admin/variable_add.html:65
+#: templates/admin/variable_add.html:75
 #, fuzzy
 msgid "Créer la variable"
 msgstr "Clave de la variable *"
 
-#: templates/admin/variable_add.html:130
+#: templates/admin/variable_add.html:141
 #, fuzzy
 msgid "Variable créée avec succès"
 msgstr "Campaña creada con éxito"
 
-#: templates/admin/variable_add.html:135
+#: templates/admin/variable_add.html:146
 #, fuzzy
 msgid "Erreur lors de la création de la variable"
 msgstr "Información de la variable"
@@ -1053,38 +1234,38 @@ msgstr "Información de la variable"
 msgid "Modifier la variable"
 msgstr "Editar variable"
 
-#: templates/admin/variable_edit.html:71
+#: templates/admin/variable_edit.html:81
 msgid "Mettre à jour la variable"
 msgstr "Actualizar variable"
 
-#: templates/admin/variable_edit.html:74
+#: templates/admin/variable_edit.html:84
 msgid "Supprimer la variable"
 msgstr "Eliminar variable"
 
-#: templates/admin/variable_edit.html:145
+#: templates/admin/variable_edit.html:157
 msgid "Erreur lors du chargement de la variable"
 msgstr "Error al cargar la variable"
 
-#: templates/admin/variable_edit.html:172
+#: templates/admin/variable_edit.html:184
 #, fuzzy
 msgid "Variable mise à jour avec succès"
 msgstr "Campaña actualizada con éxito"
 
-#: templates/admin/variable_edit.html:177
+#: templates/admin/variable_edit.html:189
 #, fuzzy
 msgid "Erreur lors de la mise à jour de la variable"
 msgstr "Actualizar variable"
 
-#: templates/admin/variable_edit.html:183 templates/admin/variables.html:211
+#: templates/admin/variable_edit.html:195 templates/admin/variables.html:211
 msgid "Êtes-vous sûr de vouloir supprimer cette variable ?"
 msgstr "¿Está seguro de que desea eliminar esta variable?"
 
-#: templates/admin/variable_edit.html:189 templates/admin/variables.html:217
+#: templates/admin/variable_edit.html:201 templates/admin/variables.html:217
 #, fuzzy
 msgid "Variable supprimée avec succès"
 msgstr "Prueba eliminada con éxito"
 
-#: templates/admin/variable_edit.html:194 templates/admin/variables.html:220
+#: templates/admin/variable_edit.html:206 templates/admin/variables.html:220
 msgid "Erreur lors de la suppression de la variable"
 msgstr "Error al eliminar la variable"
 

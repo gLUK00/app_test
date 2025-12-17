@@ -18,7 +18,7 @@ echo "1. Extraction des messages..."
 pybabel extract -F babel.cfg -o messages.pot .
 
 # Liste des langues à gérer (l'anglais est la langue source)
-LANGUAGES="fr es zh de ja"
+LANGUAGES="en fr es zh de ja"
 
 echo "2. Gestion des catalogues (init/update)..."
 for lang in $LANGUAGES; do
