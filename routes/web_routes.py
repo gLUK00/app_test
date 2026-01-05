@@ -69,6 +69,13 @@ def campain_files(campain_id):
     user = get_current_user()
     return render_template('campain_files.html', user=user, campain_id=campain_id)
 
+@web_bp.route('/campains/<campain_id>/workdir')
+@token_required
+def campain_workdir(campain_id):
+    """Page de gestion des fichiers du répertoire work d'une campagne."""
+    user = get_current_user()
+    return render_template('campain_workdir.html', user=user, campain_id=campain_id)
+
 @web_bp.route('/campains/<campain_id>/add/test')
 @token_required
 def add_test(campain_id):

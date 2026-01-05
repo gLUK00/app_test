@@ -1,0 +1,254 @@
+{% extends "base.html" %}
+
+{% block title %}{{ _('Répertoire de travail') }} - {{ app_name }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1>
+                <i class="fas fa-folder-open"></i> {{ _('Répertoire de travail') }}
+            </h1>
+            <h5 class="text-muted" id="campainName">{{ _('Chargement...') }}</h5>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="#" id="backButton" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> {{ _('Retour') }}
+            </a>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center">
+                <button class="btn btn-sm btn-warning me-2" onclick="navigateUp()" id="btnUp" disabled>
+                    <i class="fas fa-level-up-alt"></i>
+                </button>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-0" id="pathBreadcrumb">
+                        <li class="breadcrumb-item active">/</li>
+                    </ol>
+                </nav>
+            </div>
+            <div>
+                <button class="btn btn-sm btn-primary" onclick="loadFiles()">
+                    <i class="fas fa-sync-alt"></i> {{ _('Rafraîchir') }}
+                </button>
+            </div>
+        </div>
+        <div class="card-body">
+            <div id="loading" class="text-center py-4">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">{{ _('Chargement...') }}</span>
+                </div>
+            </div>
+            
+            <div id="filesContent" style="display: none;">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead>
+                            <tr>
+                                <th style="width: 50px;"></th>
+                                <th>{{ _('Nom') }}</th>
+                                <th>{{ _('Taille') }}</th>
+                                <th>{{ _('Date de modification') }}</th>
+                                <th class="text-end">{{ _('Actions') }}</th>
+                            </tr>
+                        </thead>
+                        <tbody id="filesTableBody">
+                            <!-- Files will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div id="emptyDir" class="text-center text-muted py-5" style="display: none;">
+                    <i class="fas fa-folder-open fa-3x mb-3"></i>
+                    <p>{{ _('Ce dossier est vide') }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const campainId = '{{ campain_id }}';
+let currentPath = '';
+
+document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('backButton').href = `/campains/${campainId}`;
+    loadCampainInfo();
+    loadFiles();
+});
+
+async function loadCampainInfo() {
+    try {
+        const campain = await API.get(`/api/campains/${campainId}`);
+        document.getElementById('campainName').textContent = campain.name;
+    } catch (error) {
+        console.error('Erreur chargement campagne:', error);
+    }
+}
+
+async function loadFiles(path = currentPath) {
+    document.getElementById('loading').style.display = 'block';
+    document.getElementById('filesContent').style.display = 'none';
+    
+    try {
+        const response = await API.get(`/api/campains/${campainId}/workdir?path=${encodeURIComponent(path)}`);
+        currentPath = response.current_path || '';
+        
+        updateBreadcrumb();
+        renderFiles(response.files, response.directories);
+        
+        document.getElementById('btnUp').disabled = !currentPath;
+        
+    } catch (error) {
+        console.error('Erreur chargement fichiers:', error);
+        Notification.error("{{ _('Impossible de charger les fichiers') }}");
+    } finally {
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('filesContent').style.display = 'block';
+    }
+}
+
+function renderFiles(files, directories) {
+    const tbody = document.getElementById('filesTableBody');
+    tbody.innerHTML = '';
+    
+    if (files.length === 0 && directories.length === 0) {
+        document.getElementById('emptyDir').style.display = 'block';
+        return;
+    }
+    
+    document.getElementById('emptyDir').style.display = 'none';
+    
+    // Render directories
+    directories.forEach(dir => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td class="text-center"><i class="fas fa-folder text-warning fa-lg"></i></td>
+            <td>
+                <a href="#" onclick="navigateTo('${dir.name}'); return false;" class="text-decoration-none fw-bold text-dark">
+                    ${dir.name}
+                </a>
+            </td>
+            <td>-</td>
+            <td>${new Date(dir.modified).toLocaleString()}</td>
+            <td class="text-end">
+                <button class="btn btn-sm btn-outline-danger" onclick="deleteDirectory('${dir.path}')" title="{{ _('Supprimer') }}">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </td>
+        `;
+        tbody.appendChild(tr);
+    });
+    
+    // Render files
+    files.forEach(file => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td class="text-center"><i class="fas fa-file text-secondary fa-lg"></i></td>
+            <td>${file.name}</td>
+            <td>${formatFileSize(file.size * 1024)}</td>
+            <td>${new Date(file.modified).toLocaleString()}</td>
+            <td class="text-end">
+                <a href="/api/campains/${campainId}/workdir/${encodeURIComponent(file.path)}?token=${localStorage.getItem('token')}" 
+                   class="btn btn-sm btn-primary me-1" target="_blank" title="{{ _('Télécharger') }}">
+                    <i class="fas fa-download"></i>
+                </a>
+                <button class="btn btn-sm btn-danger" onclick="deleteFile('${file.path}')" title="{{ _('Supprimer') }}">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
+function updateBreadcrumb() {
+    const breadcrumb = document.getElementById('pathBreadcrumb');
+    breadcrumb.innerHTML = '';
+    
+    // Root item
+    const rootLi = document.createElement('li');
+    rootLi.className = `breadcrumb-item ${!currentPath ? 'active' : ''}`;
+    if (!currentPath) {
+        rootLi.textContent = 'Work';
+    } else {
+        rootLi.innerHTML = `<a href="#" onclick="loadFiles(''); return false;">Work</a>`;
+    }
+    breadcrumb.appendChild(rootLi);
+    
+    if (currentPath) {
+        const parts = currentPath.split('/');
+        let builtPath = '';
+        
+        parts.forEach((part, index) => {
+            builtPath += (builtPath ? '/' : '') + part;
+            const li = document.createElement('li');
+            li.className = `breadcrumb-item ${index === parts.length - 1 ? 'active' : ''}`;
+            
+            if (index === parts.length - 1) {
+                li.textContent = part;
+            } else {
+                li.innerHTML = `<a href="#" onclick="loadFiles('${builtPath}'); return false;">${part}</a>`;
+            }
+            breadcrumb.appendChild(li);
+        });
+    }
+}
+
+function navigateTo(dirName) {
+    const newPath = currentPath ? `${currentPath}/${dirName}` : dirName;
+    loadFiles(newPath);
+}
+
+function navigateUp() {
+    if (!currentPath) return;
+    const parts = currentPath.split('/');
+    parts.pop();
+    loadFiles(parts.join('/'));
+}
+
+async function deleteFile(filePath) {
+    if (!confirm("{{ _('Êtes-vous sûr de vouloir supprimer ce fichier ?') }}")) return;
+    
+    try {
+        await API.delete(`/api/campains/${campainId}/workdir/${encodeURIComponent(filePath)}`);
+        Notification.success("{{ _('Fichier supprimé avec succès') }}");
+        loadFiles();
+    } catch (error) {
+        console.error('Erreur suppression:', error);
+        Notification.error("{{ _('Erreur lors de la suppression') }}");
+    }
+}
+
+async function deleteDirectory(dirPath) {
+    if (!confirm("{{ _('Êtes-vous sûr de vouloir supprimer ce dossier ?') }}")) return;
+    
+    try {
+        await API.delete(`/api/campains/${campainId}/workdir-directories?path=${encodeURIComponent(dirPath)}`);
+        Notification.success("{{ _('Dossier supprimé avec succès') }}");
+        loadFiles();
+    } catch (error) {
+        console.error('Erreur suppression:', error);
+        // Check if error is because directory is not empty
+        if (error.message && error.message.includes('pas vide')) {
+            Notification.error("{{ _('Le dossier n\'est pas vide') }}");
+        } else {
+            Notification.error("{{ _('Erreur lors de la suppression') }}");
+        }
+    }
+}
+
+function formatFileSize(bytes) {
+    if (bytes === 0) return '0 B';
+    const k = 1024;
+    const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+}
+</script>
+{% endblock %}

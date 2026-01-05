@@ -50,7 +50,11 @@ class HTMLReportPlugin(ReportBase):
                 "name": "theme",
                 "type": "select",
                 "label": "Thème du rapport",
-                "options": ["light", "dark", "blue"],
+                "options": [
+                    {"value": "light", "label": "Clair"},
+                    {"value": "dark", "label": "Sombre"},
+                    {"value": "blue", "label": "Bleu"}
+                ],
                 "required": False
             }
         ]

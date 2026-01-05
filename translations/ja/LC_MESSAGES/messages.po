@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-12-17 16:53+0100\n"
+"POT-Creation-Date: 2026-01-05 21:32+0100\n"
 "PO-Revision-Date: 2025-12-04 17:49+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ja\n"
@@ -42,30 +42,30 @@ msgstr "メールアドレスまたはパスワードが間違っています"
 msgid "Authentification réussie"
 msgstr "認証に成功しました"
 
-#: routes/campains_routes.py:43 routes/campains_routes.py:75
-#: routes/campains_routes.py:90 routes/users_routes.py:26
+#: routes/campains_routes.py:44 routes/campains_routes.py:76
+#: routes/campains_routes.py:91 routes/users_routes.py:26
 #, python-brace-format
 msgid "Erreur serveur: {}"
 msgstr "サーバーエラー：{}"
 
-#: routes/campains_routes.py:70 templates/campain_add.html:61
+#: routes/campains_routes.py:71 templates/campain_add.html:61
 msgid "Campagne créée avec succès"
 msgstr "キャンペーンが正常に作成されました"
 
-#: routes/campains_routes.py:85
+#: routes/campains_routes.py:86
 msgid "Campagne non trouvée"
 msgstr "キャンペーンが見つかりません"
 
-#: routes/campains_routes.py:101
+#: routes/campains_routes.py:102
 msgid "Campagne mise à jour avec succès"
 msgstr "キャンペーンが正常に更新されました"
 
-#: routes/campains_routes.py:612 routes/rapports_routes.py:289
+#: routes/campains_routes.py:782 routes/rapports_routes.py:289
 #, fuzzy
 msgid "Fichier non trouvé"
 msgstr "テストが見つかりません"
 
-#: routes/campains_routes.py:615 templates/campain_details.html:1284
+#: routes/campains_routes.py:785 templates/campain_details.html:1315
 #, fuzzy
 msgid "Rapport supprimé avec succès"
 msgstr "テストが正常に削除されました"
@@ -162,27 +162,27 @@ msgstr "テストが正常に下に移動しました"
 msgid "Utilisateur créé avec succès"
 msgstr "ユーザーが正常に作成されました"
 
-#: templates/base.html:40 templates/dashboard.html:3 templates/dashboard.html:9
+#: templates/base.html:43 templates/dashboard.html:3 templates/dashboard.html:9
 msgid "Tableau de bord"
 msgstr "ダッシュボード"
 
-#: templates/base.html:46
+#: templates/base.html:49
 msgid "Administration"
 msgstr "管理"
 
-#: templates/base.html:50
+#: templates/base.html:53
 msgid "Utilisateurs"
 msgstr "ユーザー"
 
-#: templates/base.html:53
+#: templates/base.html:56
 msgid "Variables"
 msgstr "変数"
 
-#: templates/admin/deleted.html:3 templates/base.html:57
+#: templates/admin/deleted.html:3 templates/base.html:60
 msgid "Éléments supprimés"
 msgstr "削除されたアイテム"
 
-#: templates/base.html:79
+#: templates/base.html:82
 msgid "Déconnexion"
 msgstr "ログアウト"
 
@@ -198,9 +198,9 @@ msgstr "新しいキャンペーン"
 #: templates/admin/user_edit.html:13 templates/admin/variable_add.html:13
 #: templates/admin/variable_edit.html:13 templates/campain_add.html:13
 #: templates/campain_details.html:21 templates/campain_files.html:16
-#: templates/rapport_details.html:109 templates/rapport_details.html:113
-#: templates/test_add.html:17 templates/test_edit.html:17
-#: templates/test_execute.html:13
+#: templates/campain_workdir.html:16 templates/rapport_details.html:109
+#: templates/rapport_details.html:113 templates/test_add.html:17
+#: templates/test_edit.html:17 templates/test_execute.html:13
 msgid "Retour"
 msgstr "戻る"
 
@@ -237,8 +237,9 @@ msgstr "キャンペーンの詳細"
 #: templates/admin/deleted.html:94 templates/admin/user_edit.html:27
 #: templates/admin/users.html:28 templates/admin/variable_edit.html:27
 #: templates/admin/variables.html:41 templates/campain_details.html:11
-#: templates/campain_details.html:67 templates/campain_files.html:12
-#: templates/campain_files.html:42 templates/dashboard.html:35
+#: templates/campain_details.html:75 templates/campain_files.html:12
+#: templates/campain_files.html:42 templates/campain_workdir.html:12
+#: templates/campain_workdir.html:42 templates/dashboard.html:35
 #: templates/rapport_details.html:176 templates/test_edit.html:62
 #: templates/test_execute.html:28 templates/test_execute.html:60
 msgid "Chargement..."
@@ -252,145 +253,158 @@ msgstr "キャンペーンの名前を変更"
 msgid "Exporter la campagne"
 msgstr "キャンペーンをエクスポート"
 
-#: templates/campain_details.html:31
+#: templates/campain_details.html:32
 msgid "Informations"
 msgstr "情報"
 
-#: templates/campain_details.html:36 templates/rapport_details.html:132
+#: templates/campain_details.html:33
+msgid "View working directory"
+msgstr "作業ディレクトリを表示"
+
+#: templates/campain_details.html:60
+msgid "View workdir files"
+msgstr "作業ディレクトリファイルを表示"
+
+#: templates/campain_details.html:41 templates/rapport_details.html:132
 #: templates/test_execute.html:34
 msgid "Nom :"
 msgstr "名前："
 
-#: templates/campain_details.html:37 templates/test_execute.html:35
+#: templates/campain_details.html:42 templates/test_execute.html:35
 msgid "Description :"
 msgstr "説明："
 
-#: templates/campain_details.html:40
+#: templates/campain_details.html:45
 msgid "Créée le :"
 msgstr "作成日："
 
-#: templates/campain_details.html:41
+#: templates/campain_details.html:46
 msgid "Créée par :"
 msgstr "作成者："
 
-#: templates/campain_details.html:55
+#: templates/campain_details.html:60
 msgid "Fichiers"
 msgstr "ファイル"
 
-#: templates/campain_details.html:57
-msgid "View workdir files"
-msgstr "作業ディレクトリファイルを表示"
+#: templates/campain_details.html:66
+msgid "Chemin du répertoire files"
+msgstr "ファイルディレクトリのパス"
 
-#: templates/campain_details.html:61
+#: templates/campain_details.html:68
 msgid "Ajouter un fichier"
 msgstr "ファイルを追加"
 
-#: templates/campain_details.html:75
+#: templates/campain_details.html:83
 msgid "Nom du fichier"
 msgstr "ファイル名"
 
-#: templates/campain_details.html:76
+#: templates/campain_details.html:84
 msgid "Taille (Ko)"
 msgstr "サイズ (KB)"
 
-#: templates/campain_details.html:77 templates/campain_files.html:54
+#: templates/campain_details.html:85 templates/campain_files.html:54
+#: templates/campain_workdir.html:54
 msgid "Date de modification"
 msgstr "更新日"
 
 #: templates/admin/deleted.html:206 templates/admin/deleted.html:239
 #: templates/admin/deleted.html:272 templates/admin/users.html:69
 #: templates/admin/variables.html:80 templates/admin/variables.html:162
-#: templates/campain_details.html:78 templates/campain_details.html:115
-#: templates/campain_files.html:55 templates/dashboard.html:104
+#: templates/campain_details.html:86 templates/campain_details.html:123
+#: templates/campain_files.html:55 templates/campain_workdir.html:55
+#: templates/dashboard.html:104
 msgid "Actions"
 msgstr "アクション"
 
-#: templates/campain_details.html:89
+#: templates/campain_details.html:97
 msgid "Aucun fichier dans cette campagne"
 msgstr "このキャンペーンにはファイルがありません"
 
-#: templates/campain_details.html:101
+#: templates/campain_details.html:109
 #, fuzzy
 msgid "Rapports générés"
 msgstr "削除されたレポート"
 
-#: templates/campain_details.html:103
+#: templates/campain_details.html:111
 msgid "Refresh"
 msgstr ""
 
 #: templates/admin/deleted.html:206 templates/admin/deleted.html:239
 #: templates/admin/deleted.html:272 templates/admin/users.html:66
-#: templates/campain_details.html:111 templates/campain_files.html:52
-#: templates/dashboard.html:101
+#: templates/campain_details.html:119 templates/campain_files.html:52
+#: templates/campain_workdir.html:52 templates/dashboard.html:101
 msgid "Nom"
 msgstr "名前"
 
-#: templates/campain_details.html:112
+#: templates/campain_details.html:120
 msgid "Type"
 msgstr ""
 
-#: templates/campain_details.html:113
+#: templates/campain_details.html:121
 msgid "Date"
 msgstr ""
 
-#: templates/campain_details.html:114 templates/campain_files.html:53
+#: templates/campain_details.html:122 templates/campain_files.html:53
+#: templates/campain_workdir.html:53
 #, fuzzy
 msgid "Taille"
 msgstr "サイズ (KB)"
 
-#: templates/campain_details.html:133
+#: templates/campain_details.html:141
 msgid "Tests de la campagne"
 msgstr "キャンペーンのテスト"
 
-#: templates/campain_details.html:135 templates/test_add.html:3
+#: templates/campain_details.html:143 templates/test_add.html:3
 #: templates/test_add.html:9
 msgid "Ajouter un test"
 msgstr "テストを追加"
 
-#: templates/campain_details.html:1086 templates/rapport_details.html:292
+#: templates/campain_details.html:1117 templates/rapport_details.html:292
 msgid "Erreur lors de l'exécution de la campagne"
 msgstr "キャンペーンの実行中にエラーが発生しました"
 
-#: templates/campain_details.html:1109
+#: templates/campain_details.html:1140
 #, fuzzy
 msgid "Export en cours..."
 msgstr "進行中"
 
-#: templates/campain_details.html:1145
+#: templates/campain_details.html:1176
 #, fuzzy
 msgid "Export réussi"
 msgstr "成功"
 
-#: templates/campain_details.html:1193
+#: templates/campain_details.html:1224
 msgid "Le nom de la campagne ne peut pas être vide"
 msgstr "キャンペーン名は空にできません"
 
-#: templates/campain_details.html:1208
+#: templates/campain_details.html:1239
 #, fuzzy
 msgid "Campagne renommée avec succès"
 msgstr "キャンペーンが正常に作成されました"
 
-#: templates/campain_details.html:1212
+#: templates/campain_details.html:1243
 #, fuzzy
 msgid "Erreur lors du renommage de la campagne"
 msgstr "キャンペーンの名前を変更"
 
-#: templates/campain_details.html:1261 templates/campain_files.html:158
+#: templates/campain_details.html:1292 templates/campain_files.html:158
+#: templates/campain_workdir.html:158
 msgid "Télécharger"
 msgstr ""
 
-#: templates/campain_details.html:1264 templates/campain_files.html:140
-#: templates/campain_files.html:161
+#: templates/campain_details.html:1295 templates/campain_files.html:140
+#: templates/campain_files.html:161 templates/campain_workdir.html:140
+#: templates/campain_workdir.html:161
 #, fuzzy
 msgid "Supprimer"
 msgstr "テストを削除"
 
-#: templates/campain_details.html:1280
+#: templates/campain_details.html:1311
 #, fuzzy
 msgid "Êtes-vous sûr de vouloir supprimer ce rapport ?"
 msgstr "この変数を削除してもよろしいですか？"
 
-#: templates/campain_details.html:1288
+#: templates/campain_details.html:1319
 #, fuzzy
 msgid "Erreur lors de la suppression du rapport"
 msgstr "削除中にエラーが発生しました"
@@ -399,44 +413,49 @@ msgstr "削除中にエラーが発生しました"
 msgid "Fichiers de travail"
 msgstr "作業ファイル"
 
-#: templates/campain_files.html:35
+#: templates/campain_files.html:35 templates/campain_workdir.html:35
 msgid "Rafraîchir"
 msgstr ""
 
-#: templates/campain_files.html:66
+#: templates/campain_files.html:66 templates/campain_workdir.html:66
 msgid "Ce dossier est vide"
 msgstr "このフォルダは空です"
 
-#: templates/campain_files.html:109
+#: templates/campain_files.html:109 templates/campain_workdir.html:109
 msgid "Impossible de charger les fichiers"
 msgstr "ファイルを読み込めません"
 
-#: templates/campain_files.html:216
+#: templates/campain_files.html:216 templates/campain_workdir.html:216
 #, fuzzy
 msgid "Êtes-vous sûr de vouloir supprimer ce fichier ?"
 msgstr "このユーザーを削除してもよろしいですか？"
 
-#: templates/campain_files.html:220
+#: templates/campain_files.html:220 templates/campain_workdir.html:220
 #, fuzzy
 msgid "Fichier supprimé avec succès"
 msgstr "ユーザーが正常に作成されました"
 
 #: templates/admin/deleted.html:431 templates/campain_files.html:224
-#: templates/campain_files.html:241
+#: templates/campain_files.html:241 templates/campain_workdir.html:224
+#: templates/campain_workdir.html:241
 msgid "Erreur lors de la suppression"
 msgstr "削除中にエラーが発生しました"
 
-#: templates/campain_files.html:229
+#: templates/campain_files.html:229 templates/campain_workdir.html:229
 msgid "Êtes-vous sûr de vouloir supprimer ce dossier ?"
 msgstr "このフォルダを削除してもよろしいですか？"
 
-#: templates/campain_files.html:233
+#: templates/campain_files.html:233 templates/campain_workdir.html:233
 msgid "Dossier supprimé avec succès"
 msgstr "フォルダが正常に削除されました"
 
-#: templates/campain_files.html:239
+#: templates/campain_files.html:239 templates/campain_workdir.html:239
 msgid "Le dossier n'est pas vide"
 msgstr "フォルダは空ではありません"
+
+#: templates/campain_workdir.html:3 templates/campain_workdir.html:10
+msgid "Répertoire de travail"
+msgstr "作業ディレクトリ"
 
 #: templates/dashboard.html:10
 msgid "Bienvenue sur votre espace de gestion des campagnes de tests"

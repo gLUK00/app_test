@@ -1,14 +1,14 @@
 # Translations template for PROJECT.
-# Copyright (C) 2025 ORGANIZATION
+# Copyright (C) 2026 ORGANIZATION
 # This file is distributed under the same license as the PROJECT project.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
 #
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-12-17 16:53+0100\n"
+"POT-Creation-Date: 2026-01-05 21:32+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -41,29 +41,29 @@ msgstr ""
 msgid "Authentification réussie"
 msgstr ""
 
-#: routes/campains_routes.py:43 routes/campains_routes.py:75
-#: routes/campains_routes.py:90 routes/users_routes.py:26
+#: routes/campains_routes.py:44 routes/campains_routes.py:76
+#: routes/campains_routes.py:91 routes/users_routes.py:26
 #, python-brace-format
 msgid "Erreur serveur: {}"
 msgstr ""
 
-#: routes/campains_routes.py:70 templates/campain_add.html:61
+#: routes/campains_routes.py:71 templates/campain_add.html:61
 msgid "Campagne créée avec succès"
 msgstr ""
 
-#: routes/campains_routes.py:85
+#: routes/campains_routes.py:86
 msgid "Campagne non trouvée"
 msgstr ""
 
-#: routes/campains_routes.py:101
+#: routes/campains_routes.py:102
 msgid "Campagne mise à jour avec succès"
 msgstr ""
 
-#: routes/campains_routes.py:612 routes/rapports_routes.py:289
+#: routes/campains_routes.py:782 routes/rapports_routes.py:289
 msgid "Fichier non trouvé"
 msgstr ""
 
-#: routes/campains_routes.py:615 templates/campain_details.html:1284
+#: routes/campains_routes.py:785 templates/campain_details.html:1315
 msgid "Rapport supprimé avec succès"
 msgstr ""
 
@@ -158,27 +158,27 @@ msgstr ""
 msgid "Utilisateur créé avec succès"
 msgstr ""
 
-#: templates/base.html:40 templates/dashboard.html:3 templates/dashboard.html:9
+#: templates/base.html:43 templates/dashboard.html:3 templates/dashboard.html:9
 msgid "Tableau de bord"
 msgstr ""
 
-#: templates/base.html:46
+#: templates/base.html:49
 msgid "Administration"
 msgstr ""
 
-#: templates/base.html:50
+#: templates/base.html:53
 msgid "Utilisateurs"
 msgstr ""
 
-#: templates/base.html:53
+#: templates/base.html:56
 msgid "Variables"
 msgstr ""
 
-#: templates/admin/deleted.html:3 templates/base.html:57
+#: templates/admin/deleted.html:3 templates/base.html:60
 msgid "Éléments supprimés"
 msgstr ""
 
-#: templates/base.html:79
+#: templates/base.html:82
 msgid "Déconnexion"
 msgstr ""
 
@@ -194,9 +194,9 @@ msgstr ""
 #: templates/admin/user_edit.html:13 templates/admin/variable_add.html:13
 #: templates/admin/variable_edit.html:13 templates/campain_add.html:13
 #: templates/campain_details.html:21 templates/campain_files.html:16
-#: templates/rapport_details.html:109 templates/rapport_details.html:113
-#: templates/test_add.html:17 templates/test_edit.html:17
-#: templates/test_execute.html:13
+#: templates/campain_workdir.html:16 templates/rapport_details.html:109
+#: templates/rapport_details.html:113 templates/test_add.html:17
+#: templates/test_edit.html:17 templates/test_execute.html:13
 msgid "Retour"
 msgstr ""
 
@@ -232,8 +232,9 @@ msgstr ""
 #: templates/admin/deleted.html:94 templates/admin/user_edit.html:27
 #: templates/admin/users.html:28 templates/admin/variable_edit.html:27
 #: templates/admin/variables.html:41 templates/campain_details.html:11
-#: templates/campain_details.html:67 templates/campain_files.html:12
-#: templates/campain_files.html:42 templates/dashboard.html:35
+#: templates/campain_details.html:75 templates/campain_files.html:12
+#: templates/campain_files.html:42 templates/campain_workdir.html:12
+#: templates/campain_workdir.html:42 templates/dashboard.html:35
 #: templates/rapport_details.html:176 templates/test_edit.html:62
 #: templates/test_execute.html:28 templates/test_execute.html:60
 msgid "Chargement..."
@@ -247,137 +248,146 @@ msgstr ""
 msgid "Exporter la campagne"
 msgstr ""
 
-#: templates/campain_details.html:31
+#: templates/campain_details.html:32
 msgid "Informations"
 msgstr ""
 
-#: templates/campain_details.html:36 templates/rapport_details.html:132
+#: templates/campain_details.html:34 templates/campain_details.html:62
+msgid "View workdir files"
+msgstr ""
+
+#: templates/campain_details.html:41 templates/rapport_details.html:132
 #: templates/test_execute.html:34
 msgid "Nom :"
 msgstr ""
 
-#: templates/campain_details.html:37 templates/test_execute.html:35
+#: templates/campain_details.html:42 templates/test_execute.html:35
 msgid "Description :"
 msgstr ""
 
-#: templates/campain_details.html:40
+#: templates/campain_details.html:45
 msgid "Créée le :"
 msgstr ""
 
-#: templates/campain_details.html:41
+#: templates/campain_details.html:46
 msgid "Créée par :"
 msgstr ""
 
-#: templates/campain_details.html:55
+#: templates/campain_details.html:60
 msgid "Fichiers"
 msgstr ""
 
-#: templates/campain_details.html:57
-msgid "View workdir files"
+#: templates/campain_details.html:66
+msgid "Chemin du répertoire files"
 msgstr ""
 
-#: templates/campain_details.html:61
+#: templates/campain_details.html:68
 msgid "Ajouter un fichier"
 msgstr ""
 
-#: templates/campain_details.html:75
+#: templates/campain_details.html:83
 msgid "Nom du fichier"
 msgstr ""
 
-#: templates/campain_details.html:76
+#: templates/campain_details.html:84
 msgid "Taille (Ko)"
 msgstr ""
 
-#: templates/campain_details.html:77 templates/campain_files.html:54
+#: templates/campain_details.html:85 templates/campain_files.html:54
+#: templates/campain_workdir.html:54
 msgid "Date de modification"
 msgstr ""
 
 #: templates/admin/deleted.html:206 templates/admin/deleted.html:239
 #: templates/admin/deleted.html:272 templates/admin/users.html:69
 #: templates/admin/variables.html:80 templates/admin/variables.html:162
-#: templates/campain_details.html:78 templates/campain_details.html:115
-#: templates/campain_files.html:55 templates/dashboard.html:104
+#: templates/campain_details.html:86 templates/campain_details.html:123
+#: templates/campain_files.html:55 templates/campain_workdir.html:55
+#: templates/dashboard.html:104
 msgid "Actions"
 msgstr ""
 
-#: templates/campain_details.html:89
+#: templates/campain_details.html:97
 msgid "Aucun fichier dans cette campagne"
 msgstr ""
 
-#: templates/campain_details.html:101
+#: templates/campain_details.html:109
 msgid "Rapports générés"
 msgstr ""
 
-#: templates/campain_details.html:103
+#: templates/campain_details.html:111
 msgid "Refresh"
 msgstr ""
 
 #: templates/admin/deleted.html:206 templates/admin/deleted.html:239
 #: templates/admin/deleted.html:272 templates/admin/users.html:66
-#: templates/campain_details.html:111 templates/campain_files.html:52
-#: templates/dashboard.html:101
+#: templates/campain_details.html:119 templates/campain_files.html:52
+#: templates/campain_workdir.html:52 templates/dashboard.html:101
 msgid "Nom"
 msgstr ""
 
-#: templates/campain_details.html:112
+#: templates/campain_details.html:120
 msgid "Type"
 msgstr ""
 
-#: templates/campain_details.html:113
+#: templates/campain_details.html:121
 msgid "Date"
 msgstr ""
 
-#: templates/campain_details.html:114 templates/campain_files.html:53
+#: templates/campain_details.html:122 templates/campain_files.html:53
+#: templates/campain_workdir.html:53
 msgid "Taille"
 msgstr ""
 
-#: templates/campain_details.html:133
+#: templates/campain_details.html:141
 msgid "Tests de la campagne"
 msgstr ""
 
-#: templates/campain_details.html:135 templates/test_add.html:3
+#: templates/campain_details.html:143 templates/test_add.html:3
 #: templates/test_add.html:9
 msgid "Ajouter un test"
 msgstr ""
 
-#: templates/campain_details.html:1086 templates/rapport_details.html:292
+#: templates/campain_details.html:1117 templates/rapport_details.html:292
 msgid "Erreur lors de l'exécution de la campagne"
 msgstr ""
 
-#: templates/campain_details.html:1109
+#: templates/campain_details.html:1140
 msgid "Export en cours..."
 msgstr ""
 
-#: templates/campain_details.html:1145
+#: templates/campain_details.html:1176
 msgid "Export réussi"
 msgstr ""
 
-#: templates/campain_details.html:1193
+#: templates/campain_details.html:1224
 msgid "Le nom de la campagne ne peut pas être vide"
 msgstr ""
 
-#: templates/campain_details.html:1208
+#: templates/campain_details.html:1239
 msgid "Campagne renommée avec succès"
 msgstr ""
 
-#: templates/campain_details.html:1212
+#: templates/campain_details.html:1243
 msgid "Erreur lors du renommage de la campagne"
 msgstr ""
 
-#: templates/campain_details.html:1261 templates/campain_files.html:158
+#: templates/campain_details.html:1292 templates/campain_files.html:158
+#: templates/campain_workdir.html:158
 msgid "Télécharger"
 msgstr ""
 
-#: templates/campain_details.html:1264 templates/campain_files.html:140
-#: templates/campain_files.html:161
+#: templates/campain_details.html:1295 templates/campain_files.html:140
+#: templates/campain_files.html:161 templates/campain_workdir.html:140
+#: templates/campain_workdir.html:161
 msgid "Supprimer"
 msgstr ""
 
-#: templates/campain_details.html:1280
+#: templates/campain_details.html:1311
 msgid "Êtes-vous sûr de vouloir supprimer ce rapport ?"
 msgstr ""
 
-#: templates/campain_details.html:1288
+#: templates/campain_details.html:1319
 msgid "Erreur lors de la suppression du rapport"
 msgstr ""
 
@@ -385,41 +395,46 @@ msgstr ""
 msgid "Fichiers de travail"
 msgstr ""
 
-#: templates/campain_files.html:35
+#: templates/campain_files.html:35 templates/campain_workdir.html:35
 msgid "Rafraîchir"
 msgstr ""
 
-#: templates/campain_files.html:66
+#: templates/campain_files.html:66 templates/campain_workdir.html:66
 msgid "Ce dossier est vide"
 msgstr ""
 
-#: templates/campain_files.html:109
+#: templates/campain_files.html:109 templates/campain_workdir.html:109
 msgid "Impossible de charger les fichiers"
 msgstr ""
 
-#: templates/campain_files.html:216
+#: templates/campain_files.html:216 templates/campain_workdir.html:216
 msgid "Êtes-vous sûr de vouloir supprimer ce fichier ?"
 msgstr ""
 
-#: templates/campain_files.html:220
+#: templates/campain_files.html:220 templates/campain_workdir.html:220
 msgid "Fichier supprimé avec succès"
 msgstr ""
 
 #: templates/admin/deleted.html:431 templates/campain_files.html:224
-#: templates/campain_files.html:241
+#: templates/campain_files.html:241 templates/campain_workdir.html:224
+#: templates/campain_workdir.html:241
 msgid "Erreur lors de la suppression"
 msgstr ""
 
-#: templates/campain_files.html:229
+#: templates/campain_files.html:229 templates/campain_workdir.html:229
 msgid "Êtes-vous sûr de vouloir supprimer ce dossier ?"
 msgstr ""
 
-#: templates/campain_files.html:233
+#: templates/campain_files.html:233 templates/campain_workdir.html:233
 msgid "Dossier supprimé avec succès"
 msgstr ""
 
-#: templates/campain_files.html:239
+#: templates/campain_files.html:239 templates/campain_workdir.html:239
 msgid "Le dossier n'est pas vide"
+msgstr ""
+
+#: templates/campain_workdir.html:3 templates/campain_workdir.html:10
+msgid "Répertoire de travail"
 msgstr ""
 
 #: templates/dashboard.html:10

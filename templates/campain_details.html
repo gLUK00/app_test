@@ -27,8 +27,11 @@
     <div class="row mb-4">
         <div class="col-12">
             <div class="card">
-                <div class="card-header campain-info-header">
-                    <i class="fas fa-info-circle"></i> {{ _('Informations') }}
+                <div class="card-header campain-info-header d-flex justify-content-between align-items-center">
+                    <span><i class="fas fa-info-circle"></i> {{ _('Informations') }}</span>
+                    <a href="{{ url_for('web.campain_workdir', campain_id=campain_id) }}" id="viewWorkdirFilesBtnInfo" class="btn btn-sm btn-warning" style="display: none;">
+                        <i class="fas fa-folder-open"></i> {{ _('View working directory') }}
+                    </a>
                 </div>
                 <div class="card-body">
                     <div class="row">
@@ -57,9 +60,12 @@
                             <i class="fas fa-external-link-alt"></i> {{ _('View workdir files') }}
                         </a>
                     </div>
-                    <button class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#uploadFileModal">
-                        <i class="fas fa-upload"></i> {{ _('Ajouter un fichier') }}
-                    </button>
+                    <div class="d-flex align-items-center">
+                        <span id="filesDirTag" class="badge bg-secondary me-2" style="font-family: monospace; display: none;" title="{{ _('Chemin du répertoire files') }}"></span>
+                        <button class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#uploadFileModal">
+                            <i class="fas fa-upload"></i> {{ _('Ajouter un fichier') }}
+                        </button>
+                    </div>
                 </div>
                 <div class="card-body">
                     <div id="filesLoading" class="text-center">
@@ -738,6 +744,22 @@ function getProgressBarClass(status) {
 
 // ===== GESTION DES FICHIERS =====
 
+// Chargement du statut du répertoire workdir (work)
+async function loadWorkdirStatus() {
+    try {
+        const data = await API.get(`/api/campains/${campainId}/workdir`);
+        
+        // Gestion du bouton "View workdir files" dans la section Information
+        const hasWorkdirContent = (data.files && data.files.length > 0) || (data.directories && data.directories.length > 0);
+        const viewBtnInfo = document.getElementById('viewWorkdirFilesBtnInfo');
+        if (viewBtnInfo) {
+            viewBtnInfo.style.display = hasWorkdirContent ? 'inline-block' : 'none';
+        }
+    } catch (error) {
+        console.error('Erreur lors du chargement du statut workdir:', error);
+    }
+}
+
 // Chargement de la liste des fichiers
 async function loadFiles() {
     try {
@@ -745,7 +767,14 @@ async function loadFiles() {
         
         document.getElementById('filesLoading').style.display = 'none';
         
-        // Gestion du bouton "View workdir files"
+        // Afficher le chemin du répertoire files
+        const filesDirTag = document.getElementById('filesDirTag');
+        if (filesDirTag && data.files_dir) {
+            filesDirTag.textContent = data.files_dir;
+            filesDirTag.style.display = 'inline-block';
+        }
+        
+        // Gestion du bouton "View workdir files" dans la section Files
         const hasContent = (data.files && data.files.length > 0) || (data.directories && data.directories.length > 0);
         const viewBtn = document.getElementById('viewWorkdirFilesBtn');
         if (viewBtn) {
@@ -1299,6 +1328,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     loadCampainDetails();
     loadFiles();
+    loadWorkdirStatus(); // Charge le statut du répertoire work
     loadTests();
     loadRapports(); // Charge les rapports d'exécution (historique)
     loadReports(); // Charge les fichiers de rapports générés

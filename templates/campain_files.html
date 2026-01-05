@@ -175,9 +175,9 @@ function updateBreadcrumb() {
     const rootLi = document.createElement('li');
     rootLi.className = `breadcrumb-item ${!currentPath ? 'active' : ''}`;
     if (!currentPath) {
-        rootLi.textContent = 'Work';
+        rootLi.textContent = 'Files';
     } else {
-        rootLi.innerHTML = `<a href="#" onclick="loadFiles(''); return false;">Work</a>`;
+        rootLi.innerHTML = `<a href="#" onclick="loadFiles(''); return false;">Files</a>`;
     }
     breadcrumb.appendChild(rootLi);
     

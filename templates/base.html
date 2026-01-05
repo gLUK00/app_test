@@ -17,6 +17,9 @@
     <!-- FontAwesome -->
     <link rel="stylesheet" href="{{ url_for('static', filename='vendor/fontawesome/css/all.min.css') }}">
     
+    <!-- Flag Icons -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='vendor/flag-icon-css/css/flag-icon.min.css') }}">
+
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
     
@@ -66,12 +69,12 @@
                             <i class="fas fa-globe"></i> {{ session.get('language', 'en')|upper }}
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownLanguage">
-                            <li><a class="dropdown-item" href="{{ url_for('web.set_language', lang_code='en') }}">🇬🇧 English</a></li>
-                            <li><a class="dropdown-item" href="{{ url_for('web.set_language', lang_code='fr') }}">🇫🇷 Français</a></li>
-                            <li><a class="dropdown-item" href="{{ url_for('web.set_language', lang_code='es') }}">🇪🇸 Español</a></li>
-                            <li><a class="dropdown-item" href="{{ url_for('web.set_language', lang_code='zh') }}">🇨🇳 中文</a></li>
-                            <li><a class="dropdown-item" href="{{ url_for('web.set_language', lang_code='de') }}">🇩🇪 Deutsch</a></li>
-                            <li><a class="dropdown-item" href="{{ url_for('web.set_language', lang_code='ja') }}">🇯🇵 日本語</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('web.set_language', lang_code='en') }}"><span class="flag-icon flag-icon-gb me-2"></span> English</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('web.set_language', lang_code='fr') }}"><span class="flag-icon flag-icon-fr me-2"></span> Français</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('web.set_language', lang_code='es') }}"><span class="flag-icon flag-icon-es me-2"></span> Español</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('web.set_language', lang_code='zh') }}"><span class="flag-icon flag-icon-cn me-2"></span> 中文</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('web.set_language', lang_code='de') }}"><span class="flag-icon flag-icon-de me-2"></span> Deutsch</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('web.set_language', lang_code='ja') }}"><span class="flag-icon flag-icon-jp me-2"></span> 日本語</a></li>
                         </ul>
                     </li>
                     <li class="nav-item">
