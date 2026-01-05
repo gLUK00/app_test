@@ -217,6 +217,7 @@ class HTTPRequestAction(ActionBase):
             if return_status_code and str( response.status_code ) != return_status_code:
                 self.set_code(1)
                 self.add_trace(f"Code de statut inattendu: attendu {return_status_code}, reçu {response.status_code}")
+                self.add_trace(f"Réponse: {response.text}")
                 return self.get_result( False, output_vars )
 
             if return_status_code or ( response.status_code >= 200 and response.status_code < 300 ):
@@ -227,6 +228,7 @@ class HTTPRequestAction(ActionBase):
 
             self.set_code(1)
             self.add_trace(f"Erreur HTTP: {response.status_code}")
+            self.add_trace(f"Réponse: {response.text}")
             return self.get_result( False, None )
         
         except requests.exceptions.Timeout:
