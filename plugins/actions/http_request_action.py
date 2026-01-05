@@ -186,7 +186,7 @@ class HTTPRequestAction(ActionBase):
             try:
                 # Effectuer la requête
                 if method == 'GET':
-                    response = requests.get(url, headers=headers, timeout=timeout, verify=False)
+                    response = requests.get(url, headers=headers, params=body, timeout=timeout, verify=False)
                 elif method == 'POST':
                     response = requests.post(url, headers=headers, data=body, files=files_to_send if files_to_send else None, timeout=timeout, verify=False)
                 elif method == 'PUT':
