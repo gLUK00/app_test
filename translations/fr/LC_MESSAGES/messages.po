@@ -1285,3 +1285,166 @@ msgstr ""
 msgid "Tous les champs requis sont présents"
 msgstr ""
 
+#: Plugin Data Structures translations
+msgid "Plugin Data Structures"
+msgstr "Structures de données des plugins"
+
+msgid "Add data structure"
+msgstr "Ajouter une structure"
+
+msgid "Add plugin data structure"
+msgstr "Ajouter une structure de données plugin"
+
+msgid "No plugin data structures defined"
+msgstr "Aucune structure de données définie"
+
+msgid "Plugin data structures allow you to save reusable configurations (e.g., credentials) for action plugins."
+msgstr "Les structures de données permettent de sauvegarder des configurations réutilisables (ex: identifiants) pour les plugins d'action."
+
+msgid "Plugin type"
+msgstr "Type de plugin"
+
+msgid "Select a plugin..."
+msgstr "Sélectionnez un plugin..."
+
+msgid "Structure name"
+msgstr "Nom de la structure"
+
+msgid "e.g., Production WebDAV Server"
+msgstr "ex: Serveur WebDAV Production"
+
+msgid "A unique name to identify this configuration"
+msgstr "Un nom unique pour identifier cette configuration"
+
+msgid "Structure fields"
+msgstr "Champs de la structure"
+
+msgid "Enter values"
+msgstr "Saisir les valeurs"
+
+msgid "Field"
+msgstr "Champ"
+
+msgid "Type"
+msgstr "Type"
+
+msgid "Required"
+msgstr "Obligatoire"
+
+msgid "View structure"
+msgstr "Voir la structure"
+
+msgid "Edit structure"
+msgstr "Modifier la structure"
+
+msgid "Edit values"
+msgstr "Modifier les valeurs"
+
+msgid "Stored values:"
+msgstr "Valeurs enregistrées :"
+
+msgid "View"
+msgstr "Voir"
+
+msgid "Edit"
+msgstr "Modifier"
+
+msgid "Delete"
+msgstr "Supprimer"
+
+msgid "Cancel"
+msgstr "Annuler"
+
+msgid "Close"
+msgstr "Fermer"
+
+msgid "Save"
+msgstr "Enregistrer"
+
+msgid "Update"
+msgstr "Mettre à jour"
+
+msgid "Please fill in all required fields"
+msgstr "Veuillez remplir tous les champs obligatoires"
+
+msgid "Structure added successfully"
+msgstr "Structure ajoutée avec succès"
+
+msgid "Error adding structure"
+msgstr "Erreur lors de l'ajout de la structure"
+
+msgid "Error loading structure"
+msgstr "Erreur lors du chargement de la structure"
+
+msgid "Name is required"
+msgstr "Le nom est obligatoire"
+
+msgid "Structure updated successfully"
+msgstr "Structure mise à jour avec succès"
+
+msgid "Error updating structure"
+msgstr "Erreur lors de la mise à jour de la structure"
+
+msgid "Are you sure you want to delete the structure"
+msgstr "Êtes-vous sûr de vouloir supprimer la structure"
+
+msgid "Structure deleted successfully"
+msgstr "Structure supprimée avec succès"
+
+msgid "Error deleting structure"
+msgstr "Erreur lors de la suppression de la structure"
+
+msgid "Le nom de la structure est obligatoire"
+msgstr "Le nom de la structure est obligatoire"
+
+msgid "Le type de plugin est obligatoire"
+msgstr "Le type de plugin est obligatoire"
+
+msgid "Les valeurs de la structure sont obligatoires"
+msgstr "Les valeurs de la structure sont obligatoires"
+
+msgid "Une structure avec ce nom existe déjà pour ce type de plugin"
+msgstr "Une structure avec ce nom existe déjà pour ce type de plugin"
+
+msgid "Structure de données ajoutée avec succès"
+msgstr "Structure de données ajoutée avec succès"
+
+msgid "Structure de données non trouvée"
+msgstr "Structure de données non trouvée"
+
+msgid "Aucune modification fournie"
+msgstr "Aucune modification fournie"
+
+msgid "Impossible de mettre à jour la structure (non trouvée ou nom déjà utilisé)"
+msgstr "Impossible de mettre à jour la structure (non trouvée ou nom déjà utilisé)"
+
+msgid "Structure de données mise à jour avec succès"
+msgstr "Structure de données mise à jour avec succès"
+
+msgid "Structure de données supprimée avec succès"
+msgstr "Structure de données supprimée avec succès"
+
+#: Phase 2 - Utilisation des structures dans les actions
+msgid "Structures disponibles"
+msgstr "Structures disponibles"
+
+msgid "Cliquez sur une structure pour pré-remplir les champs de connexion."
+msgstr "Cliquez sur une structure pour pré-remplir les champs de connexion."
+
+msgid "Structure appliquée"
+msgstr "Structure appliquée"
+
+msgid "Champs pré-remplis"
+msgstr "Champs pré-remplis"
+
+msgid "Structure non trouvée"
+msgstr "Structure non trouvée"
+
+msgid "La structure référencée a été supprimée. Veuillez sélectionner une nouvelle structure ou remplir les champs manuellement."
+msgstr "La structure référencée a été supprimée. Veuillez sélectionner une nouvelle structure ou remplir les champs manuellement."
+
+msgid "Utilise la structure"
+msgstr "Utilise la structure"
+
+msgid "Structure manquante"
+msgstr "Structure manquante"

@@ -131,6 +131,49 @@
         </div>
     </div>
     
+    <!-- Section Plugin Data Structures -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <span><i class="fas fa-database"></i> {{ _('Plugin Data Structures') }}</span>
+                    <button class="btn btn-sm btn-light" data-bs-toggle="modal" data-bs-target="#addPluginStructureModal">
+                        <i class="fas fa-plus"></i> {{ _('Add data structure') }}
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div id="pluginStructuresLoading" class="text-center">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">{{ _('Chargement...') }}</span>
+                        </div>
+                    </div>
+                    <div id="pluginStructuresContainer" style="display: none;">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>{{ _('Name') }}</th>
+                                        <th>{{ _('Plugin type') }}</th>
+                                        <th>{{ _('Created') }}</th>
+                                        <th style="width: 205px;">{{ _('Actions') }}</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="pluginStructuresTableBody">
+                                    <!-- Les structures seront chargées ici -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div id="noPluginStructures" style="display: none;" class="text-center text-muted py-4">
+                        <i class="fas fa-inbox fa-3x mb-3"></i>
+                        <p>{{ _('No plugin data structures defined') }}</p>
+                        <p class="small text-muted">{{ _('Plugin data structures allow you to save reusable configurations (e.g., credentials) for action plugins.') }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
     <!-- Liste des tests -->
     <div class="row mb-4">
         <div class="col-12">
@@ -364,6 +407,124 @@
                 </button>
                 <button type="button" class="btn btn-info" id="confirmExportBtn">
                     <i class="fas fa-file-export"></i> Exporter
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modale d'ajout de structure de données plugin -->
+<div class="modal fade" id="addPluginStructureModal" tabindex="-1" aria-labelledby="addPluginStructureModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addPluginStructureModalLabel">
+                    <i class="fas fa-database"></i> {{ _('Add plugin data structure') }}
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addPluginStructureForm">
+                    <div class="mb-3">
+                        <label for="pluginTypeSelect" class="form-label">{{ _('Plugin type') }} <span class="text-danger">*</span></label>
+                        <select class="form-select" id="pluginTypeSelect" required>
+                            <option value="">{{ _('Select a plugin...') }}</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="structureName" class="form-label">{{ _('Structure name') }} <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="structureName" required placeholder="{{ _('e.g., Production WebDAV Server') }}">
+                        <div class="form-text">{{ _('A unique name to identify this configuration') }}</div>
+                    </div>
+                    
+                    <div id="structureFieldsContainer" style="display: none;">
+                        <hr>
+                        <h6><i class="fas fa-th-list"></i> {{ _('Structure fields') }}</h6>
+                        <div id="structureFieldsPreview" class="table-responsive mb-3">
+                            <!-- Structure fields preview -->
+                        </div>
+                        
+                        <h6><i class="fas fa-edit"></i> {{ _('Enter values') }}</h6>
+                        <div id="structureValuesForm">
+                            <!-- Dynamic fields will be generated here -->
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times"></i> {{ _('Cancel') }}
+                </button>
+                <button type="button" class="btn btn-primary" id="savePluginStructureBtn" disabled>
+                    <i class="fas fa-save"></i> {{ _('Save') }}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modale de visualisation de structure -->
+<div class="modal fade" id="viewPluginStructureModal" tabindex="-1" aria-labelledby="viewPluginStructureModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="viewPluginStructureModalLabel">
+                    <i class="fas fa-eye"></i> {{ _('View structure') }}
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p><strong>{{ _('Name:') }}</strong> <span id="viewStructureName"></span></p>
+                <p><strong>{{ _('Plugin type:') }}</strong> <span id="viewStructurePluginType"></span></p>
+                <hr>
+                <h6>{{ _('Stored values:') }}</h6>
+                <div id="viewStructureValues" class="table-responsive">
+                    <!-- Values will be displayed here -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times"></i> {{ _('Close') }}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modale d'édition de structure -->
+<div class="modal fade" id="editPluginStructureModal" tabindex="-1" aria-labelledby="editPluginStructureModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editPluginStructureModalLabel">
+                    <i class="fas fa-edit"></i> {{ _('Edit structure') }}
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editPluginStructureForm">
+                    <input type="hidden" id="editStructureId">
+                    <input type="hidden" id="editStructurePluginType">
+                    
+                    <div class="mb-3">
+                        <label for="editStructureName" class="form-label">{{ _('Structure name') }} <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="editStructureName" required>
+                    </div>
+                    
+                    <hr>
+                    <h6><i class="fas fa-edit"></i> {{ _('Edit values') }}</h6>
+                    <div id="editStructureValuesForm">
+                        <!-- Dynamic fields will be generated here -->
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times"></i> {{ _('Cancel') }}
+                </button>
+                <button type="button" class="btn btn-primary" id="updatePluginStructureBtn">
+                    <i class="fas fa-save"></i> {{ _('Update') }}
                 </button>
             </div>
         </div>
@@ -1326,12 +1487,326 @@ document.addEventListener('DOMContentLoaded', () => {
         return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
     }
 
+    // ==================== Plugin Data Structures ====================
+    
+    let pluginsWithStructure = {};
+    
+    // Charger les plugins avec structure
+    async function loadPluginsWithStructure() {
+        try {
+            pluginsWithStructure = await API.get('/api/actions/with-structure');
+            
+            // Remplir le select des plugins
+            const select = document.getElementById('pluginTypeSelect');
+            select.innerHTML = '<option value="">{{ _("Select a plugin...") }}</option>';
+            
+            for (const [pluginType, pluginInfo] of Object.entries(pluginsWithStructure)) {
+                const option = document.createElement('option');
+                option.value = pluginType;
+                option.textContent = pluginInfo.label;
+                option.style.backgroundColor = pluginInfo.color;
+                select.appendChild(option);
+            }
+        } catch (error) {
+            console.error('Erreur chargement plugins avec structure:', error);
+        }
+    }
+    
+    // Charger les structures de données
+    async function loadPluginStructures() {
+        const loading = document.getElementById('pluginStructuresLoading');
+        const container = document.getElementById('pluginStructuresContainer');
+        const noData = document.getElementById('noPluginStructures');
+        const tbody = document.getElementById('pluginStructuresTableBody');
+        
+        loading.style.display = '';
+        container.style.display = 'none';
+        noData.style.display = 'none';
+        
+        try {
+            const result = await API.get(`/api/campains/${campainId}/plugin-structures`);
+            const structures = result.structures || [];
+            
+            loading.style.display = 'none';
+            
+            if (structures.length === 0) {
+                noData.style.display = '';
+                return;
+            }
+            
+            container.style.display = '';
+            tbody.innerHTML = '';
+            
+            for (const structure of structures) {
+                const pluginInfo = pluginsWithStructure[structure.plugin_type] || {};
+                const color = pluginInfo.color || '#6c757d';
+                const label = pluginInfo.label || structure.plugin_type;
+                
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong>${structure.name}</strong></td>
+                    <td><span class="badge" style="background-color: ${color};">${label}</span></td>
+                    <td>${new Date(structure.created_at).toLocaleDateString()}</td>
+                    <td>
+                        <button class="btn btn-sm btn-info me-1" onclick="viewPluginStructure('${structure.id}')" title="{{ _('View') }}">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="btn btn-sm btn-warning me-1" onclick="editPluginStructure('${structure.id}')" title="{{ _('Edit') }}">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-sm btn-danger" onclick="deletePluginStructure('${structure.id}', '${structure.name}')" title="{{ _('Delete') }}">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            }
+        } catch (error) {
+            console.error('Erreur chargement structures:', error);
+            loading.style.display = 'none';
+            noData.style.display = '';
+        }
+    }
+    
+    // Gestionnaire de changement de plugin
+    document.getElementById('pluginTypeSelect').addEventListener('change', function() {
+        const pluginType = this.value;
+        const fieldsContainer = document.getElementById('structureFieldsContainer');
+        const fieldsPreview = document.getElementById('structureFieldsPreview');
+        const valuesForm = document.getElementById('structureValuesForm');
+        const saveBtn = document.getElementById('savePluginStructureBtn');
+        
+        if (!pluginType) {
+            fieldsContainer.style.display = 'none';
+            saveBtn.disabled = true;
+            return;
+        }
+        
+        const pluginInfo = pluginsWithStructure[pluginType];
+        if (!pluginInfo) return;
+        
+        fieldsContainer.style.display = '';
+        saveBtn.disabled = false;
+        
+        // Afficher la prévisualisation de la structure
+        let previewHtml = '<table class="table table-sm table-bordered"><thead><tr><th>{{ _("Field") }}</th><th>{{ _("Type") }}</th><th>{{ _("Required") }}</th></tr></thead><tbody>';
+        for (const [fieldName, fieldInfo] of Object.entries(pluginInfo.structure)) {
+            previewHtml += `<tr>
+                <td>${fieldInfo.label || fieldName}</td>
+                <td><code>${fieldInfo.type}</code></td>
+                <td>${fieldInfo.required ? '<i class="fas fa-check text-success"></i>' : '<i class="fas fa-minus text-muted"></i>'}</td>
+            </tr>`;
+        }
+        previewHtml += '</tbody></table>';
+        fieldsPreview.innerHTML = previewHtml;
+        
+        // Générer le formulaire de saisie
+        generateStructureForm(pluginInfo.structure, valuesForm);
+    });
+    
+    // Générer un formulaire dynamique pour une structure
+    function generateStructureForm(structure, container, existingValues = {}) {
+        container.innerHTML = '';
+        
+        for (const [fieldName, fieldInfo] of Object.entries(structure)) {
+            const div = document.createElement('div');
+            div.className = 'mb-3';
+            
+            const label = document.createElement('label');
+            label.className = 'form-label';
+            label.innerHTML = `${fieldInfo.label || fieldName} ${fieldInfo.required ? '<span class="text-danger">*</span>' : ''}`;
+            div.appendChild(label);
+            
+            let input;
+            if (fieldInfo.type === 'password') {
+                input = document.createElement('input');
+                input.type = 'password';
+                input.className = 'form-control';
+            } else if (fieldInfo.type === 'number') {
+                input = document.createElement('input');
+                input.type = 'number';
+                input.className = 'form-control';
+            } else if (fieldInfo.type === 'boolean') {
+                input = document.createElement('input');
+                input.type = 'checkbox';
+                input.className = 'form-check-input';
+            } else if (fieldInfo.type === 'select' && fieldInfo.options) {
+                input = document.createElement('select');
+                input.className = 'form-select';
+                fieldInfo.options.forEach(opt => {
+                    const option = document.createElement('option');
+                    option.value = opt;
+                    option.textContent = opt;
+                    input.appendChild(option);
+                });
+            } else {
+                input = document.createElement('input');
+                input.type = 'text';
+                input.className = 'form-control';
+            }
+            
+            input.name = fieldName;
+            input.id = `structure_field_${fieldName}`;
+            if (fieldInfo.required) input.required = true;
+            if (fieldInfo.default !== undefined) input.value = fieldInfo.default;
+            if (existingValues[fieldName] !== undefined) input.value = existingValues[fieldName];
+            
+            div.appendChild(input);
+            container.appendChild(div);
+        }
+    }
+    
+    // Sauvegarder une nouvelle structure
+    document.getElementById('savePluginStructureBtn').addEventListener('click', async function() {
+        const pluginType = document.getElementById('pluginTypeSelect').value;
+        const name = document.getElementById('structureName').value.trim();
+        
+        if (!pluginType || !name) {
+            Notification.error("{{ _('Please fill in all required fields') }}");
+            return;
+        }
+        
+        const pluginInfo = pluginsWithStructure[pluginType];
+        const values = {};
+        
+        for (const fieldName of Object.keys(pluginInfo.structure)) {
+            const input = document.getElementById(`structure_field_${fieldName}`);
+            if (input) {
+                values[fieldName] = input.type === 'checkbox' ? input.checked : input.value;
+            }
+        }
+        
+        try {
+            await API.post(`/api/campains/${campainId}/plugin-structures`, {
+                name: name,
+                plugin_type: pluginType,
+                values: values
+            });
+            
+            Notification.success("{{ _('Structure added successfully') }}");
+            bootstrap.Modal.getInstance(document.getElementById('addPluginStructureModal')).hide();
+            
+            // Reset form
+            document.getElementById('addPluginStructureForm').reset();
+            document.getElementById('structureFieldsContainer').style.display = 'none';
+            document.getElementById('savePluginStructureBtn').disabled = true;
+            
+            loadPluginStructures();
+        } catch (error) {
+            console.error('Erreur ajout structure:', error);
+            Notification.error(error.message || "{{ _('Error adding structure') }}");
+        }
+    });
+    
+    // Visualiser une structure
+    window.viewPluginStructure = async function(structureId) {
+        try {
+            const structure = await API.get(`/api/campains/${campainId}/plugin-structures/${structureId}`);
+            const pluginInfo = pluginsWithStructure[structure.plugin_type] || {};
+            
+            document.getElementById('viewStructureName').textContent = structure.name;
+            document.getElementById('viewStructurePluginType').innerHTML = `<span class="badge" style="background-color: ${pluginInfo.color || '#6c757d'};">${pluginInfo.label || structure.plugin_type}</span>`;
+            
+            // Afficher les valeurs
+            let valuesHtml = '<table class="table table-sm"><tbody>';
+            for (const [fieldName, fieldValue] of Object.entries(structure.values)) {
+                const fieldInfo = pluginInfo.structure ? pluginInfo.structure[fieldName] : null;
+                const displayValue = fieldInfo && fieldInfo.obfuscate ? '••••••••' : fieldValue;
+                valuesHtml += `<tr><td><strong>${fieldInfo ? fieldInfo.label : fieldName}</strong></td><td>${displayValue || '-'}</td></tr>`;
+            }
+            valuesHtml += '</tbody></table>';
+            document.getElementById('viewStructureValues').innerHTML = valuesHtml;
+            
+            new bootstrap.Modal(document.getElementById('viewPluginStructureModal')).show();
+        } catch (error) {
+            console.error('Erreur visualisation structure:', error);
+            Notification.error("{{ _('Error loading structure') }}");
+        }
+    };
+    
+    // Éditer une structure
+    window.editPluginStructure = async function(structureId) {
+        try {
+            const structure = await API.get(`/api/campains/${campainId}/plugin-structures/${structureId}`);
+            const pluginInfo = pluginsWithStructure[structure.plugin_type] || {};
+            
+            document.getElementById('editStructureId').value = structureId;
+            document.getElementById('editStructurePluginType').value = structure.plugin_type;
+            document.getElementById('editStructureName').value = structure.name;
+            
+            // Générer le formulaire avec les valeurs existantes
+            if (pluginInfo.structure) {
+                generateStructureForm(pluginInfo.structure, document.getElementById('editStructureValuesForm'), structure.values);
+            }
+            
+            new bootstrap.Modal(document.getElementById('editPluginStructureModal')).show();
+        } catch (error) {
+            console.error('Erreur chargement structure:', error);
+            Notification.error("{{ _('Error loading structure') }}");
+        }
+    };
+    
+    // Mettre à jour une structure
+    document.getElementById('updatePluginStructureBtn').addEventListener('click', async function() {
+        const structureId = document.getElementById('editStructureId').value;
+        const pluginType = document.getElementById('editStructurePluginType').value;
+        const name = document.getElementById('editStructureName').value.trim();
+        
+        if (!name) {
+            Notification.error("{{ _('Name is required') }}");
+            return;
+        }
+        
+        const pluginInfo = pluginsWithStructure[pluginType];
+        const values = {};
+        
+        if (pluginInfo && pluginInfo.structure) {
+            for (const fieldName of Object.keys(pluginInfo.structure)) {
+                const input = document.getElementById(`structure_field_${fieldName}`);
+                if (input) {
+                    values[fieldName] = input.type === 'checkbox' ? input.checked : input.value;
+                }
+            }
+        }
+        
+        try {
+            await API.put(`/api/campains/${campainId}/plugin-structures/${structureId}`, {
+                name: name,
+                values: values
+            });
+            
+            Notification.success("{{ _('Structure updated successfully') }}");
+            bootstrap.Modal.getInstance(document.getElementById('editPluginStructureModal')).hide();
+            loadPluginStructures();
+        } catch (error) {
+            console.error('Erreur mise à jour structure:', error);
+            Notification.error(error.message || "{{ _('Error updating structure') }}");
+        }
+    });
+    
+    // Supprimer une structure
+    window.deletePluginStructure = async function(structureId, structureName) {
+        if (!confirm(`{{ _('Are you sure you want to delete the structure') }} "${structureName}"?`)) {
+            return;
+        }
+        
+        try {
+            await API.delete(`/api/campains/${campainId}/plugin-structures/${structureId}`);
+            Notification.success("{{ _('Structure deleted successfully') }}");
+            loadPluginStructures();
+        } catch (error) {
+            console.error('Erreur suppression structure:', error);
+            Notification.error("{{ _('Error deleting structure') }}");
+        }
+    };
+
     loadCampainDetails();
     loadFiles();
     loadWorkdirStatus(); // Charge le statut du répertoire work
     loadTests();
     loadRapports(); // Charge les rapports d'exécution (historique)
     loadReports(); // Charge les fichiers de rapports générés
+    loadPluginsWithStructure().then(() => loadPluginStructures()); // Charge les structures de plugins
 });
 </script>
 {% endblock %}

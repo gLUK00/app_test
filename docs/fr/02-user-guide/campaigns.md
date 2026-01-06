@@ -63,3 +63,55 @@ Vous verrez une barre de progression et des mises à jour de statut.
 *   **Rouge** : Échoué
 
 Cliquez sur un rapport en cours ou terminé pour voir les logs détaillés.
+
+## Structures de Données des Plugins
+
+Les structures de données des plugins permettent de sauvegarder des configurations réutilisables pour les plugins d'action. C'est particulièrement utile pour stocker des identifiants de connexion (WebDAV, FTP, S3, SSH, etc.) que vous utilisez fréquemment dans plusieurs tests.
+
+### Concept
+
+Certains plugins d'action (WebDAV, FTP, SFTP, S3, SSH) fournissent une fonction `get_structure()` qui définit les champs configurables pour ce plugin. Par exemple, un plugin WebDAV peut définir :
+
+| Champ | Type | Description |
+|-------|------|-------------|
+| url | string | URL du serveur WebDAV |
+| username | string | Nom d'utilisateur |
+| password | password | Mot de passe (masqué) |
+
+### Créer une Structure de Données
+
+1. Sur la page Détails de la Campagne, trouvez la section **Structures de données des plugins**.
+2. Cliquez sur **Ajouter une structure**.
+3. Sélectionnez un **Type de plugin** dans la liste déroulante (seuls les plugins supportant les structures de données sont listés).
+4. Entrez un **Nom de structure** (ex: "Serveur WebDAV Production").
+5. Remplissez les **valeurs** pour chaque champ.
+6. Cliquez sur **Enregistrer**.
+
+### Gérer les Structures de Données
+
+La section Structures de données des plugins affiche toutes les configurations sauvegardées avec :
+
+| Colonne | Description |
+|---------|-------------|
+| Nom | Le nom unique que vous avez donné à la structure |
+| Type de plugin | Le type de plugin d'action (affiché comme badge coloré) |
+| Créé | Date de création |
+| Actions | Boutons Voir, Modifier ou Supprimer |
+
+#### Actions Disponibles :
+*   **Voir** (👁) : Ouvre une modale affichant les valeurs stockées de la structure (les mots de passe sont masqués).
+*   **Modifier** (✏️) : Modifier le nom ou les valeurs de la structure.
+*   **Supprimer** (🗑) : Supprimer la structure (avec confirmation).
+
+### Cas d'Utilisation
+
+1. **Identifiants Centralisés** : Stockez les identifiants WebDAV, FTP ou S3 une seule fois et référencez-les dans plusieurs tests.
+2. **Changement d'Environnement** : Créez des structures séparées pour les environnements "Développement", "Staging" et "Production".
+3. **Collaboration en Équipe** : Partagez des configurations cohérentes entre les membres de l'équipe via l'export/import de campagnes.
+
+### Export et Import
+
+Les structures de données des plugins sont automatiquement incluses lors de l'export d'une campagne. Lors de l'import d'une campagne, toutes les structures sont restaurées avec leurs valeurs originales.
+
+!!! note "Note de Sécurité"
+    Les mots de passe et données sensibles marqués avec `obfuscate: true` sont stockés dans la base de données mais affichés comme `••••••••` dans l'interface. Soyez prudent lors de l'export des campagnes car les valeurs réelles sont incluses dans le fichier JSON.

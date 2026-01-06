@@ -15,6 +15,7 @@ import json
 import base64
 from io import BytesIO
 from models.test import Test
+import uuid
 
 campains_bp = Blueprint('campains_api', __name__, url_prefix='/api/campains')
 
@@ -598,12 +599,16 @@ def export_campain(campain_id):
         # Récupérer les tests
         tests = Test.get_by_campain(campain_id)
         
+        # Récupérer les structures de données des plugins
+        plugin_data_structures = Campain.get_plugin_data_structures(campain_id)
+        
         # Préparer les données d'export
         export_data = {
             'campain': campain,
             'tests': tests,
+            'plugin_data_structures': plugin_data_structures,
             'exportDate': datetime.utcnow().isoformat(),
-            'version': '1.0'
+            'version': '1.1'  # Version mise à jour pour inclure les structures
         }
         
         # Gérer l'inclusion des fichiers
@@ -725,6 +730,21 @@ def import_campain():
                         print(f"Erreur lors de la création du fichier {filename}: {e}")
                         # On continue même si un fichier échoue
         
+        # 4. Restaurer les structures de données des plugins
+        if 'plugin_data_structures' in data and isinstance(data['plugin_data_structures'], list):
+            for structure in data['plugin_data_structures']:
+                if all(key in structure for key in ['name', 'plugin_type', 'values']):
+                    try:
+                        Campain.add_plugin_data_structure(
+                            campain_id=campain_id,
+                            name=structure['name'],
+                            plugin_type=structure['plugin_type'],
+                            values=structure['values']
+                        )
+                    except Exception as e:
+                        print(f"Erreur lors de la restauration de la structure {structure.get('name', 'unknown')}: {e}")
+                        # On continue même si une structure échoue
+        
         return jsonify({
             'message': 'Campagne importée avec succès',
             'campain_id': campain_id
@@ -785,3 +805,205 @@ def delete_report(campain_id, filename):
         return jsonify({'message': _('Rapport supprimé avec succès')}), 200
     except Exception as e:
         return jsonify({'message': str(e)}), 500
+
+
+# ==================== Plugin Data Structures Routes ====================
+
+@campains_bp.route('/<campain_id>/plugin-structures', methods=['GET'])
+@token_required
+def get_plugin_structures(campain_id):
+    """Récupère les structures de données des plugins d'une campagne."""
+    try:
+        # Vérifier que la campagne existe
+        campain = Campain.find_by_id(campain_id)
+        if not campain:
+            return jsonify({'message': _('Campagne non trouvée')}), 404
+        
+        structures = Campain.get_plugin_data_structures(campain_id)
+        return jsonify({'structures': structures}), 200
+        
+    except Exception as e:
+        return jsonify({'message': _('Erreur serveur: {}').format(str(e))}), 500
+
+
+@campains_bp.route('/<campain_id>/plugin-structures', methods=['POST'])
+@token_required
+def add_plugin_structure(campain_id):
+    """Ajoute une structure de données de plugin à une campagne."""
+    try:
+        # Vérifier que la campagne existe
+        campain = Campain.find_by_id(campain_id)
+        if not campain:
+            return jsonify({'message': _('Campagne non trouvée')}), 404
+        
+        data = request.get_json()
+        
+        # Validation
+        if not data.get('name'):
+            return jsonify({'message': _('Le nom de la structure est obligatoire')}), 400
+        if not data.get('plugin_type'):
+            return jsonify({'message': _('Le type de plugin est obligatoire')}), 400
+        if not data.get('values') or not isinstance(data['values'], dict):
+            return jsonify({'message': _('Les valeurs de la structure sont obligatoires')}), 400
+        
+        structure_id = Campain.add_plugin_data_structure(
+            campain_id=campain_id,
+            name=data['name'],
+            plugin_type=data['plugin_type'],
+            values=data['values']
+        )
+        
+        if not structure_id:
+            return jsonify({'message': _('Une structure avec ce nom existe déjà pour ce type de plugin')}), 409
+        
+        return jsonify({
+            'message': _('Structure de données ajoutée avec succès'),
+            'structure_id': structure_id
+        }), 201
+        
+    except Exception as e:
+        return jsonify({'message': _('Erreur serveur: {}').format(str(e))}), 500
+
+
+@campains_bp.route('/<campain_id>/plugin-structures/<structure_id>', methods=['GET'])
+@token_required
+def get_plugin_structure(campain_id, structure_id):
+    """Récupère une structure de données de plugin spécifique."""
+    try:
+        # Vérifier que la campagne existe
+        campain = Campain.find_by_id(campain_id)
+        if not campain:
+            return jsonify({'message': _('Campagne non trouvée')}), 404
+        
+        structure = Campain.get_plugin_data_structure_by_id(campain_id, structure_id)
+        
+        if not structure:
+            return jsonify({'message': _('Structure de données non trouvée')}), 404
+        
+        return jsonify(structure), 200
+        
+    except Exception as e:
+        return jsonify({'message': _('Erreur serveur: {}').format(str(e))}), 500
+
+
+@campains_bp.route('/<campain_id>/plugin-structures/<structure_id>', methods=['PUT'])
+@token_required
+def update_plugin_structure(campain_id, structure_id):
+    """Met à jour une structure de données de plugin."""
+    try:
+        # Vérifier que la campagne existe
+        campain = Campain.find_by_id(campain_id)
+        if not campain:
+            return jsonify({'message': _('Campagne non trouvée')}), 404
+        
+        data = request.get_json()
+        
+        name = data.get('name')
+        values = data.get('values')
+        
+        if name is None and values is None:
+            return jsonify({'message': _('Aucune modification fournie')}), 400
+        
+        success = Campain.update_plugin_data_structure(
+            campain_id=campain_id,
+            structure_id=structure_id,
+            name=name,
+            values=values
+        )
+        
+        if not success:
+            return jsonify({'message': _('Impossible de mettre à jour la structure (non trouvée ou nom déjà utilisé)')}), 400
+        
+        return jsonify({'message': _('Structure de données mise à jour avec succès')}), 200
+        
+    except Exception as e:
+        return jsonify({'message': _('Erreur serveur: {}').format(str(e))}), 500
+
+
+@campains_bp.route('/<campain_id>/plugin-structures/<structure_id>', methods=['DELETE'])
+@token_required
+def delete_plugin_structure(campain_id, structure_id):
+    """Supprime une structure de données de plugin et nettoie les actions qui l'utilisent."""
+    try:
+        # Vérifier que la campagne existe
+        campain = Campain.find_by_id(campain_id)
+        if not campain:
+            return jsonify({'message': _('Campagne non trouvée')}), 404
+        
+        # Récupérer la structure avant suppression pour pouvoir copier ses valeurs
+        structure = Campain.get_plugin_data_structure_by_id(campain_id, structure_id)
+        if not structure:
+            return jsonify({'message': _('Structure de données non trouvée')}), 404
+        
+        # Nettoyer les actions qui référencent cette structure
+        actions_cleaned = _cleanup_actions_referencing_structure(campain_id, structure_id, structure)
+        
+        # Supprimer la structure
+        success = Campain.delete_plugin_data_structure(campain_id, structure_id)
+        
+        if not success:
+            return jsonify({'message': _('Structure de données non trouvée')}), 404
+        
+        return jsonify({
+            'message': _('Structure de données supprimée avec succès'),
+            'actions_cleaned': actions_cleaned
+        }), 200
+        
+    except Exception as e:
+        return jsonify({'message': _('Erreur serveur: {}').format(str(e))}), 500
+
+
+def _cleanup_actions_referencing_structure(campain_id, structure_id, structure):
+    """
+    Nettoie les actions qui référencent une structure supprimée.
+    Copie les valeurs de la structure dans les champs de l'action avant de supprimer la référence.
+    
+    Args:
+        campain_id: ID de la campagne
+        structure_id: ID de la structure supprimée
+        structure: Données de la structure (avec values)
+        
+    Returns:
+        int: Nombre d'actions nettoyées
+    """
+    from models.test import Test
+    from utils.db import get_collection
+    from bson import ObjectId
+    
+    actions_cleaned = 0
+    structure_values = structure.get('values', {})
+    
+    # Récupérer tous les tests de la campagne
+    tests = Test.get_by_campain(campain_id)
+    
+    tests_collection = get_collection(Test.collection_name)
+    
+    for test in tests:
+        test_modified = False
+        actions = test.get('actions', [])
+        
+        for action in actions:
+            if action.get('structure_id') == structure_id:
+                # Copier les valeurs de la structure dans action.value
+                if 'value' not in action:
+                    action['value'] = {}
+                
+                for key, value in structure_values.items():
+                    # Ne pas écraser les valeurs existantes
+                    if key not in action['value'] or action['value'][key] == '' or action['value'][key] is None:
+                        action['value'][key] = value
+                
+                # Supprimer la référence à la structure
+                del action['structure_id']
+                
+                test_modified = True
+                actions_cleaned += 1
+        
+        # Mettre à jour le test si des actions ont été modifiées
+        if test_modified:
+            tests_collection.update_one(
+                {'_id': ObjectId(test['_id'])},
+                {'$set': {'actions': actions}}
+            )
+    
+    return actions_cleaned

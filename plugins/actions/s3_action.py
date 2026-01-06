@@ -50,6 +50,15 @@ class S3Action(ActionBase):
                 
         return (True, "")
     
+    def get_structure(self):
+        """Retourne la structure des données réutilisables pour S3."""
+        return {
+            "endpoint_url": {"type": "string", "label": "Endpoint URL", "required": False},
+            "access_key": {"type": "string", "label": "Access Key ID", "required": True},
+            "secret_key": {"type": "password", "label": "Secret Access Key", "required": True, "obfuscate": True},
+            "region_name": {"type": "string", "label": "Région", "required": False, "default": "us-east-1"}
+        }
+    
     def get_input_mask(self):
         """Retourne le masque de saisie pour les opérations S3."""
         return [

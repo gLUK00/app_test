@@ -32,6 +32,15 @@ class SFTPAction(ActionBase):
                 return (False, f"Le champ '{field}' est obligatoire")
         return (True, "")
     
+    def get_structure(self):
+        """Retourne la structure des données réutilisables pour SFTP."""
+        return {
+            "host": {"type": "string", "label": "Hôte SFTP", "required": True},
+            "port": {"type": "number", "label": "Port", "required": False, "default": 22},
+            "username": {"type": "string", "label": "Utilisateur", "required": True},
+            "password": {"type": "password", "label": "Mot de passe", "required": True, "obfuscate": True}
+        }
+    
     def get_input_mask(self):
         """Retourne le masque de saisie pour les opérations SFTP."""
         return [

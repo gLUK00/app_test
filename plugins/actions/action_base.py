@@ -123,6 +123,26 @@ class ActionBase(PluginBase):
         """
         return None
     
+    def get_structure(self):
+        """
+        Retourne la structure des données réutilisables pour ce type d'action.
+        Cette méthode est optionnelle et permet de définir des configurations
+        réutilisables (ex: credentials, paramètres de connexion).
+        
+        Returns:
+            dict ou None: Dictionnaire définissant la structure des données
+            Exemple:
+            {
+                "url": {"type": "string", "label": "URL", "required": True},
+                "username": {"type": "string", "label": "Username", "required": False},
+                "password": {"type": "password", "label": "Password", "required": False, "obfuscate": True}
+            }
+            
+            Types supportés: "string", "password", "number", "boolean", "select"
+            Retourne None si le plugin ne supporte pas les structures de données.
+        """
+        return None
+    
     @abstractmethod
     def execute(self, action_context, test_variables=None):
         """

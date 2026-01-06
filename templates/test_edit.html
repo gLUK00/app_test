@@ -152,6 +152,18 @@
     const campainId = '{{ campain_id }}';
     const testId = '{{ test_id }}';
     
+    // Traductions pour TestActionsManager
+    window.testActionsTranslations = {
+        availableStructures: "{{ _('Structures disponibles') }}",
+        structureHelpText: "{{ _('Cliquez sur une structure pour pré-remplir les champs de connexion.') }}",
+        structureApplied: "{{ _('Structure appliquée') }}",
+        prefilledFields: "{{ _('Champs pré-remplis') }}",
+        structureNotFound: "{{ _('Structure non trouvée') }}",
+        structureDeletedMessage: "{{ _('La structure référencée a été supprimée. Veuillez sélectionner une nouvelle structure ou remplir les champs manuellement.') }}",
+        usesStructure: "{{ _('Utilise la structure') }}",
+        missingStructure: "{{ _('Structure manquante') }}"
+    };
+    
     // Charger les données du test
     async function loadTestData() {
         try {

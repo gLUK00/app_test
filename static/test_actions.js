@@ -15,6 +15,10 @@ class TestActionsManager {
         this.editingActionIndex = -1;
         this.actionModal = null;
         this.variableModal = null;
+        // Phase 2: Gestion des structures de données des plugins
+        this.campainStructures = [];
+        this.selectedStructureId = null;
+        this.campainId = null;
     }
 
     /**
@@ -83,6 +87,293 @@ class TestActionsManager {
             console.error('Erreur lors du chargement des couleurs:', error);
             // Pas de fallback critique, on utilisera une couleur par défaut
         }
+    }
+
+    /**
+     * Charge les structures de données de la campagne
+     */
+    async loadCampainStructures() {
+        if (!this.campainId) {
+            // Essayer de récupérer l'ID de la campagne depuis le DOM
+            const campainIdEl = document.getElementById('campainId');
+            if (campainIdEl) {
+                this.campainId = campainIdEl.value;
+            }
+        }
+        
+        if (!this.campainId) {
+            console.warn('ID de campagne non trouvé, impossible de charger les structures');
+            return;
+        }
+        
+        try {
+            const result = await API.get(`/api/campains/${this.campainId}/plugin-structures`);
+            this.campainStructures = result.structures || [];
+            console.log('Structures de la campagne chargées:', this.campainStructures);
+        } catch (error) {
+            console.error('Erreur lors du chargement des structures:', error);
+            this.campainStructures = [];
+        }
+    }
+
+    /**
+     * Filtre les structures par type d'action
+     */
+    getStructuresForActionType(actionType) {
+        // Les structures sont stockées avec plugin_type (pas action_type)
+        return this.campainStructures.filter(s => s.plugin_type === actionType);
+    }
+
+    /**
+     * Affiche les tags de structures disponibles pour un type d'action
+     */
+    displayStructureTags(actionType, selectedStructureId = null) {
+        console.log('displayStructureTags appelé avec actionType:', actionType);
+        console.log('campainStructures:', this.campainStructures);
+        
+        // Supprimer la section existante si elle existe
+        const existingSection = document.getElementById('structureTagsSection');
+        if (existingSection) {
+            existingSection.remove();
+        }
+        
+        const structures = this.getStructuresForActionType(actionType);
+        console.log('Structures filtrées pour', actionType, ':', structures);
+        
+        // Si aucune structure disponible, ne rien afficher
+        if (structures.length === 0) {
+            console.log('Aucune structure trouvée pour ce type d\'action');
+            return;
+        }
+        
+        // Créer la section des tags
+        const section = document.createElement('div');
+        section.id = 'structureTagsSection';
+        section.className = 'mb-3 p-3 border rounded bg-light';
+        
+        const header = document.createElement('div');
+        header.className = 'd-flex align-items-center mb-2';
+        header.innerHTML = `
+            <i class="fas fa-bookmark text-primary me-2"></i>
+            <span class="fw-bold text-primary">${this.getTranslation('availableStructures', 'Structures disponibles')}</span>
+            <span class="badge bg-secondary ms-2">${structures.length}</span>
+        `;
+        section.appendChild(header);
+        
+        const helpText = document.createElement('p');
+        helpText.className = 'text-muted small mb-2';
+        helpText.textContent = this.getTranslation('structureHelpText', 'Cliquez sur une structure pour pré-remplir les champs de connexion.');
+        section.appendChild(helpText);
+        
+        const tagsContainer = document.createElement('div');
+        tagsContainer.className = 'd-flex flex-wrap gap-2';
+        tagsContainer.id = 'structureTagsContainer';
+        
+        structures.forEach(structure => {
+            const tag = document.createElement('button');
+            tag.type = 'button';
+            tag.className = 'btn btn-sm structure-tag';
+            tag.dataset.structureId = structure.id;
+            
+            // Vérifier si ce tag est sélectionné
+            const isSelected = selectedStructureId === structure.id;
+            if (isSelected) {
+                tag.classList.add('btn-primary');
+                tag.innerHTML = `<i class="fas fa-check-circle me-1"></i>${structure.name}`;
+            } else {
+                tag.classList.add('btn-outline-primary');
+                tag.innerHTML = `<i class="fas fa-bookmark me-1"></i>${structure.name}`;
+            }
+            
+            // Event listener pour la sélection/désélection
+            tag.addEventListener('click', () => this.toggleStructureSelection(structure.id));
+            
+            tagsContainer.appendChild(tag);
+        });
+        
+        section.appendChild(tagsContainer);
+        
+        // Insérer après le select actionType
+        const actionTypeDiv = document.getElementById('actionType').closest('.mb-3');
+        actionTypeDiv.after(section);
+    }
+
+    /**
+     * Gère la sélection/désélection d'une structure
+     */
+    toggleStructureSelection(structureId) {
+        if (this.selectedStructureId === structureId) {
+            // Désélection
+            this.deselectStructure();
+        } else {
+            // Sélection
+            this.selectStructure(structureId);
+        }
+    }
+
+    /**
+     * Sélectionne une structure et pré-remplit les champs
+     */
+    selectStructure(structureId) {
+        const structure = this.campainStructures.find(s => s.id === structureId);
+        if (!structure) {
+            console.error('Structure non trouvée:', structureId);
+            return;
+        }
+        
+        this.selectedStructureId = structureId;
+        
+        // Mettre à jour l'apparence des tags
+        this.updateStructureTagsAppearance();
+        
+        // Pré-remplir et masquer les champs
+        const values = structure.values || {};
+        Object.entries(values).forEach(([fieldName, fieldValue]) => {
+            const fieldWrapper = document.querySelector(`[data-field-name="${fieldName}"]`);
+            const input = document.getElementById(fieldName);
+            
+            if (input && fieldWrapper) {
+                // Remplir la valeur
+                if (input.type === 'checkbox') {
+                    input.checked = fieldValue === true || fieldValue === 'true' || fieldValue === 1;
+                } else {
+                    input.value = fieldValue;
+                }
+                
+                // Masquer le champ et marquer comme pré-rempli par structure
+                fieldWrapper.style.display = 'none';
+                fieldWrapper.dataset.structureFilled = 'true';
+            }
+        });
+        
+        // Afficher un résumé des valeurs pré-remplies
+        this.displayStructureSummary(structure);
+        
+        console.log('Structure sélectionnée:', structure.name);
+    }
+
+    /**
+     * Désélectionne la structure et réaffiche les champs
+     */
+    deselectStructure() {
+        if (!this.selectedStructureId) return;
+        
+        const structure = this.campainStructures.find(s => s.id === this.selectedStructureId);
+        
+        this.selectedStructureId = null;
+        
+        // Mettre à jour l'apparence des tags
+        this.updateStructureTagsAppearance();
+        
+        // Réafficher les champs masqués et vider les valeurs
+        document.querySelectorAll('[data-structure-filled="true"]').forEach(fieldWrapper => {
+            fieldWrapper.style.display = 'block';
+            fieldWrapper.dataset.structureFilled = 'false';
+            
+            const fieldName = fieldWrapper.dataset.fieldName;
+            const input = document.getElementById(fieldName);
+            if (input) {
+                if (input.type === 'checkbox') {
+                    input.checked = false;
+                } else {
+                    input.value = '';
+                }
+            }
+        });
+        
+        // Supprimer le résumé
+        const summary = document.getElementById('structureSummary');
+        if (summary) {
+            summary.remove();
+        }
+        
+        console.log('Structure désélectionnée');
+    }
+
+    /**
+     * Met à jour l'apparence visuelle des tags de structure
+     */
+    updateStructureTagsAppearance() {
+        const tags = document.querySelectorAll('.structure-tag');
+        tags.forEach(tag => {
+            const isSelected = tag.dataset.structureId === this.selectedStructureId;
+            
+            tag.classList.remove('btn-primary', 'btn-outline-primary');
+            
+            if (isSelected) {
+                tag.classList.add('btn-primary');
+                const name = tag.textContent.replace(/^\s*✓?\s*/, '');
+                tag.innerHTML = `<i class="fas fa-check-circle me-1"></i>${this.campainStructures.find(s => s.id === this.selectedStructureId)?.name || name}`;
+            } else {
+                tag.classList.add('btn-outline-primary');
+                const structure = this.campainStructures.find(s => s.id === tag.dataset.structureId);
+                tag.innerHTML = `<i class="fas fa-bookmark me-1"></i>${structure?.name || ''}`;
+            }
+        });
+    }
+
+    /**
+     * Affiche un résumé des valeurs pré-remplies par la structure
+     */
+    displayStructureSummary(structure) {
+        // Supprimer le résumé existant
+        const existingSummary = document.getElementById('structureSummary');
+        if (existingSummary) {
+            existingSummary.remove();
+        }
+        
+        const values = structure.values || {};
+        if (Object.keys(values).length === 0) return;
+        
+        const summary = document.createElement('div');
+        summary.id = 'structureSummary';
+        summary.className = 'alert alert-info mb-3';
+        
+        let html = `
+            <div class="d-flex align-items-center mb-2">
+                <i class="fas fa-info-circle me-2"></i>
+                <strong>${this.getTranslation('structureApplied', 'Structure appliquée')}: ${structure.name}</strong>
+            </div>
+            <small class="text-muted">${this.getTranslation('prefilledFields', 'Champs pré-remplis')}:</small>
+            <ul class="mb-0 mt-1" style="font-size: 0.85rem;">
+        `;
+        
+        Object.entries(values).forEach(([key, value]) => {
+            let displayValue = value;
+            // Masquer les valeurs sensibles (obfusquées)
+            if (typeof displayValue === 'string' && displayValue.length > 50) {
+                displayValue = displayValue.substring(0, 50) + '...';
+            }
+            html += `<li><strong>${key}:</strong> ${this.isObfuscatedField(key) ? '••••••••' : displayValue}</li>`;
+        });
+        
+        html += '</ul>';
+        summary.innerHTML = html;
+        
+        // Insérer après la section des tags
+        const structureSection = document.getElementById('structureTagsSection');
+        if (structureSection) {
+            structureSection.after(summary);
+        }
+    }
+
+    /**
+     * Vérifie si un champ doit être obfusqué (mot de passe, secret, etc.)
+     */
+    isObfuscatedField(fieldName) {
+        const obfuscatedKeywords = ['password', 'secret', 'key', 'token', 'passphrase'];
+        return obfuscatedKeywords.some(keyword => fieldName.toLowerCase().includes(keyword));
+    }
+
+    /**
+     * Récupère une traduction ou une valeur par défaut
+     */
+    getTranslation(key, defaultValue) {
+        // Les traductions sont injectées depuis le template
+        if (window.testActionsTranslations && window.testActionsTranslations[key]) {
+            return window.testActionsTranslations[key];
+        }
+        return defaultValue;
     }
 
     /**
@@ -386,10 +677,22 @@ class TestActionsManager {
         const dynamicFieldsContainer = document.getElementById('dynamicFields');
         dynamicFieldsContainer.innerHTML = '';
         
+        // Réinitialiser la sélection de structure lors du changement de type
+        this.selectedStructureId = currentParameters.structure_id || null;
+        
+        // Supprimer les sections de structure existantes
+        const existingSection = document.getElementById('structureTagsSection');
+        if (existingSection) existingSection.remove();
+        const existingSummary = document.getElementById('structureSummary');
+        if (existingSummary) existingSummary.remove();
+        
         if (!actionType || !this.actionMasks[actionType]) {
             document.getElementById('outputVariablesSection').style.display = 'none';
             return;
         }
+        
+        // Afficher les tags de structures disponibles
+        this.displayStructureTags(actionType, this.selectedStructureId);
         
         const mask = this.actionMasks[actionType];
         mask.forEach(field => {
@@ -412,6 +715,17 @@ class TestActionsManager {
             }
         });
         
+        // Si une structure est sélectionnée, appliquer ses valeurs et masquer les champs
+        if (this.selectedStructureId) {
+            const structure = this.campainStructures.find(s => s.id === this.selectedStructureId);
+            if (structure) {
+                this.applyStructureToFields(structure);
+            } else {
+                // Structure référencée n'existe plus - afficher un avertissement
+                this.displayMissingStructureWarning();
+            }
+        }
+        
         // Afficher les variables de sortie disponibles
         this.displayOutputVariables(actionType, currentParameters.output_mapping || {});
         
@@ -420,6 +734,57 @@ class TestActionsManager {
         setTimeout(() => {
             this.executeJsShowForm(actionType, currentParameters);
         }, 10);
+    }
+
+    /**
+     * Applique les valeurs d'une structure aux champs du formulaire
+     */
+    applyStructureToFields(structure) {
+        const values = structure.values || {};
+        Object.entries(values).forEach(([fieldName, fieldValue]) => {
+            const fieldWrapper = document.querySelector(`[data-field-name="${fieldName}"]`);
+            const input = document.getElementById(fieldName);
+            
+            if (input && fieldWrapper) {
+                // Remplir la valeur
+                if (input.type === 'checkbox') {
+                    input.checked = fieldValue === true || fieldValue === 'true' || fieldValue === 1;
+                } else {
+                    input.value = fieldValue;
+                }
+                
+                // Masquer le champ et marquer comme pré-rempli par structure
+                fieldWrapper.style.display = 'none';
+                fieldWrapper.dataset.structureFilled = 'true';
+            }
+        });
+        
+        // Afficher le résumé
+        this.displayStructureSummary(structure);
+    }
+
+    /**
+     * Affiche un avertissement lorsque la structure référencée n'existe plus
+     */
+    displayMissingStructureWarning() {
+        const warning = document.createElement('div');
+        warning.id = 'structureMissingWarning';
+        warning.className = 'alert alert-warning mb-3';
+        warning.innerHTML = `
+            <div class="d-flex align-items-center">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                <div>
+                    <strong>${this.getTranslation('structureNotFound', 'Structure non trouvée')}</strong><br>
+                    <small>${this.getTranslation('structureDeletedMessage', 'La structure référencée a été supprimée. Veuillez sélectionner une nouvelle structure ou remplir les champs manuellement.')}</small>
+                </div>
+            </div>
+        `;
+        
+        const actionTypeDiv = document.getElementById('actionType').closest('.mb-3');
+        actionTypeDiv.after(warning);
+        
+        // Réinitialiser la référence
+        this.selectedStructureId = null;
     }
 
     /**
@@ -611,6 +976,17 @@ class TestActionsManager {
                 }).join('');
             }
             
+            // Badge pour la structure utilisée
+            let structureBadge = '';
+            if (action.structure_id) {
+                const structure = this.campainStructures.find(s => s.id === action.structure_id);
+                if (structure) {
+                    structureBadge = `<span class="badge bg-info me-1" style="font-size: 0.75rem;" title="${this.getTranslation('usesStructure', 'Utilise la structure')}"><i class="fas fa-bookmark me-1"></i>${structure.name}</span>`;
+                } else {
+                    structureBadge = `<span class="badge bg-warning text-dark me-1" style="font-size: 0.75rem;" title="${this.getTranslation('structureNotFound', 'Structure non trouvée')}"><i class="fas fa-exclamation-triangle me-1"></i>${this.getTranslation('missingStructure', 'Structure manquante')}</span>`;
+                }
+            }
+            
             const actionLabel = this.actionLabels[action.type] || action.type.toUpperCase();
             const actionColor = this.actionColors[action.type] || '#6c757d';
             
@@ -624,6 +1000,7 @@ class TestActionsManager {
                                     <span class="badge bg-secondary me-2">#${index + 1}</span>
                                     <h6 class="mb-0">Action ${actionLabel}</h6>
                                     <span class="badge ms-2" style="background-color: ${actionColor};">${actionLabel}</span>
+                                    ${structureBadge}
                                 </div>
                                 ${outputBadges ? `<div class="d-flex align-items-center flex-wrap">${outputBadges}</div>` : ''}
                             </div>
@@ -655,10 +1032,20 @@ class TestActionsManager {
      */
     openAddActionModal() {
         this.editingActionIndex = -1;
+        this.selectedStructureId = null; // Réinitialiser la structure sélectionnée
         document.getElementById('actionModalTitle').textContent = 'Ajouter une action';
         document.getElementById('actionForm').reset();
         document.getElementById('dynamicFields').innerHTML = '';
         document.getElementById('outputVariablesSection').style.display = 'none';
+        
+        // Supprimer les sections de structure existantes
+        const existingSection = document.getElementById('structureTagsSection');
+        if (existingSection) existingSection.remove();
+        const existingSummary = document.getElementById('structureSummary');
+        if (existingSummary) existingSummary.remove();
+        const existingWarning = document.getElementById('structureMissingWarning');
+        if (existingWarning) existingWarning.remove();
+        
         this.actionModal.show();
     }
 
@@ -672,7 +1059,13 @@ class TestActionsManager {
         document.getElementById('actionModalTitle').textContent = 'Modifier l\'action';
         document.getElementById('actionType').value = action.type;
         
-        this.displayDynamicFields(action.type, action.value);
+        // Passer structure_id dans les paramètres pour displayDynamicFields
+        const params = { ...action.value };
+        if (action.structure_id) {
+            params.structure_id = action.structure_id;
+        }
+        
+        this.displayDynamicFields(action.type, params);
         this.actionModal.show();
     }
 
@@ -766,6 +1159,20 @@ class TestActionsManager {
             actionData.output_mapping = outputMapping;
         }
         
+        // Si une structure est sélectionnée, inclure ses valeurs dans actionData
+        // et sauvegarder la référence structure_id
+        if (this.selectedStructureId) {
+            const structure = this.campainStructures.find(s => s.id === this.selectedStructureId);
+            if (structure && structure.values) {
+                // Fusionner les valeurs de la structure avec les données du formulaire
+                Object.entries(structure.values).forEach(([key, value]) => {
+                    if (actionData[key] === undefined || actionData[key] === '') {
+                        actionData[key] = value;
+                    }
+                });
+            }
+        }
+        
         // Exécuter la fonction JavaScript jsValidateForm du plugin si elle existe
         const validationResult = this.executeJsValidateForm(actionType, actionData);
         if (!validationResult.isValid) {
@@ -777,6 +1184,11 @@ class TestActionsManager {
             type: actionType,
             value: actionData
         };
+        
+        // Ajouter la référence à la structure si sélectionnée
+        if (this.selectedStructureId) {
+            action.structure_id = this.selectedStructureId;
+        }
         
         if (this.editingActionIndex >= 0) {
             this.actions[this.editingActionIndex] = action;
@@ -967,6 +1379,9 @@ class TestActionsManager {
         
         await this.loadActionMasks();
         await this.loadActionOutputVariables();
+        
+        // Charger les structures de données de la campagne
+        await this.loadCampainStructures();
         
         this.initEventListeners();
         

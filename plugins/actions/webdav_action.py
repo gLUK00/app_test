@@ -91,6 +91,14 @@ class WebdavAction(ActionBase):
             }
         ]
     
+    def get_structure(self):
+        """Retourne la structure des données réutilisables pour WebDAV."""
+        return {
+            "url": {"type": "string", "label": "URL WebDAV", "required": True},
+            "username": {"type": "string", "label": "Utilisateur", "required": False},
+            "password": {"type": "password", "label": "Mot de passe", "required": False, "obfuscate": True}
+        }
+    
     def get_output_variables(self):
         """Retourne la liste des variables de sortie pour les opérations WebDAV."""
         return [

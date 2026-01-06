@@ -157,3 +157,48 @@ def get_javascript(action_type):
         return response
     except Exception as e:
         return jsonify({'message': f'Erreur serveur: {str(e)}'}), 500
+
+@actions_bp.route('/with-structure', methods=['GET'])
+def get_actions_with_structure():
+    """Récupère tous les plugins d'action proposant une fonction get_structure()."""
+    try:
+        actions = get_all_actions()
+        plugins_with_structure = {}
+        
+        for action_type, action_info in actions.items():
+            action_instance = get_action(action_type)
+            if action_instance:
+                structure = action_instance.get_structure()
+                if structure is not None:
+                    metadata = action_info.get('metadata', {})
+                    plugins_with_structure[action_type] = {
+                        'label': action_instance.label if hasattr(action_instance, 'label') and action_instance.label else action_type.replace('_', ' ').title(),
+                        'color': metadata.get('color', '#6c757d'),
+                        'structure': structure
+                    }
+        
+        return jsonify(plugins_with_structure), 200
+    except Exception as e:
+        return jsonify({'message': f'Erreur serveur: {str(e)}'}), 500
+
+@actions_bp.route('/structure/<action_type>', methods=['GET'])
+def get_action_structure(action_type):
+    """Récupère la structure de données pour un type d'action spécifique."""
+    try:
+        action = get_action(action_type)
+        
+        if not action:
+            return jsonify({'message': f'Type d\'action non supporté: {action_type}'}), 400
+        
+        structure = action.get_structure()
+        
+        if structure is None:
+            return jsonify({'message': f'Ce type d\'action ne propose pas de structure de données'}), 404
+        
+        return jsonify({
+            'type': action_type,
+            'label': action.label if hasattr(action, 'label') and action.label else action_type.replace('_', ' ').title(),
+            'structure': structure
+        }), 200
+    except Exception as e:
+        return jsonify({'message': f'Erreur serveur: {str(e)}'}), 500

@@ -1,6 +1,7 @@
 """Modèle pour la gestion des campagnes de tests."""
 from bson import ObjectId
 from datetime import datetime
+import uuid
 from utils.db import get_collection, is_soft_delete_enabled
 
 class Campain:
@@ -18,7 +19,8 @@ class Campain:
             'name': name,
             'dateCreated': datetime.utcnow(),
             'description': description,
-            'isDeleted': False
+            'isDeleted': False,
+            'plugin_data_structures': []
         }
         
         result = collection.insert_one(campain_data)
@@ -165,3 +167,145 @@ class Campain:
         """Trouve une campagne par son nom."""
         collection = get_collection(Campain.collection_name)
         return collection.find_one({'name': name, 'isDeleted': {'$ne': True}})
+    
+    # ==================== Plugin Data Structures ====================
+    
+    @staticmethod
+    def get_plugin_data_structures(campain_id):
+        """Récupère les structures de données des plugins d'une campagne."""
+        collection = get_collection(Campain.collection_name)
+        campain = collection.find_one({'_id': ObjectId(campain_id)})
+        
+        if campain:
+            return campain.get('plugin_data_structures', [])
+        return []
+    
+    @staticmethod
+    def add_plugin_data_structure(campain_id, name, plugin_type, values):
+        """
+        Ajoute une structure de données de plugin à une campagne.
+        
+        Args:
+            campain_id: ID de la campagne
+            name: Nom de la structure (unique par type de plugin)
+            plugin_type: Type de plugin (ex: 'webdav', 'ftp', 's3')
+            values: Dictionnaire des valeurs de la structure
+            
+        Returns:
+            str: ID de la structure créée ou None en cas d'erreur
+        """
+        collection = get_collection(Campain.collection_name)
+        
+        # Vérifier que le nom est unique pour ce type de plugin dans cette campagne
+        campain = collection.find_one({'_id': ObjectId(campain_id)})
+        if not campain:
+            return None
+            
+        existing_structures = campain.get('plugin_data_structures', [])
+        for struct in existing_structures:
+            if struct['name'] == name and struct['plugin_type'] == plugin_type:
+                return None  # Nom déjà existant pour ce type
+        
+        structure_id = str(uuid.uuid4())
+        structure = {
+            'id': structure_id,
+            'name': name,
+            'plugin_type': plugin_type,
+            'values': values,
+            'created_at': datetime.utcnow().isoformat(),
+            'updated_at': datetime.utcnow().isoformat()
+        }
+        
+        collection.update_one(
+            {'_id': ObjectId(campain_id)},
+            {'$push': {'plugin_data_structures': structure}}
+        )
+        
+        return structure_id
+    
+    @staticmethod
+    def update_plugin_data_structure(campain_id, structure_id, name=None, values=None):
+        """
+        Met à jour une structure de données de plugin.
+        
+        Args:
+            campain_id: ID de la campagne
+            structure_id: ID de la structure à modifier
+            name: Nouveau nom (optionnel)
+            values: Nouvelles valeurs (optionnel)
+            
+        Returns:
+            bool: True si la mise à jour a réussi
+        """
+        collection = get_collection(Campain.collection_name)
+        
+        # Récupérer la campagne
+        campain = collection.find_one({'_id': ObjectId(campain_id)})
+        if not campain:
+            return False
+            
+        structures = campain.get('plugin_data_structures', [])
+        
+        # Trouver et mettre à jour la structure
+        for i, struct in enumerate(structures):
+            if struct['id'] == structure_id:
+                if name is not None:
+                    # Vérifier l'unicité du nom
+                    for other in structures:
+                        if other['id'] != structure_id and other['name'] == name and other['plugin_type'] == struct['plugin_type']:
+                            return False  # Nom déjà pris
+                    structures[i]['name'] = name
+                
+                if values is not None:
+                    structures[i]['values'] = values
+                    
+                structures[i]['updated_at'] = datetime.utcnow().isoformat()
+                
+                collection.update_one(
+                    {'_id': ObjectId(campain_id)},
+                    {'$set': {'plugin_data_structures': structures}}
+                )
+                return True
+        
+        return False
+    
+    @staticmethod
+    def delete_plugin_data_structure(campain_id, structure_id):
+        """
+        Supprime une structure de données de plugin.
+        
+        Args:
+            campain_id: ID de la campagne
+            structure_id: ID de la structure à supprimer
+            
+        Returns:
+            bool: True si la suppression a réussi
+        """
+        collection = get_collection(Campain.collection_name)
+        
+        result = collection.update_one(
+            {'_id': ObjectId(campain_id)},
+            {'$pull': {'plugin_data_structures': {'id': structure_id}}}
+        )
+        
+        return result.modified_count > 0
+    
+    @staticmethod
+    def get_plugin_data_structure_by_id(campain_id, structure_id):
+        """
+        Récupère une structure de données de plugin par son ID.
+        
+        Args:
+            campain_id: ID de la campagne
+            structure_id: ID de la structure
+            
+        Returns:
+            dict: La structure ou None si non trouvée
+        """
+        structures = Campain.get_plugin_data_structures(campain_id)
+        
+        for struct in structures:
+            if struct['id'] == structure_id:
+                return struct
+        
+        return None

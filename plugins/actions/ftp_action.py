@@ -33,6 +33,15 @@ class FTPAction(ActionBase):
                 return (False, f"Le champ '{field}' est obligatoire")
         return (True, "")
     
+    def get_structure(self):
+        """Retourne la structure des données réutilisables pour FTP."""
+        return {
+            "host": {"type": "string", "label": "Hôte FTP", "required": True},
+            "port": {"type": "number", "label": "Port", "required": False, "default": 21},
+            "username": {"type": "string", "label": "Utilisateur", "required": True},
+            "password": {"type": "password", "label": "Mot de passe", "required": True, "obfuscate": True}
+        }
+    
     def get_input_mask(self):
         """Retourne le masque de saisie pour les opérations FTP."""
         return [
