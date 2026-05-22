@@ -207,6 +207,8 @@ return {
             remote_path = action_context.get('remote_path', '').strip()
             content = action_context.get('content', '')
             file_content = action_context.get('file_content', '').strip()
+            _override = action_context.get('_timeout_override')
+            ftp_timeout = int(float(_override)) if _override is not None else int(float(action_context.get('timeout') or 30))
             
             # Vérifier que l'hôte n'est pas vide
             if not host:
@@ -230,7 +232,7 @@ return {
             
             # Connexion au serveur FTP
             ftp = FTP()
-            ftp.connect(host, port, timeout=30)
+            ftp.connect(host, port, timeout=ftp_timeout)
             self.add_trace(f"Connexion TCP établie, authentification en cours...")
             ftp.login(username, password)
             

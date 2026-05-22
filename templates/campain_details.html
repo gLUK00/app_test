@@ -303,6 +303,24 @@
                             <div class="form-text">Si activé, l'exécution s'arrêtera dès qu'un test échoue</div>
                         </div>
                     </div>
+
+                    <div class="mb-3">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="timeoutOverrideSwitch"
+                                   onchange="document.getElementById('timeoutOverrideDiv').style.display = this.checked ? '' : 'none'">
+                            <label class="form-check-label fw-semibold" for="timeoutOverrideSwitch">
+                                Surcharger le timeout des actions
+                            </label>
+                            <div class="form-text">Si activé, remplace le timeout de chaque action par la valeur ci-dessous</div>
+                        </div>
+                        <div id="timeoutOverrideDiv" style="display:none;" class="mt-2">
+                            <div class="input-group" style="max-width:220px;">
+                                <input type="number" class="form-control" id="timeoutOverrideValue"
+                                       value="30" min="1" max="3600" placeholder="30">
+                                <span class="input-group-text">secondes</span>
+                            </div>
+                        </div>
+                    </div>
                 </form>
             </div>
             <div class="modal-footer">
@@ -816,6 +834,8 @@ document.getElementById('launchCampainBtn').addEventListener('click', async () =
     const name = document.getElementById('rapportName').value.trim();
     const filiere = document.getElementById('filiere').value;
     const stopOnFailure = document.getElementById('stopOnFailure').checked;
+    const timeoutOverride = document.getElementById('timeoutOverrideSwitch').checked;
+    const timeoutValue = timeoutOverride ? parseInt(document.getElementById('timeoutOverrideValue').value) || 30 : null;
     
     if (!name) {
         Notification.error('Le nom du rapport est obligatoire');
@@ -836,7 +856,8 @@ document.getElementById('launchCampainBtn').addEventListener('click', async () =
             campain_id: campainId,
             name: name,
             filiere: filiere,
-            stop_on_failure: stopOnFailure
+            stop_on_failure: stopOnFailure,
+            timeout_override: timeoutValue
         });
         
         // IMPORTANT: Rejoindre immédiatement la room du rapport pour recevoir les événements

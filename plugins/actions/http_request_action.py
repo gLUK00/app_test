@@ -126,7 +126,11 @@ class HTTPRequestAction(ActionBase):
             headers = action_context.get('headers', {})
             body = action_context.get('body')
             return_status_code = action_context.get('return_status_code', None)
-            timeout = action_context.get('timeout', 30)
+            _override = action_context.get('_timeout_override')
+            if _override is not None:
+                timeout = int(float(_override))
+            else:
+                timeout = int(float(action_context.get('timeout') or 30))
             
             self.add_trace(f"Préparation de la requête {method} vers {url}")
             
@@ -229,6 +233,7 @@ class HTTPRequestAction(ActionBase):
             self.set_code(1)
             self.add_trace(f"Erreur HTTP: {response.status_code}")
             self.add_trace(f"Réponse: {response.text}")
+            return self.get_result( False, None )
             return self.get_result( False, None )
         
         except requests.exceptions.Timeout:

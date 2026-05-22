@@ -14,6 +14,7 @@
 }
 .test-config-card .card-header {
     background-color: #f8f9fa;
+    color: #212529;
     border-bottom: 1px solid #dee2e6;
 }
 .form-check-label {
@@ -81,6 +82,25 @@
                 <div class="col-md-4" id="testsParallelCountDiv" style="display:none;">
                     <label class="form-label fw-bold">{{ _('Nombre de tests en parallèle') }}</label>
                     <input type="number" id="testsParallelCount" class="form-control" value="2" min="2" max="20">
+                </div>
+                <!-- Surcharge timeout -->
+                <div class="col-md-4">
+                    <label class="form-label fw-bold">{{ _('Timeout des actions') }}</label>
+                    <div class="form-check form-switch mt-1">
+                        <input class="form-check-input" type="checkbox" id="timeoutOverrideSwitch"
+                               onchange="document.getElementById('timeoutOverrideDiv').style.display = this.checked ? '' : 'none'">
+                        <label class="form-check-label" for="timeoutOverrideSwitch">
+                            {{ _('Surcharger le timeout') }}
+                        </label>
+                    </div>
+                    <div id="timeoutOverrideDiv" style="display:none;" class="mt-2">
+                        <div class="input-group">
+                            <input type="number" id="timeoutOverrideValue" class="form-control"
+                                   value="30" min="1" max="3600" placeholder="30">
+                            <span class="input-group-text">s</span>
+                        </div>
+                        <div class="form-text">{{ _('Remplace le timeout de chaque action') }}</div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -310,6 +330,8 @@ async function launchPerformance() {
 
     const testsParallel = document.getElementById('testsParallelSwitch').checked;
     const testsParallelCount = parseInt(document.getElementById('testsParallelCount').value) || 2;
+    const timeoutOverride = document.getElementById('timeoutOverrideSwitch').checked;
+    const timeoutValue = timeoutOverride ? parseInt(document.getElementById('timeoutOverrideValue').value) || 30 : null;
 
     const testsConfig = [];
     for (const test of testsData) {
@@ -345,7 +367,8 @@ async function launchPerformance() {
             filiere,
             tests_config: testsConfig,
             tests_parallel: testsParallel,
-            tests_parallel_count: testsParallelCount
+            tests_parallel_count: testsParallelCount,
+            timeout_override: timeoutValue
         });
 
         // Redirection vers le dashboard

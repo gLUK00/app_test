@@ -35,7 +35,7 @@ class CampainExecutor:
             except Exception as exc:  # pragma: no cover - logging uniquement
                 print(f"⚠️  Impossible d'émettre l'événement '{event}' vers {room}: {exc}")
     
-    def execute_campain(self, rapport_id, campain_id, filiere, tests, stop_on_failure):
+    def execute_campain(self, rapport_id, campain_id, filiere, tests, stop_on_failure, timeout_override=None):
         """
         Exécute une campagne de tests en arrière-plan.
         
@@ -45,6 +45,7 @@ class CampainExecutor:
             filiere: Filière/environnement sélectionné
             tests: Liste des tests à exécuter
             stop_on_failure: Arrêter l'exécution au premier échec
+            timeout_override: Timeout global en secondes (surcharge le timeout de chaque action)
         """
         print(f"\n🚀 Démarrage de l'exécution de la campagne")
         print(f"   Rapport ID: {rapport_id}")
@@ -52,6 +53,7 @@ class CampainExecutor:
         print(f"   Filière: {filiere}")
         print(f"   Nombre de tests: {len(tests)}")
         print(f"   Stop on failure: {stop_on_failure}")
+        print(f"   Timeout override: {timeout_override}")
         
         # Lancer l'exécution dans un thread séparé
         # Utiliser threading.Thread directement car nous sommes en mode 'threading' explicite
@@ -62,7 +64,8 @@ class CampainExecutor:
                 'campain_id': campain_id, 
                 'filiere': filiere, 
                 'tests': tests, 
-                'stop_on_failure': stop_on_failure
+                'stop_on_failure': stop_on_failure,
+                'timeout_override': timeout_override
             }
         )
         thread.daemon = True
@@ -70,7 +73,7 @@ class CampainExecutor:
         
         print(f"✅ Tâche d'arrière-plan lancée pour rapport {rapport_id}\n")
     
-    def _run_campain(self, rapport_id, campain_id, filiere, tests, stop_on_failure):
+    def _run_campain(self, rapport_id, campain_id, filiere, tests, stop_on_failure, timeout_override=None):
         """Exécute la campagne de tests."""
         print(f"\n⚙️  Thread d'exécution démarré pour rapport {rapport_id}")
         campain_start_time = time.time()  # Début du chronomètre de la campagne
@@ -163,7 +166,7 @@ class CampainExecutor:
                         variables_dict['app.' + var_name] = None
                 
                 # Exécuter le test
-                test_result = self._execute_test(test_id, variables_dict, filiere)
+                test_result = self._execute_test(test_id, variables_dict, filiere, timeout_override=timeout_override)
                 test_metadata_cache[test_id] = {
                     'name': test_result.get('name', ''),
                     'description': test_result.get('description', '')
@@ -257,7 +260,7 @@ class CampainExecutor:
             
             print(f"📡 Événement 'campain_error' émis")
     
-    def _execute_test(self, test_id, variables_dict, filiere):
+    def _execute_test(self, test_id, variables_dict, filiere, timeout_override=None):
         """
         Exécute un test individuel.
         
@@ -316,6 +319,9 @@ class CampainExecutor:
                 
                 # Injecter l'ID de la campagne pour les actions qui en ont besoin (ex: fichiers)
                 resolved_value['_campain_id'] = variables_dict.get('test.campain_id')
+                # Injecter le timeout override global si activé
+                if timeout_override is not None:
+                    resolved_value['_timeout_override'] = timeout_override
                 
                 # Merge les variables de retour de l'action
                 

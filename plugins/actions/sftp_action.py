@@ -138,6 +138,8 @@ class SFTPAction(ActionBase):
             password = action_context.get('password')
             remote_path = action_context.get('remote_path')
             content = action_context.get('content', '')
+            _override = action_context.get('_timeout_override')
+            sftp_timeout = int(float(_override)) if _override is not None else int(float(action_context.get('timeout') or 30))
             
             self.add_trace(f"Connexion SFTP à {username}@{host}:{port}")
             
@@ -151,7 +153,7 @@ class SFTPAction(ActionBase):
                 port=port,
                 username=username,
                 password=password,
-                timeout=30
+                timeout=sftp_timeout
             )
             
             # Ouvrir la session SFTP

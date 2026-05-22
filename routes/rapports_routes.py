@@ -37,6 +37,12 @@ def execute_campain():
         rapport_name = data['name']
         filiere = data['filiere']
         stop_on_failure = data.get('stop_on_failure', False)
+        timeout_override = data.get('timeout_override')
+        if timeout_override is not None:
+            try:
+                timeout_override = int(float(timeout_override))
+            except (ValueError, TypeError):
+                timeout_override = None
         
         # Vérifier l'unicité du nom
         existing = Rapport.get_by_name(rapport_name)
@@ -63,7 +69,7 @@ def execute_campain():
         )
         
         # Lancer l'exécution en arrière-plan
-        executor.execute_campain(rapport_id, campain_id, filiere, test_ids, stop_on_failure)
+        executor.execute_campain(rapport_id, campain_id, filiere, test_ids, stop_on_failure, timeout_override=timeout_override)
         
         return jsonify({
             'message': 'Exécution de la campagne lancée',
@@ -380,10 +386,19 @@ def execute_performance():
         tests_parallel = bool(data.get('tests_parallel', False))
         tests_parallel_count = max(1, int(data.get('tests_parallel_count', 2)))
 
+        raw_timeout = data.get('timeout_override')
+        timeout_override = None
+        if raw_timeout is not None:
+            try:
+                timeout_override = int(float(raw_timeout))
+            except (ValueError, TypeError):
+                timeout_override = None
+
         perf_config = {
             'tests': normalized_tests,
             'tests_parallel': tests_parallel,
-            'tests_parallel_count': tests_parallel_count
+            'tests_parallel_count': tests_parallel_count,
+            'timeout_override': timeout_override
         }
 
         # Générer le nom du rapport

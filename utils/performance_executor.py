@@ -88,6 +88,7 @@ class PerformanceExecutor:
             tests_config = perf_config.get('tests', [])
             tests_parallel = perf_config.get('tests_parallel', False)
             tests_parallel_count = max(1, int(perf_config.get('tests_parallel_count', 2)))
+            timeout_override = perf_config.get('timeout_override')
 
             total_instances = sum(int(tc.get('instances', 1)) for tc in tests_config)
 
@@ -202,7 +203,7 @@ class PerformanceExecutor:
                             futures.append(
                                 pool.submit(
                                     self._execute_test_instance,
-                                    test_id, vars_copy, i + 1
+                                    test_id, vars_copy, i + 1, timeout_override
                                 )
                             )
                         for future in as_completed(futures):
@@ -228,7 +229,7 @@ class PerformanceExecutor:
 
                         vars_copy = copy.deepcopy(variables_base)
                         vars_copy['test.test_id'] = test_id
-                        result = self._execute_test_instance(test_id, vars_copy, i + 1)
+                        result = self._execute_test_instance(test_id, vars_copy, i + 1, timeout_override)
                         on_instance_done(result, test_result_entry)
 
             # ----------------------------------------------------------
@@ -300,7 +301,7 @@ class PerformanceExecutor:
     # Exécution d'une instance de test
     # ------------------------------------------------------------------
 
-    def _execute_test_instance(self, test_id, variables_dict, instance_num):
+    def _execute_test_instance(self, test_id, variables_dict, instance_num, timeout_override=None):
         """Exécute une instance unique d'un test. Thread-safe (contexte isolé)."""
         start_time = time.time()
         status = 'passed'
@@ -325,6 +326,9 @@ class PerformanceExecutor:
 
                 resolved_value = self._resolve_variables(action_value, variables_dict, test_variables)
                 resolved_value['_campain_id'] = variables_dict.get('test.campain_id')
+                # Injecter le timeout override global si activé
+                if timeout_override is not None:
+                    resolved_value['_timeout_override'] = timeout_override
 
                 action_plugin = self.plugin_manager.get_plugin(action_type)
                 if not action_plugin:
