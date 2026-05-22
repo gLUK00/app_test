@@ -105,7 +105,7 @@ class MyCustomAction(ActionBase):
 `init/` 目录中提供了一个 `test-docker-compose.yml` 文件。它设置了各种服务（FTP、SFTP、WebDAV、SSH、S3/MinIO、HTTP API），以便针对真实目标测试您的操作。
 
 ```bash
-sudo docker-compose -f init/test-docker-compose.yml up -d
+sudo docker compose -f init/test-docker-compose.yml up -d
 ```
 
 ### 2. 导入测试数据

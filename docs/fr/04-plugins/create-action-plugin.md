@@ -138,7 +138,7 @@ Pour faciliter le développement et le test de vos plugins, un environnement loc
 Un fichier `test-docker-compose.yml` est fourni dans le répertoire `init/`. Il met en place divers services (FTP, SFTP, WebDAV, SSH, S3/MinIO, API HTTP) pour tester vos actions contre des cibles réelles.
 
 ```bash
-sudo docker-compose -f init/test-docker-compose.yml up -d
+sudo docker compose -f init/test-docker-compose.yml up -d
 ```
 
 ### 2. Importer les Données de Test

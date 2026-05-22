@@ -1352,3 +1352,129 @@ msgstr "Fehlende Felder: {}"
 msgid "Tous les champs requis sont présents"
 msgstr "Alle erforderlichen Felder sind vorhanden"
 
+
+msgid "Test de performance"
+msgstr "Leistungstest"
+
+msgid "Lancer un test de performance"
+msgstr "Leistungstest starten"
+
+msgid "Configuration du test de performance"
+msgstr "Konfiguration des Leistungstests"
+
+msgid "Configuration globale"
+msgstr "Globale Konfiguration"
+
+msgid "Environnement (filière)"
+msgstr "Umgebung (Tier)"
+
+msgid "Exécution des tests"
+msgstr "Testausführung"
+
+msgid "Exécuter les tests en parallèle"
+msgstr "Tests parallel ausführen"
+
+msgid "Nombre de tests en parallèle"
+msgstr "Anzahl paralleler Tests"
+
+msgid "Configuration par test"
+msgstr "Konfiguration pro Test"
+
+msgid "Nombre d'instances"
+msgstr "Anzahl der Instanzen"
+
+msgid "Exécution des instances"
+msgstr "Instanzausführung"
+
+msgid "Exécuter les instances en parallèle"
+msgstr "Instanzen parallel ausführen"
+
+msgid "Instances en parallèle"
+msgstr "Parallele Instanzen"
+
+msgid "Arrêter sur premier échec d'instance"
+msgstr "Bei erstem Instanzfehler stoppen"
+
+msgid "Lancer le test de performance"
+msgstr "Leistungstest starten"
+
+msgid "Dashboard de performance"
+msgstr "Leistungs-Dashboard"
+
+msgid "Rapport de performance"
+msgstr "Leistungsbericht"
+
+msgid "Progression globale"
+msgstr "Gesamtfortschritt"
+
+msgid "Instances générées"
+msgstr "Erzeugte Instanzen"
+
+msgid "Instances exécutées"
+msgstr "Ausgeführte Instanzen"
+
+msgid "Instances réussies"
+msgstr "Erfolgreiche Instanzen"
+
+msgid "Instances échouées"
+msgstr "Fehlgeschlagene Instanzen"
+
+msgid "Temps moyen"
+msgstr "Durchschnittliche Zeit"
+
+msgid "Temps minimum"
+msgstr "Mindestzeit"
+
+msgid "Temps maximum"
+msgstr "Maximale Zeit"
+
+msgid "Temps total"
+msgstr "Gesamtzeit"
+
+msgid "Résultats par test"
+msgstr "Ergebnisse pro Test"
+
+msgid "Test de performance terminé avec succès"
+msgstr "Leistungstest erfolgreich abgeschlossen"
+
+msgid "instances réussies"
+msgstr "erfolgreiche Instanzen"
+
+msgid "en moyenne"
+msgstr "im Durchschnitt"
+
+msgid "Test de performance terminé avec des échecs"
+msgstr "Leistungstest mit Fehlern abgeschlossen"
+
+msgid "instance(s) échouée(s) sur"
+msgstr "fehlgeschlagene Instanz(en) von"
+
+msgid "Test de performance terminé"
+msgstr "Leistungstest abgeschlossen"
+
+msgid "Test de performance lancé"
+msgstr "Leistungstest gestartet"
+
+msgid "Retour à la campagne"
+msgstr "Zurück zur Kampagne"
+
+msgid "Veuillez sélectionner un environnement."
+msgstr "Bitte wählen Sie eine Umgebung aus."
+
+msgid "Veuillez sélectionner au moins un test."
+msgstr "Bitte wählen Sie mindestens einen Test aus."
+
+msgid "Lancement..."
+msgstr "Wird gestartet..."
+
+msgid "Erreur lors du lancement du test de performance."
+msgstr "Fehler beim Starten des Leistungstests."
+
+msgid "Exécuteur de performance non disponible"
+msgstr "Leistungsausführer nicht verfügbar"
+
+msgid "La configuration des tests est invalide ou vide"
+msgstr "Testkonfiguration ist ungültig oder leer"
+
+msgid "Test introuvable: {}"
+msgstr "Test nicht gefunden: {}"

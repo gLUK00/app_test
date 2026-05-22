@@ -225,9 +225,14 @@
             <div class="card">
                 <div class="card-header campain-rapport-header d-flex justify-content-between align-items-center">
                     <span><i class="fas fa-chart-line"></i> Rapports d'exécution</span>
-                    <button class="btn btn-sm btn-light" id="runCampainBtn" data-bs-toggle="modal" data-bs-target="#executeCampainModal">
-                        <i class="fas fa-play"></i> Exécuter la campagne
-                    </button>
+                    <div class="d-flex gap-2">
+                        <a href="{{ url_for('web.perf_config', campain_id=campain_id) }}" class="btn btn-sm btn-warning">
+                            <i class="fas fa-tachometer-alt"></i> {{ _('Test de performance') }}
+                        </a>
+                        <button class="btn btn-sm btn-light" id="runCampainBtn" data-bs-toggle="modal" data-bs-target="#executeCampainModal">
+                            <i class="fas fa-play"></i> Exécuter la campagne
+                        </button>
+                    </div>
                 </div>
                 <div class="card-body">
                     <div id="rapportsLoading" class="text-center">
@@ -671,7 +676,7 @@ async function loadRapports() {
                 
                 return `
                     <tr data-rapport-id="${rapport._id}" data-rapport-status="${rapport.status}">
-                        <td><strong>${escapeHtml(rapport.details)}</strong></td>
+                        <td><strong>${escapeHtml(rapport.details)}</strong>${rapport.type === 'performance' ? ' <span class="badge bg-warning text-dark ms-1"><i class="fas fa-tachometer-alt"></i> PERF</span>' : ''}</td>
                         <td>${new Date(rapport.dateCreated).toLocaleString('fr-FR')}</td>
                         <td><span class="badge bg-info">${escapeHtml(rapport.filiere)}</span></td>
                         <td class="rapport-status">${renderStatusBadge(rapport.status)}</td>

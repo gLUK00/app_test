@@ -1,0 +1,361 @@
+{% extends "base.html" %}
+
+{% block title %}{{ _('Test de performance') }} - {{ app_name }}{% endblock %}
+
+{% block extra_css %}
+<style>
+.test-config-card {
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    transition: border-color 0.2s;
+}
+.test-config-card.disabled-test {
+    opacity: 0.5;
+}
+.test-config-card .card-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+}
+.form-check-label {
+    cursor: pointer;
+}
+.parallel-options {
+    transition: all 0.2s;
+}
+.global-config-card {
+    background-color: #f0f8ff;
+    border: 1px solid #b0d4f1;
+    border-radius: 8px;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1><i class="fas fa-tachometer-alt text-warning"></i> {{ _('Test de performance') }}</h1>
+            <p class="text-muted">{{ _('Configurez et lancez un test de performance à partir des tests existants de la campagne.') }}</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{{ url_for('web.campain_details', campain_id=campain_id) }}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> {{ _('Retour') }}
+            </a>
+        </div>
+    </div>
+
+    <!-- Chargement -->
+    <div id="loadingSection" class="text-center py-5">
+        <div class="spinner-border text-warning" role="status">
+            <span class="visually-hidden">{{ _('Chargement...') }}</span>
+        </div>
+        <p class="mt-2 text-muted">{{ _('Chargement des tests...') }}</p>
+    </div>
+
+    <!-- Formulaire principal -->
+    <div id="configForm" style="display:none;">
+
+        <!-- Configuration globale -->
+        <div class="global-config-card p-4 mb-4">
+            <h5 class="mb-3"><i class="fas fa-sliders-h"></i> {{ _('Configuration globale') }}</h5>
+            <div class="row g-3">
+                <!-- Filière -->
+                <div class="col-md-4">
+                    <label class="form-label fw-bold">{{ _('Environnement (filière)') }} <span class="text-danger">*</span></label>
+                    <select id="filiereSelect" class="form-select">
+                        <option value="">{{ _('Chargement...') }}</option>
+                    </select>
+                </div>
+                <!-- Tests en parallèle -->
+                <div class="col-md-4">
+                    <label class="form-label fw-bold">{{ _('Exécution des tests') }}</label>
+                    <div class="form-check form-switch mt-1">
+                        <input class="form-check-input" type="checkbox" id="testsParallelSwitch"
+                               onchange="toggleTestsParallel()">
+                        <label class="form-check-label" for="testsParallelSwitch">
+                            {{ _('Exécuter les tests en parallèle') }}
+                        </label>
+                    </div>
+                </div>
+                <!-- Nombre de tests en parallèle -->
+                <div class="col-md-4" id="testsParallelCountDiv" style="display:none;">
+                    <label class="form-label fw-bold">{{ _('Nombre de tests en parallèle') }}</label>
+                    <input type="number" id="testsParallelCount" class="form-control" value="2" min="2" max="20">
+                </div>
+            </div>
+        </div>
+
+        <!-- Liste des tests -->
+        <div class="mb-4">
+            <h5 class="mb-3"><i class="fas fa-vial"></i> {{ _('Configuration par test') }}</h5>
+            <div id="testsContainer">
+                <!-- Généré dynamiquement -->
+            </div>
+        </div>
+
+        <!-- Bouton de lancement -->
+        <div class="d-flex justify-content-end gap-2 mb-5">
+            <a href="{{ url_for('web.campain_details', campain_id=campain_id) }}" class="btn btn-secondary">
+                <i class="fas fa-times"></i> {{ _('Annuler') }}
+            </a>
+            <button id="launchBtn" class="btn btn-warning btn-lg" onclick="launchPerformance()">
+                <i class="fas fa-rocket"></i> {{ _('Lancer le test de performance') }}
+            </button>
+        </div>
+    </div>
+
+    <!-- Aucun test -->
+    <div id="noTestsSection" style="display:none;" class="text-center py-5">
+        <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+        <p class="text-muted">{{ _('Aucun test dans cette campagne. Veuillez ajouter des tests avant de lancer un test de performance.') }}</p>
+        <a href="{{ url_for('web.add_test', campain_id=campain_id) }}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> {{ _('Ajouter un test') }}
+        </a>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const campainId = "{{ campain_id }}";
+let testsData = [];
+let actionColors = {};
+
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.appendChild(document.createTextNode(text));
+    return div.innerHTML;
+}
+
+// =====================================================================
+// Initialisation
+// =====================================================================
+document.addEventListener('DOMContentLoaded', async () => {
+    await Promise.all([loadTests(), loadFilieres()]);
+});
+
+async function loadActionColors() {
+    try {
+        const colors = await API.get('/api/actions/colors');
+        actionColors = colors;
+    } catch (err) {
+        console.error('Erreur chargement couleurs:', err);
+    }
+}
+
+async function loadTests() {
+    try {
+        if (Object.keys(actionColors).length === 0) {
+            await loadActionColors();
+        }
+        const data = await API.get(`/api/tests?campain_id=${campainId}`);
+        const tests = (data.data || data.tests || []);
+        testsData = tests;
+
+        document.getElementById('loadingSection').style.display = 'none';
+
+        if (!tests || tests.length === 0) {
+            document.getElementById('noTestsSection').style.display = 'block';
+            return;
+        }
+
+        document.getElementById('configForm').style.display = 'block';
+        renderTests(tests);
+    } catch (err) {
+        console.error('Erreur chargement tests:', err);
+        document.getElementById('loadingSection').style.display = 'none';
+        document.getElementById('noTestsSection').style.display = 'block';
+    }
+}
+
+async function loadFilieres() {
+    try {
+        const data = await API.get('/api/rapports/filieres');
+        const select = document.getElementById('filiereSelect');
+        select.innerHTML = '';
+        (data.filieres || []).forEach(f => {
+            const opt = document.createElement('option');
+            opt.value = f;
+            opt.textContent = f;
+            select.appendChild(opt);
+        });
+        if (!data.filieres || data.filieres.length === 0) {
+            const opt = document.createElement('option');
+            opt.value = 'default';
+            opt.textContent = 'default';
+            select.appendChild(opt);
+        }
+    } catch (err) {
+        console.error('Erreur chargement filières:', err);
+    }
+}
+
+// =====================================================================
+// Rendu des tests
+// =====================================================================
+function renderTests(tests) {
+    const container = document.getElementById('testsContainer');
+    container.innerHTML = tests.map((test, idx) => renderTestCard(test, idx)).join('');
+}
+
+function renderTestCard(test, idx) {
+    const testId = test._id;
+    const testName = escapeHtml(test.name || `Test ${idx + 1}`);
+    const testDesc = escapeHtml(test.description || '');
+    const actionTypes = (test.actions || []).map(a => a.type).filter((v, i, a) => a.indexOf(v) === i);
+
+    return `
+    <div class="test-config-card card mb-3" id="testCard_${testId}">
+        <div class="card-header bg-primary bg-opacity-10 d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center gap-3">
+                <div class="form-check mb-0">
+                    <input class="form-check-input" type="checkbox" id="include_${testId}"
+                           checked onchange="toggleTestIncluded('${testId}')">
+                    <label class="form-check-label fw-bold text-dark" for="include_${testId}">
+                        ${testName}
+                    </label>
+                </div>
+                ${testDesc ? `<small class="text-secondary">${testDesc}</small>` : ''}
+            </div>
+            <div class="d-flex gap-1">
+                ${actionTypes.map(t => { const c = actionColors[t] || '#6c757d'; return `<span class="badge me-1" style="background-color:${c}">${escapeHtml(t.toUpperCase())}</span>`; }).join('')}
+            </div>
+        </div>
+        <div class="card-body" id="testBody_${testId}">
+            <div class="row g-3 align-items-end">
+                <!-- Nombre d'instances -->
+                <div class="col-auto">
+                    <label class="form-label">{{ _('Nombre d\'instances') }}</label>
+                    <input type="number" class="form-control" id="instances_${testId}"
+                           value="1" min="1" max="1000" style="width:90px"
+                           oninput="if(!this.value||this.value<1)this.value=1"
+                           onchange="onInstancesChange('${testId}')">
+                </div>
+                <!-- Switch parallèle (toujours visible) -->
+                <div class="col-md-4">
+                    <label class="form-label">{{ _('Exécution des instances') }}</label>
+                    <div class="form-check form-switch mt-1">
+                        <input class="form-check-input" type="checkbox" id="parallel_${testId}"
+                               onchange="onParallelChange('${testId}')">
+                        <label class="form-check-label" for="parallel_${testId}">
+                            {{ _('Exécuter les instances en parallèle') }}
+                        </label>
+                    </div>
+                </div>
+                <!-- Nombre en parallèle -->
+                <div class="col-md-3" id="parallelCountDiv_${testId}" style="display:none;">
+                    <label class="form-label">{{ _('Instances en parallèle') }}</label>
+                    <input type="number" class="form-control" id="parallelCount_${testId}"
+                           value="2" min="2" max="100">
+                </div>
+                <!-- Stop on failure -->
+                <div class="col-md-4" id="stopOnFailureDiv_${testId}" style="display:none;">
+                    <div class="form-check form-switch mt-1">
+                        <input class="form-check-input" type="checkbox" id="stopOnFailure_${testId}">
+                        <label class="form-check-label" for="stopOnFailure_${testId}">
+                            {{ _('Arrêter sur premier échec d\'instance') }}
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>`;
+}
+
+// =====================================================================
+// Logique d'affichage conditionnel
+// =====================================================================
+function toggleTestIncluded(testId) {
+    const checked = document.getElementById(`include_${testId}`).checked;
+    const card = document.getElementById(`testCard_${testId}`);
+    const body = document.getElementById(`testBody_${testId}`);
+    if (checked) {
+        card.classList.remove('disabled-test');
+        body.style.opacity = '1';
+        body.style.pointerEvents = 'auto';
+    } else {
+        card.classList.add('disabled-test');
+        body.style.opacity = '0.4';
+        body.style.pointerEvents = 'none';
+    }
+}
+
+function onInstancesChange(testId) {
+    const n = parseInt(document.getElementById(`instances_${testId}`).value) || 1;
+    const stopDiv = document.getElementById(`stopOnFailureDiv_${testId}`);
+    stopDiv.style.display = n > 1 ? '' : 'none';
+    onParallelChange(testId);
+}
+
+function onParallelChange(testId) {
+    const parallel = document.getElementById(`parallel_${testId}`).checked;
+    const countDiv = document.getElementById(`parallelCountDiv_${testId}`);
+    countDiv.style.display = parallel ? '' : 'none';
+}
+
+function toggleTestsParallel() {
+    const checked = document.getElementById('testsParallelSwitch').checked;
+    document.getElementById('testsParallelCountDiv').style.display = checked ? '' : 'none';
+}
+
+// =====================================================================
+// Lancement
+// =====================================================================
+async function launchPerformance() {
+    const filiere = document.getElementById('filiereSelect').value;
+    if (!filiere) {
+        Notification.error('{{ _("Veuillez sélectionner un environnement.") }}');
+        return;
+    }
+
+    const testsParallel = document.getElementById('testsParallelSwitch').checked;
+    const testsParallelCount = parseInt(document.getElementById('testsParallelCount').value) || 2;
+
+    const testsConfig = [];
+    for (const test of testsData) {
+        const included = document.getElementById(`include_${test._id}`)?.checked;
+        if (!included) continue;
+
+        const instances = parseInt(document.getElementById(`instances_${test._id}`)?.value) || 1;
+        const parallel = document.getElementById(`parallel_${test._id}`)?.checked || false;
+        const parallelCount = parseInt(document.getElementById(`parallelCount_${test._id}`)?.value) || 2;
+        const stopOnInstanceFailure = document.getElementById(`stopOnFailure_${test._id}`)?.checked || false;
+
+        testsConfig.push({
+            test_id: test._id,
+            instances,
+            parallel: instances > 1 && parallel,
+            parallel_count: parallelCount,
+            stop_on_instance_failure: stopOnInstanceFailure
+        });
+    }
+
+    if (testsConfig.length === 0) {
+        Notification.error('{{ _("Veuillez sélectionner au moins un test.") }}');
+        return;
+    }
+
+    const launchBtn = document.getElementById('launchBtn');
+    launchBtn.disabled = true;
+    launchBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>{{ _("Lancement...") }}';
+
+    try {
+        const result = await API.post('/api/rapports/performance/execute', {
+            campain_id: campainId,
+            filiere,
+            tests_config: testsConfig,
+            tests_parallel: testsParallel,
+            tests_parallel_count: testsParallelCount
+        });
+
+        // Redirection vers le dashboard
+        window.location.href = `/campains/${campainId}/performance/${result.rapport_id}/dashboard`;
+    } catch (err) {
+        console.error('Erreur lancement:', err);
+        Notification.error(err.message || '{{ _("Erreur lors du lancement du test de performance.") }}');
+        launchBtn.disabled = false;
+        launchBtn.innerHTML = '<i class="fas fa-rocket"></i> {{ _("Lancer le test de performance") }}';
+    }
+}
+</script>
+{% endblock %}

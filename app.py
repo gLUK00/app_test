@@ -13,6 +13,7 @@ from utils.workdir import ensure_workdir_exists
 from utils.initialization import initialize_variables_from_json
 from utils.campain_executor import CampainExecutor
 from utils.test_executor import TestExecutor
+from utils.performance_executor import PerformanceExecutor
 from routes import (
     auth_bp,
     users_bp,
@@ -75,8 +76,10 @@ def create_app():
     # Initialiser les exécuteurs
     campain_executor = CampainExecutor(socketio)
     test_executor = TestExecutor(socketio)
+    performance_executor = PerformanceExecutor(socketio)
     app.config['CAMPAIN_EXECUTOR'] = campain_executor
     app.config['TEST_EXECUTOR'] = test_executor
+    app.config['PERFORMANCE_EXECUTOR'] = performance_executor
     
     # Gestionnaires d'événements WebSocket
     @socketio.on('join')
@@ -112,6 +115,15 @@ def create_app():
         if room:
             leave_room(room)
             print(f"Client quitte la room: {room}")
+
+    @socketio.on('join_perf')
+    def handle_join_perf(data):
+        """Permet à un client de rejoindre la room d'un rapport de performance."""
+        rapport_id = data.get('rapport_id')
+        if rapport_id:
+            room = f'perf_{rapport_id}'
+            join_room(room)
+            print(f"Client rejoint la room de performance: {room}")
     
     # Enregistrer les blueprints pour les routes web
     app.register_blueprint(web_bp)

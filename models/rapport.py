@@ -32,6 +32,51 @@ class Rapport:
         
         result = collection.insert_one(rapport_data)
         return str(result.inserted_id)
+
+    @staticmethod
+    def create_performance(campain_id, details, filiere, perf_config, status='pending'):
+        """Crée un rapport de test de performance."""
+        collection = get_collection(Rapport.collection_name)
+
+        rapport_data = {
+            'campainId': ObjectId(campain_id),
+            'dateCreated': datetime.utcnow(),
+            'result': 'pending',
+            'details': details,
+            'filiere': filiere,
+            'type': 'performance',
+            'perf_config': perf_config,
+            'perf_results': {},
+            'tests': [],
+            'status': status,
+            'progress': 0,
+            'executionTimeMs': 0,
+            'startTime': None,
+            'endTime': None,
+            'isDeleted': False
+        }
+
+        insert_result = collection.insert_one(rapport_data)
+        return str(insert_result.inserted_id)
+
+    @staticmethod
+    def update_perf_results(rapport_id, perf_results):
+        """Met à jour les résultats agrégés du test de performance."""
+        collection = get_collection(Rapport.collection_name)
+        # Copie sécurisée pour ne pas stocker les clés temporaires (_instance_times)
+        safe_results = {}
+        for key, value in perf_results.items():
+            if key == 'tests':
+                safe_results['tests'] = [
+                    {k: v for k, v in tr.items() if not k.startswith('_')}
+                    for tr in value
+                ]
+            else:
+                safe_results[key] = value
+        collection.update_one(
+            {'_id': ObjectId(rapport_id)},
+            {'$set': {'perf_results': safe_results}}
+        )
     
     @staticmethod
     def find_by_id(rapport_id):
@@ -130,7 +175,16 @@ class Rapport:
         
         if 'endTime' in data:
             update_data['endTime'] = data['endTime']
-        
+
+        if 'type' in data:
+            update_data['type'] = data['type']
+
+        if 'perf_config' in data:
+            update_data['perf_config'] = data['perf_config']
+
+        if 'perf_results' in data:
+            update_data['perf_results'] = data['perf_results']
+
         if update_data:
             collection.update_one({'_id': ObjectId(rapport_id)}, {'$set': update_data})
         

@@ -108,7 +108,7 @@ Para facilitar el desarrollo y las pruebas de tus plugins, un entorno local comp
 Se proporciona un archivo `test-docker-compose.yml` en el directorio `init/`. Configura varios servicios (FTP, SFTP, WebDAV, SSH, S3/MinIO, API HTTP) para probar tus acciones contra objetivos reales.
 
 ```bash
-sudo docker-compose -f init/test-docker-compose.yml up -d
+sudo docker compose -f init/test-docker-compose.yml up -d
 ```
 
 ### 2. Importar Datos de Prueba

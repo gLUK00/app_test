@@ -96,7 +96,7 @@ Per facilitare lo sviluppo e il test dei tuoi plugin, è disponibile un ambiente
 Un file `test-docker-compose.yml` è fornito nella directory `init/`. Configura vari servizi (FTP, SFTP, WebDAV, SSH, S3/MinIO, API HTTP) per testare le tue azioni contro obiettivi reali.
 
 ```bash
-sudo docker-compose -f init/test-docker-compose.yml up -d
+sudo docker compose -f init/test-docker-compose.yml up -d
 ```
 
 ### 2. Importare i Dati di Test

@@ -139,7 +139,7 @@ To facilitate the development and testing of your plugins, a complete local envi
 A `test-docker-compose.yml` file is provided in the `init/` directory. It sets up various services (FTP, SFTP, WebDAV, SSH, S3/MinIO, HTTP API) to test your actions against real targets.
 
 ```bash
-sudo docker-compose -f init/test-docker-compose.yml up -d
+sudo docker compose -f init/test-docker-compose.yml up -d
 ```
 
 ### 2. Import Test Data

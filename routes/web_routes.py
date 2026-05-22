@@ -154,8 +154,28 @@ def rapport_details(rapport_id):
     # Récupérer le rapport pour obtenir le campain_id
     rapport = Rapport.find_by_id(rapport_id)
     campain_id = str(rapport['campainId']) if rapport and 'campainId' in rapport else None
+
+    # Rediriger vers le dashboard de perf si c'est un rapport de performance
+    if rapport and rapport.get('type') == 'performance':
+        return redirect(url_for('web.perf_dashboard', campain_id=campain_id, rapport_id=rapport_id))
     
     return render_template('rapport_details.html', user=user, rapport_id=rapport_id, campain_id=campain_id)
+
+
+@web_bp.route('/campains/<campain_id>/performance')
+@token_required
+def perf_config(campain_id):
+    """Page de configuration d'un test de performance."""
+    user = get_current_user()
+    return render_template('perf_config.html', user=user, campain_id=campain_id)
+
+
+@web_bp.route('/campains/<campain_id>/performance/<rapport_id>/dashboard')
+@token_required
+def perf_dashboard(campain_id, rapport_id):
+    """Dashboard temps réel d'un test de performance."""
+    user = get_current_user()
+    return render_template('perf_dashboard.html', user=user, campain_id=campain_id, rapport_id=rapport_id)
 
 @web_bp.route('/admin/deleted')
 @token_required

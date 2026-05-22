@@ -1342,3 +1342,129 @@ msgstr "缺少字段：{}"
 msgid "Tous les champs requis sont présents"
 msgstr "所有必填字段都已存在"
 
+
+msgid "Test de performance"
+msgstr "Performance Test"
+
+msgid "Lancer un test de performance"
+msgstr "Launch a performance test"
+
+msgid "Configuration du test de performance"
+msgstr "Performance test configuration"
+
+msgid "Configuration globale"
+msgstr "Global configuration"
+
+msgid "Environnement (filière)"
+msgstr "Environment (tier)"
+
+msgid "Exécution des tests"
+msgstr "Test execution"
+
+msgid "Exécuter les tests en parallèle"
+msgstr "Run tests in parallel"
+
+msgid "Nombre de tests en parallèle"
+msgstr "Number of parallel tests"
+
+msgid "Configuration par test"
+msgstr "Per-test configuration"
+
+msgid "Nombre d'instances"
+msgstr "Number of instances"
+
+msgid "Exécution des instances"
+msgstr "Instance execution"
+
+msgid "Exécuter les instances en parallèle"
+msgstr "Run instances in parallel"
+
+msgid "Instances en parallèle"
+msgstr "Parallel instances"
+
+msgid "Arrêter sur premier échec d'instance"
+msgstr "Stop on first instance failure"
+
+msgid "Lancer le test de performance"
+msgstr "Launch performance test"
+
+msgid "Dashboard de performance"
+msgstr "Performance dashboard"
+
+msgid "Rapport de performance"
+msgstr "Performance report"
+
+msgid "Progression globale"
+msgstr "Global progress"
+
+msgid "Instances générées"
+msgstr "Total instances"
+
+msgid "Instances exécutées"
+msgstr "Executed instances"
+
+msgid "Instances réussies"
+msgstr "Passed instances"
+
+msgid "Instances échouées"
+msgstr "Failed instances"
+
+msgid "Temps moyen"
+msgstr "Average time"
+
+msgid "Temps minimum"
+msgstr "Minimum time"
+
+msgid "Temps maximum"
+msgstr "Maximum time"
+
+msgid "Temps total"
+msgstr "Total time"
+
+msgid "Résultats par test"
+msgstr "Per-test results"
+
+msgid "Test de performance terminé avec succès"
+msgstr "Performance test completed successfully"
+
+msgid "instances réussies"
+msgstr "passed instances"
+
+msgid "en moyenne"
+msgstr "on average"
+
+msgid "Test de performance terminé avec des échecs"
+msgstr "Performance test completed with failures"
+
+msgid "instance(s) échouée(s) sur"
+msgstr "failed instance(s) out of"
+
+msgid "Test de performance terminé"
+msgstr "Performance test completed"
+
+msgid "Test de performance lancé"
+msgstr "Performance test launched"
+
+msgid "Retour à la campagne"
+msgstr "Back to campaign"
+
+msgid "Veuillez sélectionner un environnement."
+msgstr "Please select an environment."
+
+msgid "Veuillez sélectionner au moins un test."
+msgstr "Please select at least one test."
+
+msgid "Lancement..."
+msgstr "Launching..."
+
+msgid "Erreur lors du lancement du test de performance."
+msgstr "Error launching performance test."
+
+msgid "Exécuteur de performance non disponible"
+msgstr "Performance executor not available"
+
+msgid "La configuration des tests est invalide ou vide"
+msgstr "Test configuration is invalid or empty"
+
+msgid "Test introuvable: {}"
+msgstr "Test not found: {}"

@@ -93,7 +93,7 @@ UI フォーム定義。`string`, `number`, `boolean`, `textarea`, `select`, `ch
 `init/` ディレクトリに `test-docker-compose.yml` ファイルが用意されています。これは、実際のターゲットに対してアクションをテストするためのさまざまなサービス（FTP、SFTP、WebDAV、SSH、S3/MinIO、HTTP API）をセットアップします。
 
 ```bash
-sudo docker-compose -f init/test-docker-compose.yml up -d
+sudo docker compose -f init/test-docker-compose.yml up -d
 ```
 
 ### 2. テストデータのインポート

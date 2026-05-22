@@ -1448,3 +1448,139 @@ msgstr "Utilise la structure"
 
 msgid "Structure manquante"
 msgstr "Structure manquante"
+
+msgid "Test de performance"
+msgstr "Test de performance"
+
+msgid "Lancer un test de performance"
+msgstr "Lancer un test de performance"
+
+msgid "Configuration du test de performance"
+msgstr "Configuration du test de performance"
+
+msgid "Configurer et lancer un test de performance à partir des tests existants de la campagne."
+msgstr "Configurer et lancer un test de performance à partir des tests existants de la campagne."
+
+msgid "Configuration globale"
+msgstr "Configuration globale"
+
+msgid "Environnement (filière)"
+msgstr "Environnement (filière)"
+
+msgid "Exécution des tests"
+msgstr "Exécution des tests"
+
+msgid "Exécuter les tests en parallèle"
+msgstr "Exécuter les tests en parallèle"
+
+msgid "Nombre de tests en parallèle"
+msgstr "Nombre de tests en parallèle"
+
+msgid "Configuration par test"
+msgstr "Configuration par test"
+
+msgid "Nombre d'instances"
+msgstr "Nombre d'instances"
+
+msgid "Exécution des instances"
+msgstr "Exécution des instances"
+
+msgid "Exécuter les instances en parallèle"
+msgstr "Exécuter les instances en parallèle"
+
+msgid "Instances en parallèle"
+msgstr "Instances en parallèle"
+
+msgid "Arrêter sur premier échec d'instance"
+msgstr "Arrêter sur premier échec d'instance"
+
+msgid "Lancer le test de performance"
+msgstr "Lancer le test de performance"
+
+msgid "Dashboard de performance"
+msgstr "Dashboard de performance"
+
+msgid "Rapport de performance"
+msgstr "Rapport de performance"
+
+msgid "Progression globale"
+msgstr "Progression globale"
+
+msgid "Instances générées"
+msgstr "Instances générées"
+
+msgid "Instances exécutées"
+msgstr "Instances exécutées"
+
+msgid "Instances réussies"
+msgstr "Instances réussies"
+
+msgid "Instances échouées"
+msgstr "Instances échouées"
+
+msgid "Temps moyen"
+msgstr "Temps moyen"
+
+msgid "Temps minimum"
+msgstr "Temps minimum"
+
+msgid "Temps maximum"
+msgstr "Temps maximum"
+
+msgid "Temps total"
+msgstr "Temps total"
+
+msgid "Résultats par test"
+msgstr "Résultats par test"
+
+msgid "Test de performance terminé avec succès"
+msgstr "Test de performance terminé avec succès"
+
+msgid "instances réussies"
+msgstr "instances réussies"
+
+msgid "en moyenne"
+msgstr "en moyenne"
+
+msgid "Test de performance terminé avec des échecs"
+msgstr "Test de performance terminé avec des échecs"
+
+msgid "instance(s) échouée(s) sur"
+msgstr "instance(s) échouée(s) sur"
+
+msgid "Test de performance terminé"
+msgstr "Test de performance terminé"
+
+msgid "Test de performance lancé"
+msgstr "Test de performance lancé"
+
+msgid "Aucun test sélectionné"
+msgstr "Aucun test sélectionné"
+
+msgid "Aucun test dans cette campagne. Veuillez ajouter des tests avant de lancer un test de performance."
+msgstr "Aucun test dans cette campagne. Veuillez ajouter des tests avant de lancer un test de performance."
+
+msgid "Retour à la campagne"
+msgstr "Retour à la campagne"
+
+msgid "Veuillez sélectionner un environnement."
+msgstr "Veuillez sélectionner un environnement."
+
+msgid "Veuillez sélectionner au moins un test."
+msgstr "Veuillez sélectionner au moins un test."
+
+msgid "Lancement..."
+msgstr "Lancement..."
+
+msgid "Erreur lors du lancement du test de performance."
+msgstr "Erreur lors du lancement du test de performance."
+
+msgid "Exécuteur de performance non disponible"
+msgstr "Exécuteur de performance non disponible"
+
+msgid "La configuration des tests est invalide ou vide"
+msgstr "La configuration des tests est invalide ou vide"
+
+msgid "Test introuvable: {}"
+msgstr "Test introuvable: {}"
+

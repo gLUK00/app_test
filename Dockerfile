@@ -23,8 +23,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . ./
 
 # Ensure the startup script is executable and set permissions for OpenShift compatibility
-RUN chmod +x /app/start.sh && \
-    chgrp -R 0 /app && \
+RUN chgrp -R 0 /app && \
     chmod -R g=u /app
 
 EXPOSE 8080

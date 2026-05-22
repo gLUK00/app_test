@@ -295,3 +295,124 @@ def download_report(campain_id, filename):
         )
     except Exception as e:
         return jsonify({'message': str(e)}), 500
+
+
+# ==========================================================================
+# Routes de tests de performance
+# ==========================================================================
+
+@rapports_bp.route('/performance/generate-name', methods=['GET'])
+@token_required
+def generate_perf_rapport_name():
+    """Génère un nom unique pour un rapport de performance."""
+    try:
+        now = datetime.now()
+        months_fr = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
+                     'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre']
+        base_name = f"Perf - {months_fr[now.month - 1]} {now.year}"
+
+        name = base_name
+        counter = 1
+        while Rapport.get_by_name(name):
+            name = f"{base_name} ({counter})"
+            counter += 1
+
+        return jsonify({'name': name}), 200
+
+    except Exception as e:
+        return jsonify({'message': f'Erreur serveur: {str(e)}'}), 500
+
+
+@rapports_bp.route('/performance/execute', methods=['POST'])
+@token_required
+def execute_performance():
+    """Lance un test de performance."""
+    try:
+        executor = current_app.config.get('PERFORMANCE_EXECUTOR')
+        if not executor:
+            return jsonify({'message': _('Exécuteur de performance non disponible')}), 500
+
+        data = request.get_json()
+
+        # Validation des champs obligatoires
+        is_valid, message = validate_required_fields(data, ['campain_id', 'filiere', 'tests_config'])
+        if not is_valid:
+            return jsonify({'message': message}), 400
+
+        campain_id = data['campain_id']
+        filiere = data['filiere']
+        tests_config = data['tests_config']
+
+        if not isinstance(tests_config, list) or len(tests_config) == 0:
+            return jsonify({'message': _('La configuration des tests est invalide ou vide')}), 400
+
+        # Vérifier que la campagne existe
+        campain = Campain.find_by_id(campain_id)
+        if not campain:
+            return jsonify({'message': _('Campagne non trouvée')}), 404
+
+        # Valider et normaliser les configs de test
+        normalized_tests = []
+        for tc in tests_config:
+            test_id = tc.get('test_id')
+            if not test_id:
+                continue
+            test = Test.find_by_id(test_id)
+            if not test:
+                return jsonify({'message': _('Test introuvable: {}').format(test_id)}), 404
+
+            instances = max(1, int(tc.get('instances', 1)))
+            parallel = bool(tc.get('parallel', False)) and instances > 1
+            parallel_count = max(1, int(tc.get('parallel_count', 2))) if parallel else 1
+            stop_on_instance_failure = bool(tc.get('stop_on_instance_failure', False))
+
+            normalized_tests.append({
+                'test_id': test_id,
+                'instances': instances,
+                'parallel': parallel,
+                'parallel_count': parallel_count,
+                'stop_on_instance_failure': stop_on_instance_failure
+            })
+
+        if not normalized_tests:
+            return jsonify({'message': _('Aucun test valide sélectionné')}), 400
+
+        tests_parallel = bool(data.get('tests_parallel', False))
+        tests_parallel_count = max(1, int(data.get('tests_parallel_count', 2)))
+
+        perf_config = {
+            'tests': normalized_tests,
+            'tests_parallel': tests_parallel,
+            'tests_parallel_count': tests_parallel_count
+        }
+
+        # Générer le nom du rapport
+        now = datetime.now()
+        months_fr = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
+                     'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre']
+        base_name = f"Perf - {months_fr[now.month - 1]} {now.year}"
+        name = base_name
+        counter = 1
+        while Rapport.get_by_name(name):
+            name = f"{base_name} ({counter})"
+            counter += 1
+
+        # Créer le rapport en base
+        rapport_id = Rapport.create_performance(
+            campain_id=campain_id,
+            details=name,
+            filiere=filiere,
+            perf_config=perf_config,
+            status='pending'
+        )
+
+        # Lancer l'exécution en arrière-plan
+        executor.execute_performance(rapport_id, campain_id, filiere, perf_config)
+
+        return jsonify({
+            'message': _('Test de performance lancé'),
+            'rapport_id': rapport_id
+        }), 201
+
+    except Exception as e:
+        return jsonify({'message': f'Erreur serveur: {str(e)}'}), 500

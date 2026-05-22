@@ -1,0 +1,647 @@
+{% extends "base.html" %}
+
+{% block title %}{{ _('Dashboard de performance') }} - {{ app_name }}{% endblock %}
+
+{% block extra_css %}
+<style>
+.stat-card {
+    border-radius: 10px;
+    border: none;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+.stat-card .card-body {
+    padding: 1.2rem;
+}
+.stat-value {
+    font-size: 1.8rem;
+    font-weight: 700;
+    line-height: 1;
+}
+.stat-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #6c757d;
+    margin-top: 0.25rem;
+}
+.test-card {
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+}
+.test-card .card-header {
+    background-color: #f8f9fa;
+    border-radius: 10px 10px 0 0;
+}
+.live-indicator {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: #dc3545;
+    animation: pulse 1.2s infinite;
+    margin-right: 6px;
+}
+@keyframes pulse {
+    0%   { opacity: 1; transform: scale(1); }
+    50%  { opacity: 0.4; transform: scale(1.3); }
+    100% { opacity: 1; transform: scale(1); }
+}
+.progress {
+    height: 18px;
+    border-radius: 9px;
+}
+.progress-bar {
+    transition: width 0.5s ease;
+    font-size: 0.72rem;
+}
+.time-tag {
+    font-family: monospace;
+    font-size: 0.95rem;
+}
+/* Final results */
+.results-table th {
+    background-color: #f8f9fa;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+}
+.results-table td {
+    vertical-align: middle;
+    font-size: 0.9rem;
+}
+.rate-badge {
+    display: inline-block;
+    min-width: 52px;
+    text-align: center;
+    border-radius: 20px;
+    padding: 2px 8px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+.chart-type-btn.active {
+    background-color: #0d6efd !important;
+    color: #fff !important;
+    border-color: #0d6efd !important;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <!-- En-tête -->
+    <div class="row mb-4 align-items-center">
+        <div class="col-md-8">
+            <h1>
+                <i class="fas fa-tachometer-alt text-warning"></i>
+                {{ _('Dashboard de performance') }}
+                <span id="liveIndicator" style="display:none;">
+                    <span class="live-indicator"></span>
+                    <span class="badge bg-danger fs-6">LIVE</span>
+                </span>
+            </h1>
+            <p class="text-muted mb-0" id="rapportName">{{ _('Chargement...') }}</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{{ url_for('web.campain_details', campain_id=campain_id) }}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> {{ _('Retour à la campagne') }}
+            </a>
+        </div>
+    </div>
+
+    <!-- Barre de progression globale -->
+    <div class="card mb-4 stat-card" id="globalProgressCard">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="fw-bold">{{ _('Progression globale') }}</span>
+                <span id="progressText" class="text-muted small">0%</span>
+            </div>
+            <div class="progress">
+                <div id="globalProgressBar" class="progress-bar bg-warning progress-bar-striped progress-bar-animated"
+                     role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats globales -->
+    <div class="row g-3 mb-4" id="globalStatsRow" style="display:none !important;">
+        <div class="col-6 col-md-3">
+            <div class="card stat-card bg-light">
+                <div class="card-body text-center">
+                    <div class="stat-value text-dark" id="statTotal">-</div>
+                    <div class="stat-label">{{ _('Instances générées') }}</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card stat-card bg-primary bg-opacity-10">
+                <div class="card-body text-center">
+                    <div class="stat-value text-primary" id="statExecuted">-</div>
+                    <div class="stat-label">{{ _('Instances exécutées') }}</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card stat-card bg-success bg-opacity-10">
+                <div class="card-body text-center">
+                    <div class="stat-value text-success" id="statPassed">-</div>
+                    <div class="stat-label">{{ _('Instances réussies') }}</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card stat-card bg-danger bg-opacity-10">
+                <div class="card-body text-center">
+                    <div class="stat-value text-danger" id="statFailed">-</div>
+                    <div class="stat-label">{{ _('Instances échouées') }}</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card stat-card bg-info bg-opacity-10">
+                <div class="card-body text-center">
+                    <div class="stat-value text-info time-tag" id="statAvg">-</div>
+                    <div class="stat-label">{{ _('Temps moyen') }}</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card stat-card bg-secondary bg-opacity-10">
+                <div class="card-body text-center">
+                    <div class="stat-value text-secondary time-tag" id="statMin">-</div>
+                    <div class="stat-label">{{ _('Temps minimum') }}</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card stat-card bg-warning bg-opacity-10">
+                <div class="card-body text-center">
+                    <div class="stat-value text-warning time-tag" id="statMax">-</div>
+                    <div class="stat-label">{{ _('Temps maximum') }}</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card stat-card bg-dark bg-opacity-10">
+                <div class="card-body text-center">
+                    <div class="stat-value text-dark time-tag" id="statTotal2">-</div>
+                    <div class="stat-label">{{ _('Temps total') }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statut final -->
+    <div id="finalStatusAlert" style="display:none;" class="mb-4"></div>
+
+    <!-- Vue LIVE : cartes avec progression -->
+    <div id="testCardsSection" style="display:none;">
+        <h5 class="mb-3">
+            <i class="fas fa-vial"></i> {{ _('Résultats par test') }}
+            <span class="live-indicator ms-2"></span>
+        </h5>
+        <div id="testCardsContainer"></div>
+    </div>
+
+    <!-- Vue finale : tableau + graphiques -->
+    <div id="finalResultsSection" style="display:none;" class="mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="mb-0"><i class="fas fa-vial"></i> {{ _('Résultats par test') }}</h5>
+            <div class="btn-group btn-group-sm" role="group">
+                <button type="button" class="btn btn-outline-primary active" id="btnViewTable" onclick="switchView('table')">
+                    <i class="fas fa-table me-1"></i>{{ _('Tableau') }}
+                </button>
+                <button type="button" class="btn btn-outline-primary" id="btnViewCharts" onclick="switchView('charts')">
+                    <i class="fas fa-chart-bar me-1"></i>{{ _('Graphiques') }}
+                </button>
+            </div>
+        </div>
+
+        <!-- Tableau -->
+        <div id="tableView">
+            <div class="table-responsive">
+                <table class="table table-striped table-hover align-middle results-table">
+                    <thead>
+                        <tr>
+                            <th>{{ _('Test') }}</th>
+                            <th class="text-center">{{ _('Total') }}</th>
+                            <th class="text-center">{{ _('Réussi') }}</th>
+                            <th class="text-center">{{ _('Échoué') }}</th>
+                            <th class="text-center">{{ _('Taux') }}</th>
+                            <th class="text-center">{{ _('T. moyen') }}</th>
+                            <th class="text-center">{{ _('T. min') }}</th>
+                            <th class="text-center">{{ _('T. max') }}</th>
+                            <th class="text-center">{{ _('T. total') }}</th>
+                        </tr>
+                    </thead>
+                    <tbody id="resultsTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Graphiques -->
+        <div id="chartsView" style="display:none;">
+            <div class="mb-3 d-flex gap-2 flex-wrap">
+                <button type="button" class="btn btn-sm btn-outline-secondary chart-type-btn active" id="btnChartInstances" onclick="switchChart('instances')">
+                    <i class="fas fa-chart-bar me-1"></i>{{ _('Instances ok/ko') }}
+                </button>
+                <button type="button" class="btn btn-sm btn-outline-secondary chart-type-btn" id="btnChartTime" onclick="switchChart('time')">
+                    <i class="fas fa-clock me-1"></i>{{ _('Temps de réponse') }}
+                </button>
+                <button type="button" class="btn btn-sm btn-outline-secondary chart-type-btn" id="btnChartDoughnut" onclick="switchChart('doughnut')">
+                    <i class="fas fa-chart-pie me-1"></i>{{ _('Succès global') }}
+                </button>
+                <button type="button" class="btn btn-sm btn-outline-secondary chart-type-btn" id="btnChartRate" onclick="switchChart('rate')">
+                    <i class="fas fa-percentage me-1"></i>{{ _('Taux par test') }}
+                </button>
+            </div>
+            <div class="card">
+                <div class="card-body" style="position:relative; min-height:300px;">
+                    <canvas id="perfChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Erreur -->
+    <div id="errorSection" style="display:none;">
+        <div class="alert alert-danger">
+            <i class="fas fa-exclamation-triangle"></i>
+            <strong>{{ _('Erreur') }}:</strong> <span id="errorMessage"></span>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='vendor/chart.umd.min.js') }}"></script>
+<script>
+const campainId = "{{ campain_id }}";
+const rapportId = "{{ rapport_id }}";
+let socket = null;
+let isCompleted = false;
+let perfChart = null;
+let lastTestsData = [];
+let currentChartType = 'instances';
+
+// Chaînes traduites (% hors des appels _() pour éviter ValueError markupsafe)
+const i18n = {
+    passed:              "{{ _('Réussies') }}",
+    failed:              "{{ _('Échouées') }}",
+    avg:                 "{{ _('Moyen') }}",
+    min:                 "{{ _('Minimum') }}",
+    max:                 "{{ _('Maximum') }}",
+    titleInstances:      "{{ _('Instances par test') }}",
+    titleTime:           "{{ _('Temps de réponse') }} (ms)",
+    titleDoughnut:       "{{ _('Résultat global des instances') }}",
+    rateLabel:           "{{ _('Taux de succès') }} (%)",
+    titleRate:           "{{ _('Taux de succès par test') }} (%)"
+};
+
+// =====================================================================
+// Init
+// =====================================================================
+document.addEventListener('DOMContentLoaded', async () => {
+    await loadRapportData();
+});
+
+async function loadRapportData() {
+    try {
+        const data = await API.get(`/api/rapports/${rapportId}`);
+        const rapport = data.rapport || data;
+
+        document.getElementById('rapportName').textContent =
+            rapport.details || '{{ _("Rapport de performance") }}';
+
+        const status = rapport.status;
+
+        if (status === 'pending' || status === 'running') {
+            showLiveMode();
+            connectWebSocket();
+        } else {
+            // Rapport terminé
+            isCompleted = true;
+            hideProgressCard();
+            const results = rapport.perf_results || {};
+            showGlobalStats(results);
+            if (results.tests && results.tests.length > 0) {
+                showFinalResults(results.tests, results);
+            }
+            showFinalStatus(status, results);
+        }
+    } catch (err) {
+        console.error('Erreur chargement rapport:', err);
+        showError('{{ _("Impossible de charger le rapport.") }}');
+    }
+}
+
+// =====================================================================
+// WebSocket
+// =====================================================================
+function connectWebSocket() {
+    if (typeof io === 'undefined') {
+        console.error('Socket.IO non disponible');
+        return;
+    }
+
+    socket = io();
+
+    socket.on('connect', () => {
+        socket.emit('join_perf', { rapport_id: rapportId });
+    });
+
+    socket.on('perf_started', (data) => {
+        console.log('Performance démarrée:', data);
+    });
+
+    socket.on('perf_stats_updated', (data) => {
+        if (data.rapport_id !== rapportId) return;
+
+        const progress = data.progress || 0;
+        updateProgressBar(progress, 'running');
+
+        if (data.global) {
+            showGlobalStats(data.global);
+        }
+        if (data.tests && data.tests.length > 0) {
+            showTestCards(data.tests);
+        }
+    });
+
+    socket.on('perf_completed', (data) => {
+        if (data.rapport_id !== rapportId) return;
+        isCompleted = true;
+        hideLiveMode();
+        hideProgressCard();
+        if (data.global) showGlobalStats(data.global);
+        if (data.tests && data.tests.length > 0) {
+            // Dernière mise à jour des cartes LIVE puis bascule vers la vue finale
+            showTestCards(data.tests);
+            setTimeout(() => {
+                document.getElementById('testCardsSection').style.display = 'none';
+                showFinalResults(data.tests, data.global || {});
+            }, 600);
+        }
+        showFinalStatus(data.status, data.global || {});
+    });
+
+    socket.on('perf_error', (data) => {
+        if (data.rapport_id !== rapportId) return;
+        hideLiveMode();
+        hideProgressCard();
+        showError(data.error || '{{ _("Erreur inconnue") }}');
+    });
+
+    socket.on('disconnect', () => {
+        if (!isCompleted) {
+            console.warn('WebSocket déconnecté');
+        }
+    });
+}
+
+// =====================================================================
+// UI helpers
+// =====================================================================
+function showLiveMode() {
+    document.getElementById('globalProgressCard').style.display = '';
+    document.getElementById('liveIndicator').style.display = '';
+    const pb = document.getElementById('globalProgressBar');
+    pb.classList.add('progress-bar-striped', 'progress-bar-animated');
+}
+
+function hideLiveMode() {
+    document.getElementById('liveIndicator').style.display = 'none';
+    const pb = document.getElementById('globalProgressBar');
+    pb.classList.remove('progress-bar-striped', 'progress-bar-animated');
+}
+
+function hideProgressCard() {
+    document.getElementById('globalProgressCard').style.display = 'none';
+}
+
+function updateProgressBar(progress, status) {
+    const pb = document.getElementById('globalProgressBar');
+    const text = document.getElementById('progressText');
+    pb.style.width = `${progress}%`;
+    pb.setAttribute('aria-valuenow', progress);
+    text.textContent = `${progress}%`;
+
+    if (status === 'success') {
+        pb.className = 'progress-bar bg-success';
+    } else if (status === 'failed' || status === 'error') {
+        pb.className = 'progress-bar bg-danger';
+    } else if (status === 'running') {
+        pb.className = 'progress-bar bg-warning progress-bar-striped progress-bar-animated';
+    }
+}
+
+function showGlobalStats(stats) {
+    document.getElementById('globalStatsRow').style.setProperty('display', 'flex', 'important');
+    document.getElementById('globalStatsRow').style.removeProperty('display');
+    document.getElementById('globalStatsRow').style.display = 'flex';
+
+    document.getElementById('statTotal').textContent = stats.total_instances ?? '-';
+    document.getElementById('statExecuted').textContent = stats.executed_instances ?? '-';
+    document.getElementById('statPassed').textContent = stats.passed_instances ?? '-';
+    document.getElementById('statFailed').textContent = stats.failed_instances ?? '-';
+    document.getElementById('statAvg').textContent = formatMs(stats.exec_time_avg_ms);
+    document.getElementById('statMin').textContent = formatMs(stats.exec_time_min_ms);
+    document.getElementById('statMax').textContent = formatMs(stats.exec_time_max_ms);
+    document.getElementById('statTotal2').textContent = formatMs(stats.exec_time_total_ms);
+}
+
+function showTestCards(tests) {
+    const section = document.getElementById('testCardsSection');
+    const container = document.getElementById('testCardsContainer');
+    section.style.display = '';
+
+    container.innerHTML = tests.map(t => {
+        const passed = t.passed_instances || 0;
+        const executed = t.executed_instances || 0;
+        const total = t.total_instances || 0;
+        const progress = total > 0 ? Math.round((executed / total) * 100) : 0;
+        const failed = t.failed_instances || 0;
+        const progressClass = failed > 0 ? 'bg-danger' : (progress >= 100 ? 'bg-success' : 'bg-warning');
+
+        return `
+        <div class="card test-card mb-3">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span class="fw-bold"><i class="fas fa-vial me-2"></i>${escapeHtml(t.name || t.test_id)}</span>
+                <div class="d-flex gap-2">
+                    <span class="badge bg-primary">${executed}/${total}</span>
+                    <span class="badge bg-success">${passed} {{ _('ok') }}</span>
+                    ${failed > 0 ? `<span class="badge bg-danger">${failed} {{ _('ko') }}</span>` : ''}
+                </div>
+            </div>
+            <div class="card-body py-2">
+                <div class="progress">
+                    <div class="progress-bar ${progressClass}" role="progressbar"
+                         style="width: ${progress}%;" aria-valuenow="${progress}"
+                         aria-valuemin="0" aria-valuemax="100">
+                        ${progress}%
+                    </div>
+                </div>
+            </div>
+        </div>`;
+    }).join('');
+}
+
+// =====================================================================
+// Vue finale (tableau + graphiques)
+// =====================================================================
+function showFinalResults(tests, globalStats) {
+    lastTestsData = tests;
+    document.getElementById('finalResultsSection').style.display = '';
+    document.getElementById('testCardsSection').style.display = 'none';
+    buildResultsTable(tests);
+    renderChart(tests, currentChartType);
+}
+
+function buildResultsTable(tests) {
+    const tbody = document.getElementById('resultsTableBody');
+    tbody.innerHTML = tests.map(t => {
+        const passed = t.passed_instances || 0;
+        const failed = t.failed_instances || 0;
+        const total = t.total_instances || 0;
+        const rate = total > 0 ? Math.round((passed / total) * 100) : 0;
+        const rateColor = rate === 100 ? '#198754' : (rate >= 80 ? '#ffc107' : '#dc3545');
+        const rateTextColor = rate >= 80 && rate < 100 ? '#000' : '#fff';
+        return `<tr>
+            <td><i class="fas fa-vial text-muted me-1"></i><strong>${escapeHtml(t.name || t.test_id)}</strong></td>
+            <td class="text-center">${total}</td>
+            <td class="text-center text-success fw-bold">${passed}</td>
+            <td class="text-center ${failed > 0 ? 'text-danger fw-bold' : 'text-muted'}">${failed}</td>
+            <td class="text-center">
+                <span class="rate-badge" style="background:${rateColor};color:${rateTextColor}">${rate}%</span>
+            </td>
+            <td class="text-center time-tag">${formatMs(t.exec_time_avg_ms)}</td>
+            <td class="text-center time-tag">${formatMs(t.exec_time_min_ms)}</td>
+            <td class="text-center time-tag">${formatMs(t.exec_time_max_ms)}</td>
+            <td class="text-center time-tag">${formatMs(t.exec_time_total_ms)}</td>
+        </tr>`;
+    }).join('');
+}
+
+function switchView(mode) {
+    const tableView = document.getElementById('tableView');
+    const chartsView = document.getElementById('chartsView');
+    document.getElementById('btnViewTable').classList.toggle('active', mode === 'table');
+    document.getElementById('btnViewCharts').classList.toggle('active', mode === 'charts');
+    tableView.style.display = mode === 'table' ? '' : 'none';
+    chartsView.style.display = mode === 'charts' ? '' : 'none';
+    if (mode === 'charts') renderChart(lastTestsData, currentChartType);
+}
+
+function switchChart(type) {
+    currentChartType = type;
+    document.querySelectorAll('.chart-type-btn').forEach(b => b.classList.remove('active'));
+    const map = { instances: 'btnChartInstances', time: 'btnChartTime', doughnut: 'btnChartDoughnut', rate: 'btnChartRate' };
+    const btn = document.getElementById(map[type]);
+    if (btn) btn.classList.add('active');
+    renderChart(lastTestsData, type);
+}
+
+function renderChart(tests, type) {
+    const canvas = document.getElementById('perfChart');
+    if (!canvas) return;
+    if (perfChart) { perfChart.destroy(); perfChart = null; }
+
+    const labels = tests.map(t => t.name || t.test_id);
+
+    if (type === 'instances') {
+        perfChart = new Chart(canvas, {
+            type: 'bar',
+            data: {
+                labels,
+                datasets: [
+                    { label: i18n.passed, data: tests.map(t => t.passed_instances || 0), backgroundColor: 'rgba(25,135,84,0.75)', borderColor: '#198754', borderWidth: 1 },
+                    { label: i18n.failed, data: tests.map(t => t.failed_instances || 0), backgroundColor: 'rgba(220,53,69,0.75)', borderColor: '#dc3545', borderWidth: 1 }
+                ]
+            },
+            options: { responsive: true, plugins: { legend: { position: 'top' }, title: { display: true, text: i18n.titleInstances } }, scales: { x: { stacked: false }, y: { beginAtZero: true, ticks: { stepSize: 1 } } } }
+        });
+    } else if (type === 'time') {
+        perfChart = new Chart(canvas, {
+            type: 'bar',
+            data: {
+                labels,
+                datasets: [
+                    { label: i18n.avg, data: tests.map(t => t.exec_time_avg_ms || 0), backgroundColor: 'rgba(13,110,253,0.7)', borderColor: '#0d6efd', borderWidth: 1 },
+                    { label: i18n.min, data: tests.map(t => t.exec_time_min_ms || 0), backgroundColor: 'rgba(108,117,125,0.5)', borderColor: '#6c757d', borderWidth: 1 },
+                    { label: i18n.max, data: tests.map(t => t.exec_time_max_ms || 0), backgroundColor: 'rgba(255,193,7,0.7)', borderColor: '#ffc107', borderWidth: 1 }
+                ]
+            },
+            options: { responsive: true, plugins: { legend: { position: 'top' }, title: { display: true, text: i18n.titleTime } }, scales: { y: { beginAtZero: true } } }
+        });
+    } else if (type === 'doughnut') {
+        const totalPassed = tests.reduce((s, t) => s + (t.passed_instances || 0), 0);
+        const totalFailed = tests.reduce((s, t) => s + (t.failed_instances || 0), 0);
+        perfChart = new Chart(canvas, {
+            type: 'doughnut',
+            data: {
+                labels: [i18n.passed, i18n.failed],
+                datasets: [{ data: [totalPassed, totalFailed], backgroundColor: ['rgba(25,135,84,0.8)', 'rgba(220,53,69,0.8)'], borderColor: ['#198754', '#dc3545'], borderWidth: 2 }]
+            },
+            options: { responsive: true, plugins: { legend: { position: 'right' }, title: { display: true, text: i18n.titleDoughnut } } }
+        });
+    } else if (type === 'rate') {
+        const rates = tests.map(t => {
+            const total = t.total_instances || 0;
+            return total > 0 ? Math.round(((t.passed_instances || 0) / total) * 100) : 0;
+        });
+        const colors = rates.map(r => r === 100 ? 'rgba(25,135,84,0.8)' : r >= 80 ? 'rgba(255,193,7,0.8)' : 'rgba(220,53,69,0.8)');
+        perfChart = new Chart(canvas, {
+            type: 'bar',
+            data: {
+                labels,
+                datasets: [{ label: i18n.rateLabel, data: rates, backgroundColor: colors, borderColor: colors.map(c => c.replace('0.8', '1')), borderWidth: 1 }]
+            },
+            options: { indexAxis: 'y', responsive: true, plugins: { legend: { display: false }, title: { display: true, text: i18n.titleRate } }, scales: { x: { beginAtZero: true, max: 100 } } }
+        });
+    }
+}
+
+function showFinalStatus(status, results) {
+    const el = document.getElementById('finalStatusAlert');
+    el.style.display = '';
+
+    const passed = results.passed_instances || 0;
+    const failed = results.failed_instances || 0;
+    const total = results.total_instances || 0;
+
+    if (status === 'success') {
+        el.innerHTML = `<div class="alert alert-success"><i class="fas fa-check-circle me-2"></i>
+            <strong>{{ _('Test de performance terminé avec succès') }}</strong> —
+            ${passed}/${total} {{ _('instances réussies') }} (${formatMs(results.exec_time_avg_ms)} {{ _('en moyenne') }})
+            </div>`;
+    } else if (status === 'failed') {
+        el.innerHTML = `<div class="alert alert-danger"><i class="fas fa-times-circle me-2"></i>
+            <strong>{{ _('Test de performance terminé avec des échecs') }}</strong> —
+            ${failed} {{ _('instance(s) échouée(s) sur') }} ${total}
+            </div>`;
+    } else {
+        el.innerHTML = `<div class="alert alert-warning"><i class="fas fa-exclamation-triangle me-2"></i>
+            <strong>{{ _('Test de performance terminé') }}</strong> (${status})
+            </div>`;
+    }
+}
+
+function showError(message) {
+    document.getElementById('errorSection').style.display = '';
+    document.getElementById('errorMessage').textContent = message;
+}
+
+function formatMs(ms) {
+    if (ms === null || ms === undefined || ms === 0) return '-';
+    if (ms < 1000) return `${ms} ms`;
+    return `${(ms / 1000).toFixed(2)} s`;
+}
+
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text ?? '';
+    return div.innerHTML;
+}
+</script>
+{% endblock %}
