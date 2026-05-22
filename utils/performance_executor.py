@@ -208,7 +208,9 @@ class PerformanceExecutor:
                         futures = []
                         for i in range(n):
                             vars_copy = copy.deepcopy(variables_base)
-                            vars_copy['test.test_id'] = test_id
+                            # Identifiant unique par instance pour éviter les conflits
+                            # en cas d'exécution parallèle (ex: ressources nommées via {{test.test_id}})
+                            vars_copy['test.test_id'] = f"{test_id}_{i+1}" if n > 1 else test_id
                             futures.append(
                                 pool.submit(
                                     self._execute_test_instance,
@@ -237,7 +239,8 @@ class PerformanceExecutor:
                             break
 
                         vars_copy = copy.deepcopy(variables_base)
-                        vars_copy['test.test_id'] = test_id
+                        # Identifiant unique par instance pour éviter les conflits sur les ressources
+                        vars_copy['test.test_id'] = f"{test_id}_{i+1}" if n > 1 else test_id
                         result = self._execute_test_instance(test_id, vars_copy, i + 1, timeout_override)
                         on_instance_done(result, test_result_entry)
 

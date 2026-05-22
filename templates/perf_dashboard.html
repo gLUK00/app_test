@@ -462,8 +462,7 @@ function connectWebSocket() {
 function showLiveMode() {
     document.getElementById('globalProgressCard').style.display = '';
     document.getElementById('liveIndicator').style.display = '';
-    const pb = document.getElementById('globalProgressBar');
-    pb.classList.add('progress-bar-striped', 'progress-bar-animated');
+    // Le segment "pending" est déjà animé par défaut (classes dans le HTML)
 }
 
 function hideLiveMode() {
