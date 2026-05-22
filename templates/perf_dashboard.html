@@ -118,10 +118,13 @@
                 <span class="fw-bold">{{ _('Progression globale') }}</span>
                 <span id="progressText" class="text-muted small">0%</span>
             </div>
-            <div class="progress">
-                <div id="globalProgressBar" class="progress-bar bg-warning progress-bar-striped progress-bar-animated"
-                     role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
-                </div>
+            <div class="progress" style="height: 22px;">
+                <div id="globalProgressBarPassed" class="progress-bar bg-success"
+                     style="width: 0%; transition: width 0.4s ease;" title="{{ _('OK') }}"></div>
+                <div id="globalProgressBarFailed" class="progress-bar bg-danger"
+                     style="width: 0%; transition: width 0.4s ease;" title="{{ _('KO') }}"></div>
+                <div id="globalProgressBarPending" class="progress-bar bg-warning progress-bar-striped progress-bar-animated"
+                     style="width: 100%; transition: width 0.4s ease;"></div>
             </div>
         </div>
     </div>
@@ -271,11 +274,23 @@
         </div>
     </div>
 
-    <!-- Erreur -->
+    <!-- Erreur système -->
     <div id="errorSection" style="display:none;">
         <div class="alert alert-danger">
             <i class="fas fa-exclamation-triangle"></i>
             <strong>{{ _('Erreur') }}:</strong> <span id="errorMessage"></span>
+        </div>
+    </div>
+
+    <!-- Zone d'erreurs d'exécution par test -->
+    <div id="errorsSection" style="display:none;" class="mb-4">
+        <div class="card border-danger">
+            <div class="card-header d-flex align-items-center" style="background:#dc3545; color:white;">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                <strong>{{ _('Détail des erreurs par test') }}</strong>
+                <span id="errorsCount" class="badge bg-light text-danger ms-2"></span>
+            </div>
+            <div class="card-body p-0" id="errorsBody"></div>
         </div>
     </div>
 </div>
@@ -398,14 +413,14 @@ function connectWebSocket() {
     socket.on('perf_stats_updated', (data) => {
         if (data.rapport_id !== rapportId) return;
 
-        const progress = data.progress || 0;
-        updateProgressBar(progress, 'running');
+        updateProgressBar(data.global || {}, 'running');
 
         if (data.global) {
             showGlobalStats(data.global);
         }
         if (data.tests && data.tests.length > 0) {
             showTestCards(data.tests);
+            updateErrorSection(data.tests);
         }
     });
 
@@ -418,6 +433,7 @@ function connectWebSocket() {
         if (data.tests && data.tests.length > 0) {
             // Dernière mise à jour des cartes LIVE puis bascule vers la vue finale
             showTestCards(data.tests);
+            updateErrorSection(data.tests);
             setTimeout(() => {
                 document.getElementById('testCardsSection').style.display = 'none';
                 showFinalResults(data.tests, data.global || {});
@@ -452,27 +468,40 @@ function showLiveMode() {
 
 function hideLiveMode() {
     document.getElementById('liveIndicator').style.display = 'none';
-    const pb = document.getElementById('globalProgressBar');
-    pb.classList.remove('progress-bar-striped', 'progress-bar-animated');
+    const pb = document.getElementById('globalProgressBarPending');
+    if (pb) pb.classList.remove('progress-bar-striped', 'progress-bar-animated');
 }
 
 function hideProgressCard() {
     document.getElementById('globalProgressCard').style.display = 'none';
 }
 
-function updateProgressBar(progress, status) {
-    const pb = document.getElementById('globalProgressBar');
-    const text = document.getElementById('progressText');
-    pb.style.width = `${progress}%`;
-    pb.setAttribute('aria-valuenow', progress);
-    text.textContent = `${progress}%`;
+function updateProgressBar(globalStats, status) {
+    const total    = (globalStats && globalStats.total_instances)    || 0;
+    const passed   = (globalStats && globalStats.passed_instances)   || 0;
+    const failed   = (globalStats && globalStats.failed_instances)   || 0;
+    const executed = (globalStats && globalStats.executed_instances) || 0;
 
-    if (status === 'success') {
-        pb.className = 'progress-bar bg-success';
-    } else if (status === 'failed' || status === 'error') {
-        pb.className = 'progress-bar bg-danger';
-    } else if (status === 'running') {
-        pb.className = 'progress-bar bg-warning progress-bar-striped progress-bar-animated';
+    const passedPct  = total > 0 ? (passed  / total * 100) : 0;
+    const failedPct  = total > 0 ? (failed  / total * 100) : 0;
+    const pendingPct = Math.max(0, 100 - passedPct - failedPct);
+
+    const pbPassed  = document.getElementById('globalProgressBarPassed');
+    const pbFailed  = document.getElementById('globalProgressBarFailed');
+    const pbPending = document.getElementById('globalProgressBarPending');
+    const text      = document.getElementById('progressText');
+
+    if (pbPassed)  pbPassed.style.width  = `${passedPct.toFixed(1)}%`;
+    if (pbFailed)  pbFailed.style.width  = `${failedPct.toFixed(1)}%`;
+    if (pbPending) pbPending.style.width = `${pendingPct.toFixed(1)}%`;
+
+    if (text && total > 0) {
+        const execPct = Math.round((executed / total) * 100);
+        text.textContent = `${passed} ok · ${failed} ko · ${execPct}%`;
+    }
+
+    if (status !== 'running' && pbPending) {
+        pbPending.classList.remove('progress-bar-striped', 'progress-bar-animated');
     }
 }
 
@@ -497,12 +526,16 @@ function showTestCards(tests) {
     section.style.display = '';
 
     container.innerHTML = tests.map(t => {
-        const passed = t.passed_instances || 0;
+        const passed   = t.passed_instances  || 0;
+        const failed   = t.failed_instances  || 0;
         const executed = t.executed_instances || 0;
-        const total = t.total_instances || 0;
-        const progress = total > 0 ? Math.round((executed / total) * 100) : 0;
-        const failed = t.failed_instances || 0;
-        const progressClass = failed > 0 ? 'bg-danger' : (progress >= 100 ? 'bg-success' : 'bg-warning');
+        const total    = t.total_instances   || 0;
+
+        const passedPct  = total > 0 ? (passed  / total * 100) : 0;
+        const failedPct  = total > 0 ? (failed  / total * 100) : 0;
+        const pendingPct = Math.max(0, 100 - passedPct - failedPct);
+        const execPct    = total > 0 ? Math.round((executed / total) * 100) : 0;
+        const isRunning  = executed < total;
 
         return `
         <div class="card test-card mb-3">
@@ -515,12 +548,15 @@ function showTestCards(tests) {
                 </div>
             </div>
             <div class="card-body py-2">
-                <div class="progress">
-                    <div class="progress-bar ${progressClass}" role="progressbar"
-                         style="width: ${progress}%;" aria-valuenow="${progress}"
-                         aria-valuemin="0" aria-valuemax="100">
-                        ${progress}%
-                    </div>
+                <div class="progress" style="height: 18px;">
+                    <div class="progress-bar bg-success"
+                         style="width: ${passedPct.toFixed(1)}%; transition: width 0.3s ease;"
+                         title="{{ _('ok') }}: ${passed}"></div>
+                    <div class="progress-bar bg-danger"
+                         style="width: ${failedPct.toFixed(1)}%; transition: width 0.3s ease;"
+                         title="{{ _('ko') }}: ${failed}"></div>
+                    <div class="progress-bar bg-warning ${isRunning ? 'progress-bar-striped progress-bar-animated' : ''}"
+                         style="width: ${pendingPct.toFixed(1)}%; transition: width 0.3s ease;">${execPct}%</div>
                 </div>
             </div>
         </div>`;
@@ -536,6 +572,7 @@ function showFinalResults(tests, globalStats) {
     document.getElementById('testCardsSection').style.display = 'none';
     buildResultsTable(tests);
     renderChart(tests, currentChartType);
+    updateErrorSection(tests);
 }
 
 function buildResultsTable(tests) {
@@ -816,6 +853,55 @@ async function generatePerfReport() {
         btn.disabled = false;
         btn.innerHTML = '<i class="fas fa-download me-1"></i>{{ _("Générer et télécharger") }}';
     }
+}// =====================================================================
+// Zone d'erreurs groupées
+// =====================================================================
+function updateErrorSection(tests) {
+    const section = document.getElementById('errorsSection');
+    const body    = document.getElementById('errorsCount');
+    const content = document.getElementById('errorsBody');
+    if (!section) return;
+
+    const testsWithErrors = (tests || []).filter(t => t.errors && t.errors.length > 0);
+
+    if (testsWithErrors.length === 0) {
+        section.style.display = 'none';
+        return;
+    }
+
+    const totalErrors = testsWithErrors.reduce((s, t) =>
+        s + t.errors.reduce((ss, e) => ss + e.count, 0), 0);
+
+    section.style.display = '';
+    if (body) body.textContent = totalErrors;
+
+    content.innerHTML = testsWithErrors.map(t => {
+        const rows = t.errors.map(e => `
+            <tr>
+                <td class="font-monospace small text-break py-1 px-3">${escapeHtml(e.message)}</td>
+                <td class="text-center text-nowrap py-1 px-2" style="width:70px;">
+                    <span class="badge bg-danger">${e.count}×</span>
+                </td>
+            </tr>`).join('');
+
+        return `
+        <div class="border-bottom p-3">
+            <div class="fw-semibold mb-2" style="color:#dc3545;">
+                <i class="fas fa-vial me-1"></i>${escapeHtml(t.name || t.test_id)}
+                <span class="text-muted fw-normal ms-2 small">(${t.failed_instances || 0} {{ _('échec(s)') }})</span>
+            </div>
+            <table class="table table-sm table-bordered mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>{{ _('Message d\'erreur') }}</th>
+                        <th class="text-center" style="width:70px;">{{ _('Nb') }}</th>
+                    </tr>
+                </thead>
+                <tbody>${rows}</tbody>
+            </table>
+        </div>`;
+    }).join('');
 }
+
 </script>
 {% endblock %}

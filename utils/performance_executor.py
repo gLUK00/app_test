@@ -120,7 +120,8 @@ class PerformanceExecutor:
                     'exec_time_min_ms': None,
                     'exec_time_max_ms': 0,
                     'exec_time_total_ms': 0,
-                    '_instance_times': []  # temporaire pour calculs
+                    '_instance_times': [],  # temporaire pour calculs
+                    '_errors': {}           # {normalized_key: {message, count}}
                 })
 
             Rapport.update_perf_results(rapport_id, perf_results)
@@ -133,8 +134,16 @@ class PerformanceExecutor:
             def on_instance_done(result, test_result_entry):
                 exec_time = result.get('executionTimeMs', 0)
                 passed = result.get('status') == 'passed'
+                err_msg = (result.get('error') or '').strip()
 
                 with lock:
+                    # Collecte des erreurs
+                    if not passed and err_msg:
+                        err_key = ' '.join(err_msg.lower().split())
+                        if err_key not in test_result_entry['_errors']:
+                            test_result_entry['_errors'][err_key] = {'message': err_msg, 'count': 0}
+                        test_result_entry['_errors'][err_key]['count'] += 1
+
                     # Stats du test
                     test_result_entry['executed_instances'] += 1
                     if passed:
@@ -256,6 +265,7 @@ class PerformanceExecutor:
             # Nettoyage des données temporaires
             for tr in perf_results['tests']:
                 tr.pop('_instance_times', None)
+                tr['errors'] = sorted(tr.pop('_errors', {}).values(), key=lambda e: -e['count'])
                 if tr['exec_time_min_ms'] is None:
                     tr['exec_time_min_ms'] = 0
 
@@ -305,6 +315,7 @@ class PerformanceExecutor:
         """Exécute une instance unique d'un test. Thread-safe (contexte isolé)."""
         start_time = time.time()
         status = 'passed'
+        error_msg = None
 
         try:
             test = Test.find_by_id(test_id)
@@ -312,7 +323,8 @@ class PerformanceExecutor:
                 return {
                     'status': 'failed',
                     'executionTimeMs': 0,
-                    'instance_num': instance_num
+                    'instance_num': instance_num,
+                    'error': 'Test introuvable'
                 }
 
             # Contexte de variables isolé par instance
@@ -333,6 +345,7 @@ class PerformanceExecutor:
                 action_plugin = self.plugin_manager.get_plugin(action_type)
                 if not action_plugin:
                     status = 'failed'
+                    error_msg = f"Plugin d'action '{action_type}' non trouvé"
                     break
 
                 try:
@@ -346,19 +359,27 @@ class PerformanceExecutor:
                                     test_variables[f'app.{test_var_name}'] = output_values[plugin_var_name]
                     else:
                         status = 'failed'
+                        traces = result.get('traces', [])
+                        error_msg = next(
+                            (str(t).strip() for t in reversed(traces) if str(t).strip()),
+                            f"Action '{action_type}' a échoué"
+                        )
                         break
-                except Exception:
+                except Exception as exc:
                     status = 'failed'
+                    error_msg = str(exc)
                     break
 
-        except Exception:
+        except Exception as exc:
             status = 'failed'
+            error_msg = str(exc)
 
         end_time = time.time()
         return {
             'status': status,
             'executionTimeMs': int((end_time - start_time) * 1000),
-            'instance_num': instance_num
+            'instance_num': instance_num,
+            'error': error_msg
         }
 
     # ------------------------------------------------------------------
@@ -421,5 +442,6 @@ def _serialize_test(tr):
         'exec_time_avg_ms': tr['exec_time_avg_ms'],
         'exec_time_min_ms': tr.get('exec_time_min_ms') or 0,
         'exec_time_max_ms': tr['exec_time_max_ms'],
-        'exec_time_total_ms': tr['exec_time_total_ms']
+        'exec_time_total_ms': tr['exec_time_total_ms'],
+        'errors': tr.get('errors', [])
     }
