@@ -26,6 +26,7 @@ from routes import (
     plugins_routes,
     deleted_bp
 )
+from routes.perf_reports_routes import perf_reports_bp
 
 # Variable globale pour l'instance SocketIO
 socketio = None
@@ -138,6 +139,7 @@ def create_app():
     app.register_blueprint(actions_bp)
     app.register_blueprint(plugins_routes)
     app.register_blueprint(deleted_bp)
+    app.register_blueprint(perf_reports_bp)
     
     # Configuration Swagger UI
     SWAGGER_URL = '/swagger'

@@ -206,14 +206,19 @@
 
     <!-- Vue finale : tableau + graphiques -->
     <div id="finalResultsSection" style="display:none;" class="mb-4">
-        <div class="d-flex justify-content-between align-items-center mb-3">
+        <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
             <h5 class="mb-0"><i class="fas fa-vial"></i> {{ _('Résultats par test') }}</h5>
-            <div class="btn-group btn-group-sm" role="group">
-                <button type="button" class="btn btn-outline-primary active" id="btnViewTable" onclick="switchView('table')">
-                    <i class="fas fa-table me-1"></i>{{ _('Tableau') }}
-                </button>
-                <button type="button" class="btn btn-outline-primary" id="btnViewCharts" onclick="switchView('charts')">
-                    <i class="fas fa-chart-bar me-1"></i>{{ _('Graphiques') }}
+            <div class="d-flex gap-2 align-items-center">
+                <div class="btn-group btn-group-sm" role="group">
+                    <button type="button" class="btn btn-outline-primary active" id="btnViewTable" onclick="switchView('table')">
+                        <i class="fas fa-table me-1"></i>{{ _('Tableau') }}
+                    </button>
+                    <button type="button" class="btn btn-outline-primary" id="btnViewCharts" onclick="switchView('charts')">
+                        <i class="fas fa-chart-bar me-1"></i>{{ _('Graphiques') }}
+                    </button>
+                </div>
+                <button type="button" class="btn btn-sm btn-outline-success" onclick="openPerfReportModal()">
+                    <i class="fas fa-file-export me-1"></i>{{ _('Générer un rapport') }}
                 </button>
             </div>
         </div>
@@ -269,6 +274,39 @@
         <div class="alert alert-danger">
             <i class="fas fa-exclamation-triangle"></i>
             <strong>{{ _('Erreur') }}:</strong> <span id="errorMessage"></span>
+        </div>
+    </div>
+</div>
+
+<!-- Modal : génération de rapport de performance -->
+<div class="modal fade" id="perfReportModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="fas fa-file-export me-2"></i>{{ _('Générer un rapport de performance') }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="perfReportType" class="form-label">{{ _('Type de rapport') }}</label>
+                    <select id="perfReportType" class="form-select" onchange="loadPerfReportConfig()">
+                        <option value="">{{ _('Choisir un type de rapport...') }}</option>
+                    </select>
+                </div>
+                <p id="perfReportDescription" class="text-muted small mb-3"></p>
+                <div id="perfReportConfigForm" class="d-none">
+                    <hr>
+                    <div id="perfDynamicFormFields"></div>
+                </div>
+                <div id="perfReportAlert" class="d-none"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ _('Annuler') }}</button>
+                <button type="button" class="btn btn-success" id="btnConfirmPerfGenerate"
+                        onclick="generatePerfReport()" disabled>
+                    <i class="fas fa-download me-1"></i>{{ _('Générer et télécharger') }}
+                </button>
+            </div>
         </div>
     </div>
 </div>
@@ -642,6 +680,140 @@ function escapeHtml(text) {
     const div = document.createElement('div');
     div.textContent = text ?? '';
     return div.innerHTML;
+}
+
+// -----------------------------------------------------------------------
+// Rapport de performance — modal
+// -----------------------------------------------------------------------
+let perfReportPlugins = {};
+
+async function openPerfReportModal() {
+    const alertDiv = document.getElementById('perfReportAlert');
+    alertDiv.className = 'd-none';
+
+    try {
+        const plugins = await API.get('/api/perf-reports/plugins');
+        perfReportPlugins = {};
+
+        const select = document.getElementById('perfReportType');
+        select.innerHTML = `<option value="">{{ _('Choisir un type de rapport...') }}</option>`;
+
+        plugins.forEach(p => {
+            perfReportPlugins[p.type] = p;
+            const opt = document.createElement('option');
+            opt.value = p.type;
+            opt.textContent = p.metadata.name;
+            select.appendChild(opt);
+        });
+
+        document.getElementById('perfReportDescription').textContent = '';
+        document.getElementById('perfReportConfigForm').classList.add('d-none');
+        document.getElementById('btnConfirmPerfGenerate').disabled = true;
+
+        const modal = new bootstrap.Modal(document.getElementById('perfReportModal'));
+        modal.show();
+    } catch (err) {
+        console.error(err);
+        alert("{{ _('Impossible de charger les plugins de rapport') }}");
+    }
+}
+
+function loadPerfReportConfig() {
+    const type  = document.getElementById('perfReportType').value;
+    const desc  = document.getElementById('perfReportDescription');
+    const form  = document.getElementById('perfReportConfigForm');
+    const fields= document.getElementById('perfDynamicFormFields');
+    const btn   = document.getElementById('btnConfirmPerfGenerate');
+
+    if (!type) {
+        desc.textContent = '';
+        form.classList.add('d-none');
+        btn.disabled = true;
+        return;
+    }
+
+    const plugin = perfReportPlugins[type];
+    desc.textContent = plugin.metadata.description || '';
+
+    fields.innerHTML = '';
+    (plugin.schema || []).forEach(field => {
+        const div = document.createElement('div');
+        div.className = 'mb-3';
+
+        if (field.type === 'checkbox') {
+            div.innerHTML = `
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="prf_${field.name}"
+                           name="${field.name}" ${field.default !== false ? 'checked' : ''}>
+                    <label class="form-check-label" for="prf_${field.name}">${escapeHtml(field.label)}</label>
+                </div>`;
+        } else if (field.type === 'select') {
+            const opts = (field.options || []).map(o =>
+                `<option value="${escapeHtml(o.value)}">${escapeHtml(o.label)}</option>`
+            ).join('');
+            div.innerHTML = `
+                <label class="form-label" for="prf_${field.name}">${escapeHtml(field.label)}</label>
+                <select class="form-select form-select-sm" id="prf_${field.name}" name="${field.name}">${opts}</select>`;
+        } else {
+            div.innerHTML = `
+                <label class="form-label" for="prf_${field.name}">${escapeHtml(field.label)}</label>
+                <input type="text" class="form-control form-control-sm" id="prf_${field.name}"
+                       name="${field.name}" placeholder="${escapeHtml(field.placeholder || '')}">`;
+        }
+        fields.appendChild(div);
+    });
+
+    form.classList.toggle('d-none', plugin.schema.length === 0);
+    btn.disabled = false;
+}
+
+async function generatePerfReport() {
+    const type   = document.getElementById('perfReportType').value;
+    const btn    = document.getElementById('btnConfirmPerfGenerate');
+    const alertDiv = document.getElementById('perfReportAlert');
+
+    if (!type) return;
+
+    // Collecter la config du formulaire
+    const config = {};
+    document.querySelectorAll('#perfDynamicFormFields [name]').forEach(el => {
+        config[el.name] = el.type === 'checkbox' ? el.checked : el.value;
+    });
+
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>{{ _("Génération...") }}';
+    alertDiv.className = 'd-none';
+
+    try {
+        const result = await API.post(`/api/perf-reports/${rapportId}/generate`, {
+            report_type: type,
+            config
+        });
+
+        // Déclencher le téléchargement
+        const a = document.createElement('a');
+        a.href = result.download_url;
+        a.download = '';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+
+        // Notifier la page campagne (autre onglet) de rafraîchir la liste des rapports
+        localStorage.setItem(`reports_updated_${campainId}`, Date.now());
+
+        alertDiv.className = 'alert alert-success';
+        alertDiv.textContent = result.message || '{{ _("Rapport généré avec succès") }}';
+
+        bootstrap.Modal.getInstance(document.getElementById('perfReportModal')).hide();
+
+    } catch (err) {
+        console.error(err);
+        alertDiv.className = 'alert alert-danger';
+        alertDiv.textContent = err.message || '{{ _("Erreur lors de la génération") }}';
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-download me-1"></i>{{ _("Générer et télécharger") }}';
+    }
 }
 </script>
 {% endblock %}

@@ -1812,6 +1812,13 @@ document.addEventListener('DOMContentLoaded', () => {
     loadRapports(); // Charge les rapports d'exécution (historique)
     loadReports(); // Charge les fichiers de rapports générés
     loadPluginsWithStructure().then(() => loadPluginStructures()); // Charge les structures de plugins
+
+    // Écoute les mises à jour de rapports déclenchées depuis d'autres onglets (ex: perf_dashboard)
+    window.addEventListener('storage', function(e) {
+        if (e.key === `reports_updated_${campainId}`) {
+            loadReports();
+        }
+    });
 });
 </script>
 {% endblock %}
