@@ -236,3 +236,41 @@ class Test:
         collection = get_collection(Test.collection_name)
         result = collection.delete_one({'_id': ObjectId(test_id)})
         return result.deleted_count > 0
+
+    @staticmethod
+    def duplicate(test_id, new_name=None, new_description=None):
+        """Duplique un test avec un nouveau nom et une nouvelle description optionnels."""
+        collection = get_collection(Test.collection_name)
+        original = collection.find_one({'_id': ObjectId(test_id), 'isDeleted': {'$ne': True}})
+
+        if not original:
+            return None
+
+        # Déterminer l'ordre du nouveau test (le placer à la fin de la campagne)
+        campain_id = original['campainId']
+        existing_tests = list(collection.find({'campainId': campain_id, 'isDeleted': {'$ne': True}}))
+        if existing_tests:
+            max_order = max([test.get('order', 0) for test in existing_tests])
+            order = max_order + 1
+        else:
+            order = 1
+
+        # Nom par défaut si non fourni
+        base_name = new_name or (original.get('name') or '')
+        if not new_name:
+            base_name = f"{original.get('name', 'Test')} (copie)"
+
+        new_test = {
+            'campainId': original['campainId'],
+            'userId': original['userId'],
+            'dateCreated': datetime.utcnow(),
+            'actions': original.get('actions', []),
+            'name': base_name,
+            'description': new_description if new_description is not None else original.get('description', ''),
+            'variables': original.get('variables', []),
+            'order': order,
+            'isDeleted': False
+        }
+
+        result = collection.insert_one(new_test)
+        return str(result.inserted_id)

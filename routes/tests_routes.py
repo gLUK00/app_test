@@ -198,6 +198,28 @@ def move_test_up(test_id):
     except Exception as e:
         return jsonify({'message': _('Erreur serveur: %(error)s', error=str(e))}), 500
 
+@tests_bp.route('/<test_id>/duplicate', methods=['POST'])
+@token_required
+def duplicate_test(test_id):
+    """Duplique un test."""
+    try:
+        data = request.get_json() or {}
+        new_name = data.get('name')
+        new_description = data.get('description')
+
+        new_test_id = Test.duplicate(test_id, new_name=new_name, new_description=new_description)
+
+        if not new_test_id:
+            return jsonify({'message': _('Test non trouvé')}), 404
+
+        return jsonify({
+            'message': _('Test dupliqué avec succès'),
+            'test_id': new_test_id
+        }), 200
+
+    except Exception as e:
+        return jsonify({'message': _('Erreur serveur: %(error)s', error=str(e))}), 500
+
 @tests_bp.route('/<test_id>/move-down', methods=['POST'])
 @token_required
 def move_test_down(test_id):

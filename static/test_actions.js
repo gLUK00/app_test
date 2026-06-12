@@ -1016,6 +1016,9 @@ class TestActionsManager {
                             <button class="btn btn-sm btn-outline-primary" onclick="testActionsManager.editAction(${index})" title="Modifier">
                                 <i class="fas fa-edit"></i>
                             </button>
+                            <button class="btn btn-sm btn-outline-info" onclick="testActionsManager.duplicateAction(${index})" title="Dupliquer">
+                                <i class="fas fa-copy"></i>
+                            </button>
                             <button class="btn btn-sm btn-outline-danger" onclick="testActionsManager.deleteAction(${index})" title="Supprimer">
                                 <i class="fas fa-trash"></i>
                             </button>
@@ -1067,6 +1070,17 @@ class TestActionsManager {
         
         this.displayDynamicFields(action.type, params);
         this.actionModal.show();
+    }
+
+    /**
+     * Duplique une action et l'ajoute juste après l'originale
+     */
+    duplicateAction(index) {
+        const originalAction = this.actions[index];
+        const duplicatedAction = JSON.parse(JSON.stringify(originalAction));
+        this.actions.splice(index + 1, 0, duplicatedAction);
+        this.renderActionsList();
+        Notification.success('Action dupliquée avec succès');
     }
 
     /**

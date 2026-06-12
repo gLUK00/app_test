@@ -554,6 +554,41 @@
     </div>
 </div>
 
+<!-- Modale de duplication de test -->
+<div class="modal fade" id="duplicateTestModal" tabindex="-1" aria-labelledby="duplicateTestModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="duplicateTestModalLabel">
+                    <i class="fas fa-copy"></i> Dupliquer le test
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="duplicateTestForm">
+                    <input type="hidden" id="duplicateTestId">
+                    <div class="mb-3">
+                        <label for="duplicateTestName" class="form-label">Nom du test <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="duplicateTestName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="duplicateTestDescription" class="form-label">Description</label>
+                        <textarea class="form-control" id="duplicateTestDescription" rows="3"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times"></i> Annuler
+                </button>
+                <button type="button" class="btn btn-info" id="confirmDuplicateTestBtn">
+                    <i class="fas fa-copy"></i> Dupliquer
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 {% endblock %}
 
 {% block extra_js %}
@@ -648,6 +683,9 @@ async function loadTests() {
                             <a href="/campains/${campainId}/edit/test/${test._id}" class="btn btn-sm btn-outline-primary" title="Modifier">
                                 <i class="fas fa-edit"></i>
                             </a>
+                            <button class="btn btn-sm btn-outline-info" onclick="openDuplicateTestModal('${test._id}', '${escapeHtml(testName)}', '${escapeHtml(test.description || '')}')" title="Dupliquer le test">
+                                <i class="fas fa-copy"></i>
+                            </button>
                             <button class="btn btn-sm btn-outline-danger" onclick="deleteTest('${test._id}')" title="Supprimer">
                                 <i class="fas fa-trash"></i>
                             </button>
@@ -803,6 +841,48 @@ async function moveTestDown(testId) {
         Notification.error(error.message || 'Impossible de déplacer le test');
     }
 }
+
+// Ouverture de la modale de duplication de test
+function openDuplicateTestModal(testId, testName, testDescription) {
+    document.getElementById('duplicateTestId').value = testId;
+    document.getElementById('duplicateTestName').value = testName + ' (copie)';
+    document.getElementById('duplicateTestDescription').value = testDescription || '';
+    const modal = new bootstrap.Modal(document.getElementById('duplicateTestModal'));
+    modal.show();
+}
+
+// Confirmation de duplication de test
+document.getElementById('confirmDuplicateTestBtn').addEventListener('click', async () => {
+    const testId = document.getElementById('duplicateTestId').value;
+    const name = document.getElementById('duplicateTestName').value.trim();
+    const description = document.getElementById('duplicateTestDescription').value.trim();
+
+    if (!name) {
+        Notification.error('Le nom du test est obligatoire');
+        return;
+    }
+
+    const btn = document.getElementById('confirmDuplicateTestBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Duplication...';
+
+    try {
+        await API.post(`/api/tests/${testId}/duplicate`, {
+            name: name,
+            description: description
+        });
+        Notification.success('Test dupliqué avec succès');
+        const modal = bootstrap.Modal.getInstance(document.getElementById('duplicateTestModal'));
+        modal.hide();
+        loadTests();
+    } catch (error) {
+        console.error('Erreur lors de la duplication du test:', error);
+        Notification.error(error.message || 'Erreur lors de la duplication du test');
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-copy"></i> Dupliquer';
+    }
+});
 
 // Chargement de la modale d'exécution
 async function loadExecuteModal() {
